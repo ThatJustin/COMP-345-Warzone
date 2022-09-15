@@ -1,3 +1,8 @@
-//
-// Created by Mohamed Amine Ahmadi on 2022-09-13.
-//
+#include "Map.h";
+#include <iostream>
+
+void testLoadMaps(){
+    MapLoader *mapLoader = new MapLoader("test.map");
+    Map *map = new Map(mapLoader);
+    map->validate();
+}
