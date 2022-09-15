@@ -1,30 +1,35 @@
+#include <iostream>
 #include "Player.h"
+#include "../Map/Map.h"
+#include "../Orders/Orders.h"
+#include "../Cards/Cards.h"
 
 Player::Player() {
     this->territories = vector<Territory*>();
     this->name = "";
     this->handCards = new Hand;
-    this->orderList = new OrderList;
+    this->ordersList = new OrdersList;
 }
 
 Player::Player(const string& name) {
     this->territories = vector<Territory*>();
     this->name = name;
     this->handCards = new Hand;
-    this->orderList = new OrderList;
+    this->ordersList = new OrdersList;
 }
 
 Player::~Player() {
     delete handCards;
-    delete orderList;
+    delete ordersList;
 }
 
 vector<Territory*> Player::getTerritories() {
+//    std::cout << "called " << std::endl;
     return territories;
 }
 
-OrderList* Player::getOrderList() {
-    return orderList;
+OrdersList* Player::getOrdersList() {
+    return ordersList;
 }
 
 Hand* Player::getHandCards() {
@@ -44,4 +49,8 @@ vector<Territory*> Player::toAttack() {
 bool Player::issueOrder() {
     //TODO wait for Orders Implementation
     return false;
+}
+
+string Player::getPlayerName() {
+    return name;
 }
