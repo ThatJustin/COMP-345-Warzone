@@ -2,7 +2,7 @@
 #include "sources/Player/Player.h"
 #include "sources/Map//Map.h"
 
-int main() {
+void testPlayers() {
     auto* player = new Player("lols");
     std::cout << player->getPlayerName() << std::endl;
     player->getPlayerName() = "lel";
@@ -16,7 +16,9 @@ int main() {
 //    auto* player = new Player("lols");
 //    player->getTerritories();
     delete player;
-    //TODO awaiting implementation of other classes
+}
+int main() {
+    testPlayers();
 }
 
 
