@@ -2,7 +2,7 @@
 #include <iostream>
 
 void testLoadMaps(){
-    MapLoader *mapLoader = new MapLoader("test.map");
-    Map *map = new Map(mapLoader);
+    MapLoader *mapLoader = new MapLoader();
+    Map *map = new Map();
     map->validate();
 }
