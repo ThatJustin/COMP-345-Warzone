@@ -8,10 +8,11 @@
 #include <vector>
 class OrdersList {
 private:
-    vector <Orders> list;
+    std::vector <Orders> list;
     int list_size;
 public:
-    void move();
+    OrdersList(const OrdersList& ol);
+    void move(int to_move, int move_to);
     void remove();
 };
 
