@@ -2,40 +2,43 @@
 #define MAP_H
 
 #include <string>
-#include <set>
 #include "../Player/Player.h"
 
 class Player;
-class Territory{
+
+class Territory {
 public:
     Territory(Player *player, int numberOfArmies);
     Territory();
     ~Territory();
     Territory(const Territory &territory);
-
-    std::string territory;
+    explicit Territory(const string &territoryName);
+    string getTerritoryName();
     string getPlayerName();
+
 private:
-    std::set<std::string> adjacencies;
-    Player* player = nullptr;
+    string territoryName;
+    Player* player;
 };
 
-class Map{
+class Map {
 public:
-    Map(Territory *territory);
+    explicit Map(Territory *territory);
     Map();
+    ~Map();
     Map(const Map &map);
-    void traverseMap(int i, bool visited[]);
     bool validate();
+    string getContinentName();
 
 private:
-    std::set<Territory> *territories;
-    bool visited[];
-
+    string continentName;
+    vector<Territory*> territories;
 };
-class MapLoader{
+
+class MapLoader {
 public:
     MapLoader();
+    ~MapLoader();
     MapLoader(const MapLoader &mapLoader);
 
 private:
