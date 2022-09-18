@@ -8,8 +8,7 @@
 #include <vector>
 class OrdersList {
 private:
-    std::vector <Orders> list;
-    int list_size;
+    std::vector <Orders*> list;
 public:
     OrdersList(const OrdersList& ol);
     void move(int to_move, int move_to);
