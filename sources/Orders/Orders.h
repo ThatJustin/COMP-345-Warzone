@@ -9,7 +9,7 @@
 
 class Orders {
 public:
-    static bool validate();
+    bool validate();
 
     void execute();
 };
@@ -19,8 +19,8 @@ private:
     std::vector<Orders*> list;
     int list_size;
 public:
-    void move();
-
+    OrdersList(const OrdersList& ol);
+    void move(int to_move, int move_to);
     void remove();
 };
 
