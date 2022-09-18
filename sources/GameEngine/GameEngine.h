@@ -5,94 +5,106 @@
 #import "string"
 
 
-class GameState{
-    public: std::string Name;
-    public: virtual void Handle() = 0;
+class GameState {
+public:
+    std::string Name;
+    virtual void Handle() = 0;
+    virtual ~GameState();
 };
 
 class GameEngine {
-    private: GameState* _state;
+private:
+    GameState* _state;
 
 public:
     GameEngine();
+    ~GameEngine();
     void setState(GameState* state);
     GameState* getState();
     void Handle();
 };
 
-class Start: public GameState{
-    private:
-        GameEngine* _context;
-    public:
-        Start(GameEngine* context);
-        void Handle();
-};
-
-class Map_Loaded: public GameState{
-    private:
-        GameEngine* _context;
-    public:
-        Map_Loaded(GameEngine* context);
-        void Handle();
-};
-
-class Map_Validated: public GameState{
+class Start : public GameState {
 private:
     GameEngine* _context;
 public:
-    Map_Validated(GameEngine* context);
+    explicit Start(GameEngine* context);
+    ~Start();
     void Handle();
 };
 
-class Players_Added: public GameState{
+class Map_Loaded : public GameState {
 private:
     GameEngine* _context;
 public:
-    Players_Added(GameEngine* context);
+    explicit Map_Loaded(GameEngine* context);
+    ~Map_Loaded();
     void Handle();
 };
 
-
-class Assign_Reinforcement: public GameState{
+class Map_Validated : public GameState {
 private:
     GameEngine* _context;
 public:
-    Assign_Reinforcement(GameEngine* context);
+    explicit Map_Validated(GameEngine* context);
+    ~Map_Validated();
     void Handle();
 };
 
-class Issue_Orders: public GameState{
+class Players_Added : public GameState {
 private:
     GameEngine* _context;
 public:
-    Issue_Orders(GameEngine* context);
+    explicit Players_Added(GameEngine* context);
+    ~Players_Added();
     void Handle();
 };
 
-class Execute_orders: public GameState{
+
+class Assign_Reinforcement : public GameState {
 private:
     GameEngine* _context;
 public:
-    Execute_orders(GameEngine* context);
+    explicit Assign_Reinforcement(GameEngine* context);
+    ~Assign_Reinforcement();
     void Handle();
 };
 
-class Win: public GameState{
+class Issue_Orders : public GameState {
 private:
     GameEngine* _context;
 public:
-    Win(GameEngine* context);
+    explicit Issue_Orders(GameEngine* context);
+    ~Issue_Orders();
     void Handle();
 };
 
-class End: public GameState{
+class Execute_orders : public GameState {
 private:
     GameEngine* _context;
 public:
-    End(GameEngine* context);
+    explicit Execute_orders(GameEngine* context);
+    ~Execute_orders();
     void Handle();
 };
 
+class Win : public GameState {
+private:
+    GameEngine* _context;
+public:
+    explicit Win(GameEngine* context);
+    ~Win();
+    void Handle();
+};
+
+class End : public GameState {
+private:
+    GameEngine* _context;
+public:
+    explicit End(GameEngine* context);
+    ~End();
+    void Handle();
+};
 
 
 #endif //COMP_345_WARZONE_GAMEENGINE_H
