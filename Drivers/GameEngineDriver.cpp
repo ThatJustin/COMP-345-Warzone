@@ -2,22 +2,25 @@
 #include "sources/GameEngine/GameEngine.h"
 #include <iostream>
 #include <string>
+
 void testGameStates() {
 
     bool flag = false;
-    GameEngine GE;
+    GameEngine* GE = new GameEngine;
 
-    while (!flag){
+    while (!flag) {
         printf("currect state:");
-        std::cout << GE.getState()->Name;
+        std::cout << GE->getState()->Name;
         printf("\n");
-        GE.Handle();
+        GE->Handle();
         printf("\n");
-        if(GE.getState()->Name == "End"){
+        if (GE->getState()->Name == "End") {
             flag = true;
         }
     }
+    delete GE;
 }
+
 int main() {
     testGameStates();
 }
