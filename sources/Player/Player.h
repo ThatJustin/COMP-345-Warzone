@@ -12,6 +12,7 @@ class Player {
 public:
     Player();
     explicit Player(const string &name);
+    explicit Player(const Player &player);
     ~Player();
     vector<Territory*> getTerritories();
     OrdersList* getOrdersList();

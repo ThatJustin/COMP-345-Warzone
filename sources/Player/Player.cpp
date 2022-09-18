@@ -18,6 +18,14 @@ Player::Player(const string& name) {
     this->ordersList = new OrdersList;
 }
 
+// Copy Constructor
+Player::Player(const Player& player) {
+    this->territories = player.territories;
+    this->handCards = player.handCards;
+    this->name = player.name;
+    this->ordersList = player.ordersList;
+}
+
 Player::~Player() {
     delete handCards;
     delete ordersList;
@@ -54,3 +62,4 @@ bool Player::issueOrder() {
 string Player::getPlayerName() {
     return name;
 }
+
