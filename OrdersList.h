@@ -12,7 +12,7 @@ private:
 public:
     OrdersList(const OrdersList& ol);
     void move(int to_move, int move_to);
-    void remove();
+    void remove(int order);
 };
 
 

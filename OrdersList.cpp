@@ -6,7 +6,6 @@
 #include <vector>
 OrdersList::OrdersList(const OrdersList& ol){
     list = ol.list;
-    list_size = ol.list_size;
 }
 
 void OrdersList::move(int to_move, int move_to) {
@@ -37,8 +36,8 @@ void OrdersList::move(int to_move, int move_to) {
     }
 }
 
-void OrdersList::remove(){
-
+void OrdersList::remove(int order){
+    list.erase(list.begin()+order);
 }
 
 
