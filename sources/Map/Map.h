@@ -9,7 +9,7 @@ class Player;
 class Continent {
 public:
     Continent();
-    Continent(int map_continent_id, string continent_name);
+    Continent(int map_continent_id, const string &continent_name);
     ~Continent();
     Continent(const Continent &continent);
     Continent &operator = (const Continent &continent);
