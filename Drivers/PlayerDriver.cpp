@@ -7,9 +7,8 @@ void testPlayers() {
     std::cout << player->getPlayerName() << std::endl;
     player->getPlayerName() = "lel";
     std::cout << player->getPlayerName() << std::endl;
-    auto* terr = new Territory();
-    terr->territory = "lol";
-    std::cout << terr->territory << std::endl;
+    auto* terr = new Territory("lol");
+    std::cout << terr->getTerritoryName() << std::endl;
     std::cout << terr->getPlayerName() << std::endl;
     delete terr;
 //    delete player;
