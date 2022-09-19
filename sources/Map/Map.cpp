@@ -8,7 +8,7 @@ Continent::Continent() {
     this->territories = vector<Territory*>();
 }
 
-Continent::Continent(int map_continent_id, string continent_name) {
+Continent::Continent(int map_continent_id, const string &continent_name) {
     this->map_continent_id = map_continent_id;
     this->continent_name = continent_name;
     this->territories = vector<Territory*>();
