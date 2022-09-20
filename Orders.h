@@ -8,31 +8,32 @@
 
 class Orders {
 public:
+    Orders();
     bool validate();
     void execute();
 };
 
-class Deploy : Orders{
+class Deploy : public Orders{
 
 };
 
-class Advance : Orders{
+class Advance : public Orders{
 
 };
 
-class Bomb : Orders{
+class Bomb : public Orders{
 
 };
 
-class Blockade : Orders{
+class Blockade : public Orders{
 
 };
 
-class Airlift : Orders{
+class Airlift : public Orders{
 
 };
 
-class Negotiate : Orders{
+class Negotiate : public Orders{
 
 };
 #endif //COMP_345_ORDERS_H

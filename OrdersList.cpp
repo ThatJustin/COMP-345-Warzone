@@ -4,6 +4,10 @@
 
 #include "OrdersList.h"
 #include <vector>
+OrdersList::OrdersList() {
+    list;
+}
+
 OrdersList::OrdersList(const OrdersList& ol){
     list = ol.list;
 }
@@ -38,6 +42,10 @@ void OrdersList::move(int to_move, int move_to) {
 
 void OrdersList::remove(int order){
     list.erase(list.begin()+order);
+}
+
+void OrdersList::add(Orders* o){
+    list.push_back(o);
 }
 
 
