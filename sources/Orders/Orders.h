@@ -44,6 +44,7 @@ private:
 public:
     OrdersList();
     OrdersList(const OrdersList& ol);
+    ~OrdersList();
     void move(int to_move, int move_to);
     void remove(int order);
     void add(Orders* o);

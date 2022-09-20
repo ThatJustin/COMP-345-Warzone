@@ -2,7 +2,6 @@
 // Created by Alex De Luca on 2022-09-14.
 //
 #include "Orders.h"
-#include "Orders.h"
 #include <vector>
 Orders::Orders(){
 
@@ -56,4 +55,11 @@ void OrdersList::remove(int order){
 
 void OrdersList::add(Orders* o){
     list.push_back(o);
+}
+
+OrdersList::~OrdersList() {
+    for(Orders *ol: list){
+        delete ol;
+        ol = nullptr;
+    }
 }
