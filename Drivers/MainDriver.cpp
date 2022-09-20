@@ -9,21 +9,22 @@ int main() {
 
     //Test Maps
     std::cout << "Testing Maps" << std::endl;
-    testLoadMaps();
+    //  testLoadMaps();
 
     //Test Player
     std::cout << "Testing Player" << std::endl;
-    testPlayers();
+    // testPlayers();
 
     //Test OrderList
     std::cout << "Testing OrderList" << std::endl;
-    testOrdersLists();
+    //  testOrdersLists();
 
     //Test Cards deck/hand
     std::cout << "Testing Cards deck/hand" << std::endl;
-    testCards();
+    // testCards();
 
     //Test GameEngine
     std::cout << "Testing GameEngine" << std::endl;
     testGameStates();
+    return 0;
 }
