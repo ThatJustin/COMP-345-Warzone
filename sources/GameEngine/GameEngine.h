@@ -5,106 +5,221 @@
 #import "string"
 
 
-class GameState {
-public:
-    std::string Name;
-    virtual void Handle() = 0;
-    virtual ~GameState();
-};
+using namespace std;
+
+class GameState;
+class Start;
+class MapLoaded;
+class MapValidated;
+class PlayersAdded;
+class AssignReinforcement;
+class IssueOrders;
+class ExecuteOrders;
+class Win;
 
 class GameEngine {
 private:
-    GameState* _state;
 
+    //each state
+    Start* start;
+    MapLoaded* loadMap;
+    MapValidated* mapValidated;
+    PlayersAdded* playersAdded;
+    AssignReinforcement* assignReinforcement;
+    IssueOrders* issueOrders;
+    ExecuteOrders* executeOrders;
+    Win* win;
+
+    // Keep track of the current state
+    GameState* currentGameState;
 public:
     GameEngine();
+    GameEngine(const GameEngine& gameEngine);
     ~GameEngine();
-    void setState(GameState* state);
-    GameState* getState();
-    void Handle();
+    friend ostream& operator<<(ostream& stream, const GameEngine &player);
+    GameEngine& operator=(const GameEngine& gameEngine);
+
+    GameState* getCurrentGameState();
+
+    //All valid transitions
+    static const int StartGame = 0,
+            LoadMap = 1,
+            ValidateMap = 2,
+            AddPlayer = 3,
+            AssignCountries = 4,
+            IssueOrder = 5,
+            EndIssueOrders = 6,
+            Execorder = 7,
+            Endexecorders = 8,
+            Win = 9,
+            Play = 10,
+            End = 11;
+
+    void changeStateByTransition(int transition);
+
+    GameState* getStateFromTransition(int transition);
+};
+
+class GameState {
+public:
+    GameEngine* gameEngine;
+
+    GameState(GameEngine* gameEngine);
+
+    //Name of the state in case we need it
+    std::string name;
+
+    //Virtual functions to override
+    virtual void enterState() = 0;
+
+    virtual bool isValidTransition();
+
+    ~GameState();
+
 };
 
 class Start : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Start(GameEngine* context);
+
+    explicit Start(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[1] = {GameEngine::LoadMap};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[1]{"loadmap"};
+
     ~Start();
-    void Handle();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-class Map_Loaded : public GameState {
+class MapLoaded : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Map_Loaded(GameEngine* context);
-    ~Map_Loaded();
-    void Handle();
+
+    explicit MapLoaded(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[2] = {GameEngine::LoadMap, GameEngine::ValidateMap};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[2]{"loadmap", "validatemap"};
+
+    ~MapLoaded();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-class Map_Validated : public GameState {
+class MapValidated : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Map_Validated(GameEngine* context);
-    ~Map_Validated();
-    void Handle();
+
+    explicit MapValidated(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[1] = {GameEngine::AddPlayer};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[1]{"addplayer"};
+
+    ~MapValidated();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-class Players_Added : public GameState {
+class PlayersAdded : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Players_Added(GameEngine* context);
-    ~Players_Added();
-    void Handle();
+
+    explicit PlayersAdded(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[2] = {GameEngine::AddPlayer, GameEngine::AssignCountries};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[2]{"addplayer", "assigncountries"};
+
+    ~PlayersAdded();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-
-class Assign_Reinforcement : public GameState {
+class AssignReinforcement : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Assign_Reinforcement(GameEngine* context);
-    ~Assign_Reinforcement();
-    void Handle();
+
+    explicit AssignReinforcement(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[2] = {GameEngine::IssueOrder};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[2]{"issueorders"};
+
+    ~AssignReinforcement();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-class Issue_Orders : public GameState {
+class IssueOrders : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Issue_Orders(GameEngine* context);
-    ~Issue_Orders();
-    void Handle();
+
+    explicit IssueOrders(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[2] = {GameEngine::IssueOrder, GameEngine::EndIssueOrders};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[2]{"issueorders", "endissueorders"};
+
+    ~IssueOrders();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
-class Execute_orders : public GameState {
+class ExecuteOrders : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Execute_orders(GameEngine* context);
-    ~Execute_orders();
-    void Handle();
+
+    explicit ExecuteOrders(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[3] = {GameEngine::Execorder, GameEngine::Endexecorders, GameEngine::Win};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[3]{"execorder", "endexecorders", "win"};
+
+    ~ExecuteOrders();
+
+    void enterState() override;
+
+    bool isValidTransition() override;
 };
 
 class Win : public GameState {
 private:
-    GameEngine* _context;
 public:
-    explicit Win(GameEngine* context);
+
+    explicit Win(GameEngine* gameEngine);
+
+    //These are the valid transitions from this state
+    const int VALID_TRANSITIONS[2] = {GameEngine::Play, GameEngine::End};
+    //These are the valid commands (input) for this state
+    const string VALID_COMMANDS[2]{"play", "end"};
+
     ~Win();
-    void Handle();
-};
 
-class End : public GameState {
-private:
-    GameEngine* _context;
-public:
-    explicit End(GameEngine* context);
-    ~End();
-    void Handle();
-};
+    void enterState() override;
 
+    bool isValidTransition() override;
+};
 
 #endif //COMP_345_WARZONE_GAMEENGINE_H

@@ -1,232 +1,621 @@
-
-
-#include <cstdio>
 #include "GameEngine.h"
 #include <iostream>
 #include <string>
+#include <algorithm>
 
+/**
+ * Constructor of GameEngine
+ */
 GameEngine::GameEngine() {
-    _state = new Start(this);
+
+    //Create the states which will be used throughout the game
+    start = new Start(this);
+    loadMap = new MapLoaded(this);
+    mapValidated = new MapValidated(this);
+    playersAdded = new PlayersAdded(this);
+    assignReinforcement = new AssignReinforcement(this);
+    issueOrders = new IssueOrders(this);
+    executeOrders = new ExecuteOrders(this);
+    win = new class Win(this);
+
+    //Keep track of the current game state
+    currentGameState = nullptr;
 }
 
-void GameEngine::setState(GameState* state) {
-    _state = state;
+/**
+ * Destructor of GameEngine
+ */
+GameEngine::~GameEngine() {
+    if (start != nullptr) {
+        delete start;
+        start = nullptr;
+    }
+    if (loadMap != nullptr) {
+        delete loadMap;
+        loadMap = nullptr;
+    }
+    if (mapValidated != nullptr) {
+        delete mapValidated;
+        mapValidated = nullptr;
+    }
+    if (playersAdded != nullptr) {
+        delete playersAdded;
+        playersAdded = nullptr;
+    }
+    if (assignReinforcement != nullptr) {
+        delete assignReinforcement;
+        assignReinforcement = nullptr;
+    }
+    if (issueOrders != nullptr) {
+        delete issueOrders;
+        issueOrders = nullptr;
+    }
+    if (executeOrders != nullptr) {
+        delete executeOrders;
+        executeOrders = nullptr;
+    }
+    if (win != nullptr) {
+        delete win;
+        win = nullptr;
+    }
+    if (currentGameState != nullptr) {
+        currentGameState = nullptr;
+    }
 }
 
-GameState* GameEngine::getState() {
-    return _state;
+/**
+ * Changes the state of the game based on the transitionn given.hanging state for the game.
+ * @param transition
+ */
+void GameEngine::changeStateByTransition(int transition) {
+    //First time running the game
+    if (currentGameState == nullptr) {
+        this->currentGameState = getStateFromTransition(transition);
+        this->getCurrentGameState()->enterState();
+    } else {
+        // isValidTransition will be used for when we need to validate that the transition is okay in the future
+        // for now it's always true
+        if (this->getCurrentGameState()->isValidTransition()) {
+            this->currentGameState = getStateFromTransition(transition);
+            this->getCurrentGameState()->enterState();
+        }
+    }
 }
 
+/**
+ * Returns the state of the game engine.
+ * @return currentGameState
+ */
+GameState* GameEngine::getCurrentGameState() {
+    return currentGameState;
+}
+
+/**
+ * Returns the state after a given transition.
+ * @param transition
+ * @return state
+ */
+GameState* GameEngine::getStateFromTransition(int transition) {
+    if (transition == StartGame || transition == Play) {
+        return start;
+    } else if (transition == LoadMap) {
+        return loadMap;
+    } else if (transition == ValidateMap) {
+        return mapValidated;
+    } else if (transition == AddPlayer) {
+        return playersAdded;
+    } else if (transition == AssignCountries || transition == Endexecorders) {
+        return assignReinforcement;
+    } else if (transition == IssueOrder) {
+        return issueOrders;
+    } else if (transition == EndIssueOrders || transition == Execorder) {
+        return executeOrders;
+    } else if (transition == Win) {
+        return win;
+    } else {
+        cout << "An invalid transition has been encountered." << endl;
+        return nullptr;
+    }
+}
+
+/**
+ * Copy constructor
+ */
+GameEngine::GameEngine(const GameEngine& gameEngine) {
+    start = gameEngine.start;
+    loadMap = gameEngine.loadMap;
+    mapValidated = gameEngine.mapValidated;
+    playersAdded = gameEngine.playersAdded;
+    assignReinforcement = gameEngine.assignReinforcement;
+    issueOrders = gameEngine.issueOrders;
+    executeOrders = gameEngine.executeOrders;
+    win = gameEngine.win;
+    currentGameState = gameEngine.currentGameState;
+}
+
+/**
+ * Override the = operator for GameEngine.
+ */
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
+    this->start = gameEngine.start;
+    this->loadMap = gameEngine.loadMap;
+    this->mapValidated = gameEngine.mapValidated;
+    this->playersAdded = gameEngine.playersAdded;
+    this->assignReinforcement = gameEngine.assignReinforcement;
+    this->issueOrders = gameEngine.issueOrders;
+    this->executeOrders = gameEngine.executeOrders;
+    this->win = gameEngine.win;
+    this->currentGameState = gameEngine.currentGameState;
+    return *this;
+}
+
+ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
+    stream << "Current GameEngine State " << gameEngine.currentGameState->name << endl;
+    return stream;
+}
+
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+GameState::GameState(GameEngine* gameEngine) {
+    this->name = "none";
+    this->gameEngine = gameEngine;
+}
+
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool GameState::isValidTransition() {
+    return true;
+}
+
+/**
+ * Destructor
+ */
 GameState::~GameState() {
 
 }
 
-void GameEngine::Handle() {
-    _state->Handle();
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+Start::Start(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "start";
+    this->gameEngine = gameEngine;
 }
 
-GameEngine::~GameEngine() {
-    delete _state;
-}
-
-///start state
-Start::Start(GameEngine* context) : _context(context) {
-    Name = "Start";
-};
-
-void Start::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: loadmap\n";
-    std::cin >> input;
-
-
-    if (input == "loadmap") {
-        _context->setState(new Map_Loaded(_context));
-    } else {
-        printf("wrong command, please retry \n");
-    }
-
-
-}
-
+/**
+ * Destructor
+ */
 Start::~Start() {
-    delete _context;
 }
 
-///Map Loaded state
-Map_Loaded::Map_Loaded(GameEngine* context) : _context(context) {
-    Name = "Map Loaded";
-};
+/**
+ * Handles what happens when entering a specific state.
+ */
+void Start::enterState() {
+    cout << "Entering start state" << endl;
 
-void Map_Loaded::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: loadmap, validatemap\n";
-    std::cin >> input;
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
 
-    if (input == "loadmap") {
-        _context->setState(new Map_Loaded(_context));
-    } else if (input == "validatemap") {
-        _context->setState(new Map_Validated(_context));
-    } else {
-        printf("wrong command, please retry \n");
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::LoadMap);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Map_Loaded::~Map_Loaded() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool Start::isValidTransition() {
+    return true;
 }
 
-///Map validated state
-Map_Validated::Map_Validated(GameEngine* context) : _context(context) {
-    Name = "Map Validated";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
 
-void Map_Validated::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: addplayer\n";
-    std::cin >> input;
+MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "loadmap";
+    this->gameEngine = gameEngine;
+}
+
+/**
+ * Destructor
+ */
+MapLoaded::~MapLoaded() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void MapLoaded::enterState() {
+    cout << "Entering Loadmap state" << endl;
 
 
-    if (input == "addplayer") {
-        _context->setState(new Players_Added(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::LoadMap);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[1]) {
+            gameEngine->changeStateByTransition(GameEngine::ValidateMap);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Map_Validated::~Map_Validated() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool MapLoaded::isValidTransition() {
+    return true;
 }
 
-///Players_Added state
-Players_Added::Players_Added(GameEngine* context) : _context(context) {
-    Name = "Players_Added";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+MapValidated::MapValidated(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "mapvalidated";
+    this->gameEngine = gameEngine;
+}
 
-void Players_Added::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: addplayer,assigncountries\n";
-    std::cin >> input;
+/**
+ * Destructor
+ */
+MapValidated::~MapValidated() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void MapValidated::enterState() {
+    cout << "Entering MapValidated state" << endl;
 
 
-    if (input == "addplayer") {
-        _context->setState(new Players_Added(_context));
-    } else if (input == "assigncountries") {
-        _context->setState(new Assign_Reinforcement(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Players_Added::~Players_Added() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool MapValidated::isValidTransition() {
+    return true;
 }
 
-///Assign_Reinforcement state
-Assign_Reinforcement::Assign_Reinforcement(GameEngine* context) : _context(context) {
-    Name = "Assign_Reinforcement";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+PlayersAdded::PlayersAdded(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "playersadded";
+    this->gameEngine = gameEngine;
+}
 
-void Assign_Reinforcement::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: issueorder\n";
-    std::cin >> input;
+/**
+ * Destructor
+ */
+PlayersAdded::~PlayersAdded() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void PlayersAdded::enterState() {
+    cout << "Entering PlayersAdded state" << endl;
 
 
-    if (input == "issueorder") {
-        _context->setState(new Issue_Orders(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[1]) {
+            gameEngine->changeStateByTransition(GameEngine::AssignCountries);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Assign_Reinforcement::~Assign_Reinforcement() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool PlayersAdded::isValidTransition() {
+    return true;
 }
 
-///Issue_Orders state
-Issue_Orders::Issue_Orders(GameEngine* context) : _context(context) {
-    Name = "Issue_Orders";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+AssignReinforcement::AssignReinforcement(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "assignreinforcement";
+    this->gameEngine = gameEngine;
+}
 
-void Issue_Orders::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: issueorder,endissueorders\n";
-    std::cin >> input;
+/**
+ * Destructor
+ */
+AssignReinforcement::~AssignReinforcement() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void AssignReinforcement::enterState() {
+    cout << "Entering AssignReinforcement state" << endl;
 
 
-    if (input == "issueorder") {
-        _context->setState(new Issue_Orders(_context));
-    } else if (input == "endissueorders") {
-        _context->setState(new Execute_orders(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Issue_Orders::~Issue_Orders() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool AssignReinforcement::isValidTransition() {
+    return true;
 }
 
-///Execute_ordersstate
-Execute_orders::Execute_orders(GameEngine* context) : _context(context) {
-    Name = "Execute_orders";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+IssueOrders::IssueOrders(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "issueorders";
+    this->gameEngine = gameEngine;
+}
 
-void Execute_orders::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: execorder,endexecorders, win\n";
-    std::cin >> input;
+/**
+ * Destructor
+ */
+IssueOrders::~IssueOrders() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void IssueOrders::enterState() {
+    cout << "Entering IssueOrders state" << endl;
 
 
-    if (input == "execorder") {
-        _context->setState(new Execute_orders(_context));
-    } else if (input == "endexecorders") {
-        _context->setState(new Assign_Reinforcement(_context));
-    } else if (input == "win") {
-        _context->setState(new Win(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[1]) {
+            gameEngine->changeStateByTransition(GameEngine::EndIssueOrders);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
-Execute_orders::~Execute_orders() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool IssueOrders::isValidTransition() {
+    return true;
 }
 
-///Win
-Win::Win(GameEngine* context) : _context(context) {
-    Name = "Win";
-};
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+ExecuteOrders::ExecuteOrders(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "executeorders";
+    this->gameEngine = gameEngine;
+}
 
-void Win::Handle() {
-    std::string input;
-    std::cout << "Please type a command: valid commands are: end, play\n";
-    std::cin >> input;
+/**
+ * Destructor
+ */
+ExecuteOrders::~ExecuteOrders() {
+
+}
+
+/**
+ * Handles what happens when entering a specific state.
+ */
+void ExecuteOrders::enterState() {
+    cout << "Entering ExecuteOrders state" << endl;
 
 
-    if (input == "end") {
-        _context->setState(new End(_context));
-    } else if (input == "play") {
-        _context->setState(new Start(_context));
-    } else {
-        printf("wrong command, please retry \n");
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::Execorder);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[1]) {
+            gameEngine->changeStateByTransition(GameEngine::Endexecorders);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[2]) {
+            gameEngine->changeStateByTransition(GameEngine::Win);
+            validInput = true;
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
     }
 }
 
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool ExecuteOrders::isValidTransition() {
+    return true;
+}
+
+/**
+ * Constructor
+ * @param name
+ * @param gameEngine
+ */
+Win::Win(GameEngine* gameEngine) : GameState(gameEngine) {
+    this->name = "win";
+    this->gameEngine = gameEngine;
+}
+
+/**
+ * Destructor
+ */
 Win::~Win() {
-    delete _context;
+
 }
 
-///End
-End::End(GameEngine* context) : _context(context) {
-    Name = "End";
-};
+/**
+ * Handles what happens when entering a specific state.
+ */
+void Win::enterState() {
+    cout << "Entering Win state" << endl;
 
-void End::Handle() {
-    std::cout << "Thank you for playing the game";
+
+    cout << "What state would you like to transition to?" << endl;
+    bool validInput = false;
+    while (!validInput) {
+        cout << "Valid transitions : ";
+        for (auto const& value: VALID_COMMANDS) {
+            std::cout << value << " ";
+        }
+        std::cout << "\n";
+
+        string input;
+        cin >> input;
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+        if (input == VALID_COMMANDS[0]) {
+            gameEngine->changeStateByTransition(GameEngine::Play);
+            validInput = true;
+        } else if (input == VALID_COMMANDS[1]) {
+            validInput = true;
+            exit(0);
+        } else {
+            cout << "An invalid transition was entered. Please try again." << endl;
+        }
+    }
 }
 
-End::~End() {
-    delete _context;
+/**
+ * Returns true if the state is allowed to make this transition.
+ * @return
+ */
+bool Win::isValidTransition() {
+    return true;
 }
