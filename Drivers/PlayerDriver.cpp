@@ -1,6 +1,6 @@
 #include <iostream>
 #include "sources/Player/Player.h"
-#include "sources/Map//Map.h"
+#include "sources/Map/Map.h"
 
 void testPlayers() {
     auto* player = new Player("Adam");
@@ -37,10 +37,3 @@ void testPlayers() {
     delete territory1;
     delete player;
 }
-
-int main() {
-    testPlayers();
-}
-
-
-
