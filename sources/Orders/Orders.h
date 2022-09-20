@@ -9,42 +9,44 @@
 
 class Orders {
 public:
-    static bool validate();
-
+    Orders();
+    bool validate();
     void execute();
+};
+
+class Deploy : public Orders{
+
+};
+
+class Advance : public Orders{
+
+};
+
+class Bomb : public Orders{
+
+};
+
+class Blockade : public Orders{
+
+};
+
+class Airlift : public Orders{
+
+};
+
+class Negotiate : public Orders{
+
 };
 
 class OrdersList {
 private:
-    std::vector<Orders*> list;
-    int list_size;
+    std::vector <Orders*> list;
 public:
-    void move();
-
-    void remove();
-};
-
-class Deploy : Orders {
-};
-
-class Advance : Orders {
-
-};
-
-class Bomb : Orders {
-
-};
-
-class Blockade : Orders {
-
-};
-
-class Airlift : Orders {
-
-};
-
-class Negotiate : Orders {
-
+    OrdersList();
+    OrdersList(const OrdersList& ol);
+    void move(int to_move, int move_to);
+    void remove(int order);
+    void add(Orders* o);
 };
 
 #endif //COMP_345_ORDERS_H
