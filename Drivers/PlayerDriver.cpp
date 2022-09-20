@@ -3,8 +3,8 @@
 #include "sources/Map/Map.h"
 
 void testPlayers() {
-    auto* player = new Player("Adam");
-    auto* territory1 = new Territory(9, "Xasnines", player);
+   auto* player = new Player("Adam");
+   auto* territory1 = new Territory(9, "Xasnines", player);
     player->getTerritories().push_back(territory1);
 
     cout << *player << endl;
@@ -34,6 +34,5 @@ void testPlayers() {
         size++;
     }
     player->toAttack().clear();
-    delete territory1;
-    delete player;
+   delete player;
 }
