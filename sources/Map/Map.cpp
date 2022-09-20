@@ -78,6 +78,15 @@ Territory::Territory() {
     this->adjacent_territories = vector<Territory*>();
 }
 
+Territory::Territory(int map_territory_id, const string& territory_name, Player* player) {
+    this->map_territory_id = map_territory_id;
+    this->number_of_armies = 0;
+    this->territory_name = territory_name;
+    this->continent = new Continent();
+    this->player = player;
+    this->adjacent_territories = vector<Territory*>();
+}
+
 Territory::Territory(int map_territory_id, string territory_name, Continent *continent) {
     this->map_territory_id = map_territory_id;
     this->number_of_armies = 0;
@@ -252,50 +261,50 @@ Continent* Map::getContinent(int map_continent_id) {
     return nullptr;
 }
 
-void Map::depthFirstSearch(int starting_territory_id, vector<Territory *> &visited_territories) {
-    Territory* starting_territory = this->getTerritory(starting_territory_id);
-    if(starting_territory != nullptr) {
-        visited_territories.push_back(starting_territory);
-        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
-            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-                this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
-            }
-        }
-    }
-}
-
-void Map::depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories) {
-    Territory* starting_territory = this->getTerritoryInContinent(starting_territory_id, continent[0]->getContinent()->getMapContinentId());
-    if(starting_territory != nullptr) {
-        visited_territories.push_back(starting_territory);
-        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
-            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-                this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
-            }
-        }
-    }
-}
+//void Map::depthFirstSearch(int starting_territory_id, vector<Territory *> &visited_territories) {
+//    Territory* starting_territory = this->getTerritory(starting_territory_id);
+//    if(starting_territory != nullptr) {
+//        visited_territories.push_back(starting_territory);
+//        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
+//            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+//                this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
+//            }
+//        }
+//    }
+//}
+//
+//void Map::depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories) {
+//    Territory* starting_territory = this->getTerritoryInContinent(starting_territory_id, continent[0]->getContinent()->getMapContinentId());
+//    if(starting_territory != nullptr) {
+//        visited_territories.push_back(starting_territory);
+//        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
+//            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+//                this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
+//            }
+//        }
+//    }
+//}
 
 bool Map::validate() {
     if(territories.empty() || continents.empty()){
         return false;
     }
 
-    for(auto &territory : this->territories) {
-        vector<Territory*> visited_territories;
-        this->depthFirstSearch(territory->getMapTerritoryId(), visited_territories);
-        if(visited_territories.size() != this->territories.size()) {
-            return false;
-        }
-    }
-
-    for(auto &continent : this->continents) {
-        vector<Territory*> visited_territories;
-        this->depthFirstSearch(continent->getTerritories(), continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
-        if(visited_territories.size() != continent->getTerritories().size()) {
-            return false;
-        }
-    }
+//    for(auto &territory : this->territories) {
+//        vector<Territory*> visited_territories;
+//        this->depthFirstSearch(territory->getMapTerritoryId(), visited_territories);
+//        if(visited_territories.size() != this->territories.size()) {
+//            return false;
+//        }
+//    }
+//
+//    for(auto &continent : this->continents) {
+//        vector<Territory*> visited_territories;
+//        this->depthFirstSearch(continent->getTerritories(), continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
+//        if(visited_territories.size() != continent->getTerritories().size()) {
+//            return false;
+//        }
+//    }
 
     for(auto &territory : this->territories) {
         int territory_in_continent_count = 0;

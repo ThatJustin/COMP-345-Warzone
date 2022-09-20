@@ -27,13 +27,18 @@ Player::Player(const Player& player) {
 }
 
 Player::~Player() {
+    for (Territory* terr: territories) {
+        delete terr;
+        terr = nullptr;
+    }
     delete handCards;
+    handCards = nullptr;
     delete ordersList;
+    ordersList = nullptr;
 }
 
 vector<Territory*> Player::getTerritories() {
-//    std::cout << "called " << std::endl;
-    return territories;
+    return this->territories;
 }
 
 OrdersList* Player::getOrdersList() {
@@ -45,13 +50,32 @@ Hand* Player::getHandCards() {
 }
 
 vector<Territory*> Player::toDefend() {
-    //Temporary return
-    return {};
+    // For now return an arbitrary list of territories to defend
+    vector<Territory*> defendTerritories;
+    auto* territory1 = new Territory(1, "Plule", this);
+    auto* territory2 = new Territory(2, "Woflington", this);
+    auto* territory3 = new Territory(3, "Chuih Cha", this);
+    auto* territory4 = new Territory(4, "Soscele", this);
+    defendTerritories.push_back(territory1);
+    defendTerritories.push_back(territory2);
+    defendTerritories.push_back(territory3);
+    defendTerritories.push_back(territory4);
+    return defendTerritories;
 }
 
 vector<Territory*> Player::toAttack() {
+    // For now return an arbitrary list of territories to attack
+    vector<Territory*> attackTerritories;
+    auto* territory1 = new Territory(5, "Voflein", this);
+    auto* territory2 = new Territory(6, "Ocrax", this);
+    auto* territory3 = new Territory(7, "Tewhuicia Caskein", this);
+    auto* territory4 = new Territory(8, "Eshana", this);
+    attackTerritories.push_back(territory1);
+    attackTerritories.push_back(territory2);
+    attackTerritories.push_back(territory3);
+    attackTerritories.push_back(territory4);
     //Temporary return
-    return {};
+    return attackTerritories;
 }
 
 bool Player::issueOrder() {
@@ -61,5 +85,24 @@ bool Player::issueOrder() {
 
 string Player::getPlayerName() {
     return name;
+}
+
+ostream& operator<<(ostream& stream, const Player& player) {
+    stream << "Player Name: " << player.name << endl;
+    stream << "Owned Territories:" << endl;
+    int size = 1;
+    for (auto& terr: player.territories) {
+        if (size == player.territories.size()) {
+            cout << terr->getTerritoryName() << "\r\n" << endl;
+        } else {
+            cout << terr->getTerritoryName() << ", ";
+        }
+        size++;
+    }
+    stream << "HandCards: " << endl;
+    stream << player.handCards << endl;
+    stream << "OrderList: " << endl;
+    stream << player.ordersList << endl;
+    return stream;
 }
 

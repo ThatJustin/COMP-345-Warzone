@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-
+#include <iostream>
 
 using namespace std;
 class Territory;
@@ -12,19 +12,22 @@ class Player {
 public:
     Player();
     explicit Player(const string &name);
-    explicit Player(const Player &player);
+    Player(const Player &player);
     ~Player();
     vector<Territory*> getTerritories();
     OrdersList* getOrdersList();
     Hand* getHandCards();
     string getPlayerName();
 
+    vector<Territory*> toDefend();
+    vector<Territory*> toAttack();
+
+    friend ostream& operator<<(ostream& stream, const Player &player);
 private:
     vector<Territory*> territories;
     OrdersList* ordersList;
     Hand* handCards;
-    vector<Territory*> toDefend();
-    vector<Territory*> toAttack();
+
     bool issueOrder();
     string name;
 };
