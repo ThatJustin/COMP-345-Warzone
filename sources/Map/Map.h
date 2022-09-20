@@ -29,6 +29,7 @@ private:
 class Territory {
 public:
     Territory();
+    explicit Territory(int map_territory_id, const string& territory_name, Player* player);
     Territory(int map_territory_id, string territory_name, Continent *continent);
     ~Territory();
     Territory(const Territory &territory);
@@ -66,8 +67,8 @@ public:
     Territory* getTerritory(int map_territory_id);
     Territory* getTerritoryInContinent(int map_territory_id, int map_continent_id);
     Continent* getContinent(int map_continent_id);
-    void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
-    void depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
+    //void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
+  //  void depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
     bool validate();
 
 
