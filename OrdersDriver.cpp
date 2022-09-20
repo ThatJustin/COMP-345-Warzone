@@ -17,9 +17,9 @@ void testOrdersLists(){
     ol->add(bl);
     ol->add(ai);
     ol->add(ne);
-
 }
 
 int main() {
+
 }
 
