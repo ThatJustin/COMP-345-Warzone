@@ -55,7 +55,7 @@ void testCards() {
     //handle leaks
     //Deck::~Deck();
 }
-
+/*
 //where all the action occurs
 int main() {
 
@@ -64,4 +64,4 @@ int main() {
 
     testCards();
     return 0;
-}
+}*/
