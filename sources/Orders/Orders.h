@@ -7,19 +7,22 @@
 
 #include <vector>
 #include "../Cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Map/Map.h"
 
 class Territory;
 
 class Player;
 
 class Orders {
-    friend std::ostream &operator<<(std::ostream &out, Orders const &order);
+    friend std::ostream& operator<<(std::ostream& out, Orders const& order);
+
 public:
     Orders();
 
     ~Orders();
 
-    Orders* createOrderByCardType(CardType orderType);
+    Orders* createOrderByCardType(CardType cardType);
 
     virtual bool validate() = 0;
 
@@ -46,12 +49,12 @@ public:
 
     void setTargetTerritory(Territory* targetTerritory);
 
+    string toString() const;
+
 private:
     int m_numberOfArmyUnits;
     Territory* m_targetTerritory;
-class Deploy : public Orders{
-    string toString()const;
-};
+}
 
 class Advance : public Orders {
 public:
@@ -68,8 +71,8 @@ public:
     int getNumberOfArmyUnits() const;
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
-class Advance : public Orders{
-    string toString()const;
+
+    string toString() const;
 
     Territory* getSourceTerritory() const;
 
@@ -96,8 +99,8 @@ public:
     bool validate() override;
 
     void execute() override;
-class Bomb : public Orders{
-    string toString()const;
+
+    string toString() const;
 
     Territory* getTargetTerritory() const;
 
@@ -108,9 +111,6 @@ private:
 };
 
 class Blockade : public Orders {
-class Blockade : public Orders{
-    string toString()const;
-
 public:
     Blockade();
 
@@ -121,6 +121,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    string toString() const;
 
     Territory* getTargetTerritory() const;
 
@@ -151,8 +153,8 @@ public:
     Territory* getSourceTerritory() const;
 
     void setSourceTerritory(Territory* sourceTerritory);
-class Airlift : public Orders{
-    string toString()const;
+
+    string toString() const;
 
     Territory* getTargetTerritory() const;
 
@@ -175,8 +177,8 @@ public:
     bool validate() override;
 
     void execute() override;
-class Negotiate : public Orders{
-    string toString()const;
+
+    string toString() const;
 
     Player* getTargetPlayer() const;
 
@@ -193,6 +195,7 @@ public:
     OrdersList();
 
     OrdersList(const OrdersList& ol);
+
     ~OrdersList();
 
     void move(int to_move, int move_to);
