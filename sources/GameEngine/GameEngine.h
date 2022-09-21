@@ -2,7 +2,7 @@
 #ifndef COMP_345_WARZONE_GAMEENGINE_H
 #define COMP_345_WARZONE_GAMEENGINE_H
 
-#import "string"
+#include <string>
 
 
 using namespace std;

@@ -18,5 +18,9 @@ void testOrdersLists(){
     ol->add(ai);
     ol->add(ne);
 
+    for (auto & fd: ol.getOrders()) {
+
+    }
+
     delete ol;
 }
