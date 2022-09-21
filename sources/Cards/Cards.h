@@ -1,11 +1,17 @@
 #pragma once
 #include "iostream"
 #include "vector"
+#include "sources/Orders/Orders.h"
 
 class Deck;
 class Hand;
+class SpecialOrders;//what is it?
 
-enum class CardsType;
+class OrdersList;
+class Orders;
+
+//enum class CardsType;
+enum CardsType {BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY};
 
 class Cards{
 
@@ -18,9 +24,10 @@ public:
     Cards(CardsType type);
     Cards(const Cards& cards);
     ~Cards();
-    CardsType getType() const;
-    //void play
-    //cardstype
+    CardsType getType(std::string name) const;
+    std::vector<SpecialOrders*> so;
+    //void Play(SpecialOrders& so, Hand& hand, Deck& deck);
+    void Play(OrdersList& ol,Orders& order, Hand& hand, Deck& deck);
 };
 
 class Deck{
@@ -35,8 +42,10 @@ public:
     Deck(const Deck& deck);
     ~Deck();
     void addcards(Cards* cards);
-    //int cardsize();
+    void removecards(Cards* cards);
     std::vector<Cards*> getcards() const;
+    int cardsize();
+    Cards* draw();
 };
 
 class Hand{
@@ -50,13 +59,12 @@ public:
     Hand(std::vector<Cards*>cards);
     Hand(const Hand& hand);
     ~Hand();
-    Cards* draw();
     void addcards(Cards* cards);
     void removecards(Cards* cards);
-    int cardsize();
     std::vector<Cards*> getcards();
 };
 
+//define the stream operator
 std::ostream& operator <<(std::ostream& stream, const Cards& cards);
 std::ostream& operator <<(std::ostream& stream, const Deck& deck);
 std::ostream& operator <<(std::ostream& stream, const Hand& hand);
