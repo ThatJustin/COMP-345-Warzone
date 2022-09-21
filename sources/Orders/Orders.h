@@ -13,6 +13,7 @@ class Territory;
 class Player;
 
 class Orders {
+    friend std::ostream &operator<<(std::ostream &out, Orders const &order);
 public:
     Orders();
 
@@ -48,6 +49,8 @@ public:
 private:
     int m_numberOfArmyUnits;
     Territory* m_targetTerritory;
+class Deploy : public Orders{
+    string toString()const;
 };
 
 class Advance : public Orders {
@@ -65,6 +68,8 @@ public:
     int getNumberOfArmyUnits() const;
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
+class Advance : public Orders{
+    string toString()const;
 
     Territory* getSourceTerritory() const;
 
@@ -91,6 +96,8 @@ public:
     bool validate() override;
 
     void execute() override;
+class Bomb : public Orders{
+    string toString()const;
 
     Territory* getTargetTerritory() const;
 
@@ -101,6 +108,8 @@ private:
 };
 
 class Blockade : public Orders {
+class Blockade : public Orders{
+    string toString()const;
 
 public:
     Blockade();
@@ -142,6 +151,8 @@ public:
     Territory* getSourceTerritory() const;
 
     void setSourceTerritory(Territory* sourceTerritory);
+class Airlift : public Orders{
+    string toString()const;
 
     Territory* getTargetTerritory() const;
 
@@ -164,6 +175,8 @@ public:
     bool validate() override;
 
     void execute() override;
+class Negotiate : public Orders{
+    string toString()const;
 
     Player* getTargetPlayer() const;
 
@@ -180,6 +193,7 @@ public:
     OrdersList();
 
     OrdersList(const OrdersList& ol);
+    ~OrdersList();
 
     void move(int to_move, int move_to);
 
