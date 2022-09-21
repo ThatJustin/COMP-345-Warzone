@@ -3,14 +3,15 @@
 //
 #include "Orders.h"
 #include <vector>
-Orders::Orders(){
+#include <string>
+#include <sstream>
 
-}
 bool Orders::validate() {
 
 }
 
 void Orders::execute() {
+
 }
 
 OrdersList::OrdersList() {
@@ -62,4 +63,54 @@ OrdersList::~OrdersList() {
         delete ol;
         ol = nullptr;
     }
+}
+
+std::string Deploy::toString() const {
+    std::stringstream ss;
+    ss<<"move a certain number of army units from the current player’s reinforcement pool to one of the current player’s territories";
+    return ss.str();
+}
+
+std::string Advance::toString() const {
+    std::stringstream ss;
+    ss<<"move a certain number of army units from one of the current player’s territories (source) to another\n"
+        "territory (target) that is adjacent to the source territory. If the target territory belongs to the current\n"
+        "player, the armies are moved from the source territory to the target territory. If the target territory\n"
+        "belongs to another player, an attack happens between the two territories. An attack is simulated by\n"
+        "the following battle simulation mechanism: First, the attacking player decides how many armies in\n"
+        "the source territory are involved in the attack. Then, each attacking army unit involved has 60%\n"
+        "chances of destroying one defending army. At the same time, each defending army unit has 70%\n"
+        "chances of destroying one attacking army unit. If all the army units on the target territory are\n"
+        "destroyed as a result of the battle, the remaining army units left from the attacking army units from\n"
+        "the source territory are moved to the target territory and the target territory now belongs to the player\n"
+        "that declared the advance order, i.e. the player has conquered this territory. In any given turn, a\n"
+        "player receives a card if they conquered at least one territory during this turn.";
+    return ss.str();
+}
+
+std::string Bomb::toString() const {
+    std::stringstream ss;
+    ss<<"destroy half of the army units located on an opponent’s territory that is adjacent to one of the current\n"
+        "player’s territories.";
+    return ss.str();
+}
+
+std::string Blockade::toString() const {
+    std::stringstream ss;
+    ss<<"triple the number of army units on one of the current player’s territories and make it a neutral territory.";
+    return ss.str();
+}
+
+std::string Airlift::toString() const {
+    std::stringstream ss;
+    ss<<"advance a certain number of army units from one of the current player’s territories to any another\n"
+        "territory.";
+    return ss.str();
+}
+
+std::string Negotiate::toString() const {
+    std::stringstream ss;
+    ss<<"prevent attacks between the current player and the player targeted by the negotiate order until the\n"
+        "end of the turn.";
+    return ss.str();
 }

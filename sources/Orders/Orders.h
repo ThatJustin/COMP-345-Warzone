@@ -8,33 +8,38 @@
 #include <vector>
 
 class Orders {
+    friend std::ostream &operator<<(std::ostream &out, Orders const &order);
 public:
-    Orders();
     bool validate();
     void execute();
 };
 
 class Deploy : public Orders{
-
+    string toString()const;
 };
 
 class Advance : public Orders{
+    string toString()const;
 
 };
 
 class Bomb : public Orders{
+    string toString()const;
 
 };
 
 class Blockade : public Orders{
+    string toString()const;
 
 };
 
 class Airlift : public Orders{
+    string toString()const;
 
 };
 
 class Negotiate : public Orders{
+    string toString()const;
 
 };
 
