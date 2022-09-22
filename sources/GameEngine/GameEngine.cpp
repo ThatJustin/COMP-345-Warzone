@@ -176,7 +176,7 @@ bool GameState::isValidTransition() {
  * Destructor
  */
 GameState::~GameState() {
-
+    delete gameEngine;
 }
 
 /**
@@ -193,6 +193,7 @@ Start::Start(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 Start::~Start() {
+
 }
 
 /**

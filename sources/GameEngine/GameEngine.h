@@ -2,7 +2,7 @@
 #ifndef COMP_345_WARZONE_GAMEENGINE_H
 #define COMP_345_WARZONE_GAMEENGINE_H
 
-#import "string"
+#include <string>
 
 
 using namespace std;
@@ -64,7 +64,7 @@ class GameState {
 public:
     GameEngine* gameEngine;
 
-    GameState(GameEngine* gameEngine);
+    explicit GameState(GameEngine* gameEngine);
 
     //Name of the state in case we need it
     std::string name;

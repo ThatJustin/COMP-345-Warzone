@@ -6,47 +6,229 @@
 #define COMP_345_ORDERS_H
 
 #include <vector>
+#include <iostream>
+
+class Territory;
+
+class Cards;
+
+class Player;
+
+using namespace std;
+
+enum class OrderType {
+    DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
+};
 
 class Orders {
+
 public:
     Orders();
-    bool validate();
-    void execute();
-};
 
-class Deploy : public Orders{
+    virtual ~Orders();
 
-};
+    virtual bool validate() = 0;
 
-class Advance : public Orders{
+    virtual OrderType getOrderType() = 0;
 
-};
+    virtual void execute() = 0;
 
-class Bomb : public Orders{
+    friend ostream& operator<<(ostream& stream, const Orders& orders);
 
 };
 
-class Blockade : public Orders{
+class Deploy : public Orders {
+public:
+    Deploy();
 
+    Deploy(int numberOfArmyUnits, Territory* targetTerritory);
+
+    ~Deploy() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    int getNumberOfArmyUnits() const;
+
+    void setNumberOfArmyUnits(int numberOfArmyUnits);
+
+    Territory* getTargetTerritory();
+
+    void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
+
+    std::string toString() const;
+
+private:
+    int m_numberOfArmyUnits;
+    Territory* m_targetTerritory;
 };
 
-class Airlift : public Orders{
+class Advance : public Orders {
+public:
+    Advance();
 
+    Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+
+    ~Advance() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    int getNumberOfArmyUnits() const;
+
+    void setNumberOfArmyUnits(int numberOfArmyUnits);
+
+    string toString() const;
+
+    Territory* getSourceTerritory();
+
+    void setSourceTerritory(Territory* sourceTerritory);
+
+    Territory* getTargetTerritory();
+
+    void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
+
+private:
+    int m_numberOfArmyUnits;
+    Territory* m_sourceTerritory;
+    Territory* m_targetTerritory;
 };
 
-class Negotiate : public Orders{
+class Bomb : public Orders {
+public:
+    Bomb();
 
+    explicit Bomb(Territory* targetTerritory);
+
+    ~Bomb() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    string toString() const;
+
+    Territory* getTargetTerritory();
+
+    void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
+
+private:
+    Territory* m_targetTerritory;
+};
+
+class Blockade : public Orders {
+public:
+    Blockade();
+
+    explicit Blockade(Territory* targetTerritory);
+
+    ~Blockade() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    string toString() const;
+
+    Territory* getTargetTerritory();
+
+    void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
+
+private:
+    Territory* m_targetTerritory;
+};
+
+class Airlift : public Orders {
+public:
+
+
+    Airlift();
+
+    Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
+
+    ~Airlift() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    int getNumberOfArmyUnits() const;
+
+    void setNumberOfArmyUnits(int numberOfArmyUnits);
+
+    Territory* getSourceTerritory();
+
+    void setSourceTerritory(Territory* sourceTerritory);
+
+    string toString() const;
+
+    Territory* getTargetTerritory();
+
+    void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
+
+private:
+    int m_numberOfArmyUnits;
+    Territory* m_sourceTerritory;
+    Territory* m_targetTerritory;
+};
+
+class Negotiate : public Orders {
+public:
+    Negotiate();
+
+    explicit Negotiate(Player* targetPlayer);
+
+    ~Negotiate() override;
+
+    bool validate() override;
+
+    void execute() override;
+
+    string toString() const;
+
+    Player* getTargetPlayer();
+
+    void setTargetPlayer(Player* targetPlayer);
+
+    OrderType getOrderType() override;
+
+private:
+    Player* m_targetPlayer;
 };
 
 class OrdersList {
 private:
-    std::vector <Orders*> list;
+    std::vector<Orders*> list;
 public:
     OrdersList();
+
     OrdersList(const OrdersList& ol);
+
+    ~OrdersList();
+
     void move(int to_move, int move_to);
+
     void remove(int order);
+
     void add(Orders* o);
+
+    vector<Orders*> getOrdersList();
 };
+
+//free functions
+Orders* createOrderByCardType(int cardType);
+string getNameByType(OrderType cardType);
 
 #endif //COMP_345_ORDERS_H
