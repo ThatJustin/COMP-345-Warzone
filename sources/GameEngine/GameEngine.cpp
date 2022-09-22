@@ -122,21 +122,24 @@ GameState* GameEngine::getStateFromTransition(int transition) {
  * Copy constructor
  */
 GameEngine::GameEngine(const GameEngine& gameEngine) {
-    start = gameEngine.start;
-    loadMap = gameEngine.loadMap;
-    mapValidated = gameEngine.mapValidated;
-    playersAdded = gameEngine.playersAdded;
-    assignReinforcement = gameEngine.assignReinforcement;
-    issueOrders = gameEngine.issueOrders;
-    executeOrders = gameEngine.executeOrders;
-    win = gameEngine.win;
-    currentGameState = gameEngine.currentGameState;
+    start = dynamic_cast<Start*>(gameEngine.start->copy());
+    loadMap = dynamic_cast<MapLoaded*>(gameEngine.loadMap->copy());
+    mapValidated = dynamic_cast<MapValidated*>(gameEngine.mapValidated->copy());
+    playersAdded = dynamic_cast<PlayersAdded*>(gameEngine.playersAdded->copy());
+    assignReinforcement = dynamic_cast<AssignReinforcement*>(gameEngine.assignReinforcement->copy());
+    issueOrders = dynamic_cast<IssueOrders*>(gameEngine.issueOrders->copy());
+    executeOrders = dynamic_cast<ExecuteOrders*>(gameEngine.executeOrders->copy());
+    win = dynamic_cast<class Win*>(gameEngine.win->copy());
+    currentGameState = gameEngine.currentGameState->copy();
 }
 
 /**
  * Override the = operator for GameEngine.
  */
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
+    if (this == &gameEngine) {
+        return *this;
+    }
     this->start = gameEngine.start;
     this->loadMap = gameEngine.loadMap;
     this->mapValidated = gameEngine.mapValidated;
@@ -149,9 +152,20 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     return *this;
 }
 
+/**
+ * Override the << operator for GameEngine.
+ */
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
-    stream << "Current GameEngine State " << gameEngine.currentGameState->name << endl;
+    stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
     return stream;
+}
+
+/**
+ * Default constructor
+ */
+GameState::GameState() {
+    this->name = "none";
+    this->gameEngine = nullptr;
 }
 
 /**
@@ -180,6 +194,15 @@ GameState::~GameState() {
 }
 
 /**
+ * Copy constructor
+ * @param start gamestate to copy
+ */
+GameState::GameState(const GameState& start) {
+    this->name = start.name;
+    this->gameEngine = new GameEngine(*start.gameEngine);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -189,11 +212,19 @@ Start::Start(GameEngine* gameEngine) : GameState(gameEngine) {
     this->gameEngine = gameEngine;
 }
 
+Start::Start(const Start& start) : GameState(start) {
+    this->name = start.name;
+    this->gameEngine = new GameEngine(*start.gameEngine);
+}
+
 /**
  * Destructor
  */
 Start::~Start() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -232,6 +263,15 @@ bool Start::isValidTransition() {
 }
 
 /**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* Start::copy() {
+    return new Start(*this);
+}
+
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -246,7 +286,10 @@ MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 MapLoaded::~MapLoaded() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -289,6 +332,23 @@ bool MapLoaded::isValidTransition() {
 }
 
 /**
+ * Copy constructor.
+ * @param mapLoaded
+ */
+MapLoaded::MapLoaded(const MapLoaded& mapLoaded) : GameState(mapLoaded) {
+    this->name = mapLoaded.name;
+    this->gameEngine = new GameEngine(*mapLoaded.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* MapLoaded::copy() {
+    return new MapLoaded(*this);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -302,7 +362,10 @@ MapValidated::MapValidated(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 MapValidated::~MapValidated() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -342,6 +405,24 @@ bool MapValidated::isValidTransition() {
 }
 
 /**
+ * Copy constructor.
+ * @param mapValidated
+ */
+MapValidated::MapValidated(const MapValidated& mapValidated) : GameState(mapValidated) {
+    this->name = mapValidated.name;
+    this->gameEngine = new GameEngine(*mapValidated.gameEngine);
+
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* MapValidated::copy() {
+    return new MapValidated(*this);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -355,7 +436,10 @@ PlayersAdded::PlayersAdded(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 PlayersAdded::~PlayersAdded() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -398,6 +482,23 @@ bool PlayersAdded::isValidTransition() {
 }
 
 /**
+ * Copy constructor.
+ * @param playersAdded
+ */
+PlayersAdded::PlayersAdded(const PlayersAdded& playersAdded) : GameState(playersAdded) {
+    this->name = playersAdded.name;
+    this->gameEngine = new GameEngine(*playersAdded.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* PlayersAdded::copy() {
+    return new PlayersAdded(*this);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -411,7 +512,10 @@ AssignReinforcement::AssignReinforcement(GameEngine* gameEngine) : GameState(gam
  * Destructor
  */
 AssignReinforcement::~AssignReinforcement() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -451,6 +555,24 @@ bool AssignReinforcement::isValidTransition() {
 }
 
 /**
+ * Copy constructor.
+ * @param assignReinforcement
+ */
+AssignReinforcement::AssignReinforcement(const AssignReinforcement& assignReinforcement) : GameState(
+        assignReinforcement) {
+    this->name = assignReinforcement.name;
+    this->gameEngine = new GameEngine(*assignReinforcement.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* AssignReinforcement::copy() {
+    return new AssignReinforcement(*this);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -464,7 +586,10 @@ IssueOrders::IssueOrders(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 IssueOrders::~IssueOrders() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -506,6 +631,19 @@ bool IssueOrders::isValidTransition() {
     return true;
 }
 
+IssueOrders::IssueOrders(const IssueOrders& issueOrders) : GameState(issueOrders) {
+    this->name = issueOrders.name;
+    this->gameEngine = new GameEngine(*issueOrders.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* IssueOrders::copy() {
+    return new IssueOrders(*this);
+}
+
 /**
  * Constructor
  * @param name
@@ -520,7 +658,10 @@ ExecuteOrders::ExecuteOrders(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 ExecuteOrders::~ExecuteOrders() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -566,6 +707,23 @@ bool ExecuteOrders::isValidTransition() {
 }
 
 /**
+ * Copy constructor.
+ * @param executeOrders
+ */
+ExecuteOrders::ExecuteOrders(const ExecuteOrders& executeOrders) : GameState(executeOrders) {
+    this->name = executeOrders.name;
+    this->gameEngine = new GameEngine(*executeOrders.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* ExecuteOrders::copy() {
+    return new ExecuteOrders(*this);
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -579,7 +737,10 @@ Win::Win(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 Win::~Win() {
-
+    if (gameEngine != nullptr) {
+        delete gameEngine;
+        gameEngine = nullptr;
+    }
 }
 
 /**
@@ -619,4 +780,21 @@ void Win::enterState() {
  */
 bool Win::isValidTransition() {
     return true;
+}
+
+/**
+ * Copy constructor.
+ * @param win
+ */
+Win::Win(const Win& win) : GameState(win) {
+    this->name = win.name;
+    this->gameEngine = new GameEngine(*win.gameEngine);
+}
+
+/**
+ * Creates a deep copy of the object.
+ * @return a new copy
+ */
+GameState* Win::copy() {
+    return new Win(*this);
 }
