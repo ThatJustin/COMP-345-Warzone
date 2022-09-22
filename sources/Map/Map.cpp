@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <utility>
 #include "Map.h"
 
 Continent::Continent() {
@@ -16,19 +17,14 @@ Continent::Continent(int map_continent_id, const string& continent_name) {
 
 Continent::~Continent() {
     for (auto& territory: this->territories) {
-        delete territory;
         territory = nullptr;
     }
-    this->territories.clear();
 }
 
 Continent::Continent(const Continent& continent) {
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
-    this->territories = vector<Territory*>(continent.territories.size());
-    for (auto& temp: continent.territories) {
-        this->territories.push_back(new Territory(*temp));
-    }
+    this->territories = continent.territories;
 }
 
 Continent& Continent::operator=(const Continent& continent) {
@@ -94,35 +90,31 @@ Territory::Territory(int map_territory_id, const string& territory_name, Player*
 Territory::Territory(int map_territory_id, string territory_name, Continent* continent) {
     this->map_territory_id = map_territory_id;
     this->number_of_armies = 0;
-    this->territory_name = territory_name;
+    this->territory_name = std::move(territory_name);
     this->continent = continent;
     this->player = nullptr;
     this->adjacent_territories = vector<Territory*>();
 }
 
 Territory::~Territory() {
-    delete this->continent;
-    this->continent = nullptr;
-    delete this->player;
-    this->player = nullptr;
-
+    if (continent != nullptr) {
+        this->continent = nullptr;
+    }
+    if (player != nullptr) {
+        this->player = nullptr;
+    }
     for (auto& adjacent_territory: this->adjacent_territories) {
-        delete adjacent_territory;
         adjacent_territory = nullptr;
     }
-    this->adjacent_territories.clear();
 }
 
 Territory::Territory(const Territory& territory) {
     this->map_territory_id = territory.map_territory_id;
     this->number_of_armies = territory.number_of_armies;
     this->territory_name = territory.territory_name;
-    this->continent = new Continent(*territory.continent);
-    this->player = new Player(*territory.player);
-    this->adjacent_territories = vector<Territory*>(territory.adjacent_territories.size());
-    for (auto& temp: territory.adjacent_territories) {
-        this->adjacent_territories.push_back(new Territory(*temp));
-    }
+    this->continent = territory.continent;
+    this->player = territory.player;
+    this->adjacent_territories = territory.adjacent_territories;
 }
 
 Territory& Territory::operator=(const Territory& territory) {
@@ -202,19 +194,11 @@ Map::~Map() {
         delete continent;
         continent = nullptr;
     }
-    this->territories.clear();
-    this->continents.clear();
 }
 
 Map::Map(const Map& map) {
-    this->territories = vector<Territory*>(map.territories.size());
-    for (auto& temp: map.territories) {
-        this->territories.push_back(new Territory(*temp));
-    }
-    this->territories = vector<Territory*>(map.continents.size());
-    for (auto& temp: map.continents) {
-        this->continents.push_back(new Continent(*temp));
-    }
+    this->territories = map.territories;
+    this->continents = map.continents;
 }
 
 Map& Map::operator=(const Map& map) {

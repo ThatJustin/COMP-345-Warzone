@@ -17,17 +17,17 @@ public:
     vector<Territory*> getTerritories();
     OrdersList* getOrdersList();
     Hand* getHandCards();
+    void setHandCards(Hand* hand);
     string getPlayerName();
     void setPlayerName(string newName);
     vector<Territory*> toDefend();
     vector<Territory*> toAttack();
-
+    bool issueOrder();
+    void addTerritory(Territory* territory);
     friend ostream& operator<<(ostream& stream, const Player &player);
 private:
     vector<Territory*> territories;
     OrdersList* ordersList;
     Hand* handCards;
-
-    bool issueOrder();
     string name;
 };

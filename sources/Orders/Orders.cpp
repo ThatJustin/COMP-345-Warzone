@@ -23,8 +23,8 @@ std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream;
 }
 
-string getNameByType(OrderType orderType) {
-    switch (orderType) {
+string getNameByOrderType(OrderType cardType) {
+    switch (cardType) {
         case OrderType::DEPLOY:
             return "deploy";
         case OrderType::ADVANCE:
@@ -65,7 +65,6 @@ OrdersList::~OrdersList() {
         delete order;
         order = nullptr;
     }
-    list.clear();
 }
 
 OrdersList::OrdersList(const OrdersList& ol) {

@@ -14,7 +14,7 @@ int main() {
 
     //Test Player
     std::cout << "Testing Player" << std::endl;
-     testPlayers();
+    testPlayers();
 
     //Test OrderList
     std::cout << "Testing OrderList" << std::endl;
@@ -26,6 +26,6 @@ int main() {
 
     //Test GameEngine
     std::cout << "Testing GameEngine" << std::endl;
-   // testGameStates();
+    // testGameStates();
     return 0;
 }

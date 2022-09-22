@@ -148,7 +148,7 @@ Hand::~Hand() {
 }
 
 std::vector<Cards*> Hand::getcards() {
-    return std::vector<Cards*>();
+    return cards;
 }
 
 //Each card has a play() method that enables a player to use it during game play by creating special orders.
@@ -160,6 +160,26 @@ void Cards::Play(OrdersList& ol, Orders& orders, Hand& hand, Deck& deck) {
 
     deck.addcards(this);
     hand.removecards(this);
+}
+
+CardsType Cards::getType() {
+    return type;
+}
+
+string getNameByCardType(CardsType cardsType) {
+    switch (cardsType) {
+        case BOMB:
+            return "bomb";
+        case REINFORCEMENT:
+            return "reinforcement";
+        case BLOCKADE:
+            return "blockade";
+        case AIRLIFT:
+            return "airlift";
+        case DIPLOMACY:
+            return "diplomamcy";
+    }
+    return "none";
 }
 
 //streams

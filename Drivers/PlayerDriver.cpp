@@ -1,14 +1,21 @@
 #include <iostream>
 #include "sources/Player/Player.h"
 #include "sources/Map/Map.h"
+#include "sources/Cards/Cards.h"
 
 void testPlayers() {
-   auto* player = new Player("Adam");
-   auto* territory1 = new Territory(9, "Xasnines", player);
-    player->getTerritories().push_back(territory1);
+    auto* player = new Player("Adam");
+    auto* territory1 = new Territory(9, "Xasnines", player);
+    player->addTerritory(territory1);
+
+    player->issueOrder();
+
+    auto* card = new Cards(CardsType::DIPLOMACY);
+    Hand* hand = new Hand;
+    hand->addcards(card);
+    player->setHandCards(hand);
 
     cout << *player << endl;
-
     //Returns an arbitrary list of territories to be defended,
     cout << "Territories to Defend:\n" << endl;
     int size = 1;
@@ -34,5 +41,6 @@ void testPlayers() {
         size++;
     }
     player->toAttack().clear();
-   delete player;
+    delete territory1;
+    delete player;
 }

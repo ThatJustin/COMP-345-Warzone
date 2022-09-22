@@ -254,6 +254,6 @@ public:
 //free functions
 Orders* createOrderByCardType(int cardType);
 
-string getNameByType(OrderType cardType);
+string getNameByOrderType(OrderType cardType);
 
 #endif //COMP_345_ORDERS_H

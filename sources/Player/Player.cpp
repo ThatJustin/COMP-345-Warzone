@@ -21,28 +21,37 @@ Player::Player(const string& name) {
 
 // Copy Constructor
 Player::Player(const Player& player) {
-    this->territories = vector<Territory*>(player.territories.size());
-    for (auto& temp: player.territories) {
-        this->territories.push_back(new Territory(*temp));
-    }
+    this->territories = player.territories;
     this->handCards = new Hand(*player.handCards);
     this->name = player.name;
     this->ordersList = new OrdersList(*player.ordersList);
 }
 
 Player::~Player() {
-    for (Territory* terr: territories) {
-        delete terr;
-        terr = nullptr;
+    if (!this->getTerritories().empty()) {
+        for (auto& terr: this->getTerritories()) {
+            terr = nullptr;
+        }
     }
-    delete handCards;
-    handCards = nullptr;
-    delete ordersList;
-    ordersList = nullptr;
+    if (handCards != nullptr) {
+        delete handCards;
+        handCards = nullptr;
+    }
+    if (ordersList != nullptr) {
+        delete ordersList;
+        ordersList = nullptr;
+    }
 }
 
 vector<Territory*> Player::getTerritories() {
     return this->territories;
+}
+
+/*
+ * Adds a territory to the player.
+ */
+void Player::addTerritory(Territory* territory) {
+    this->territories.push_back(territory);
 }
 
 OrdersList* Player::getOrdersList() {
@@ -83,8 +92,10 @@ vector<Territory*> Player::toAttack() {
 }
 
 bool Player::issueOrder() {
-    //TODO wait for Orders Implementation
-    return false;
+    //For testing purposes in assignment 1
+    Orders* order = new Bomb();
+    this->ordersList->add(order);
+    return true;
 }
 
 string Player::getPlayerName() {
@@ -97,20 +108,43 @@ void Player::setPlayerName(string newName) {
 
 ostream& operator<<(ostream& stream, const Player& player) {
     stream << "Player Name: " << player.name << endl;
-    stream << "Owned Territories:" << endl;
+    stream << "Owned Territories: ";
     int size = 1;
     for (auto& terr: player.territories) {
         if (size == player.territories.size()) {
-            cout << terr->getTerritoryName() << "\r\n" << endl;
+            cout << terr->getTerritoryName() << "\r\n";
         } else {
             cout << terr->getTerritoryName() << ", ";
         }
         size++;
     }
-    stream << "HandCards: " << endl;
-    stream << player.handCards << endl;
-    stream << "OrderList: " << endl;
-    stream << player.ordersList << endl;
+    stream << "HandCards: ";
+    size = 1;
+    for (auto& card: player.handCards->getcards()) {
+        if (size == player.handCards->getcards().size()) {
+            cout << getNameByCardType(card->getType()) << "\r\n";
+        } else {
+            cout << getNameByCardType(card->getType()) << ", ";
+        }
+        size++;
+    }
+    stream << "OrderList: ";
+    size = 1;
+    for (auto& order: player.ordersList->getOrdersList()) {
+        if (size == player.ordersList->getOrdersList().size()) {
+            cout << getNameByOrderType(order->getOrderType()) << "\r\n";
+        } else {
+            cout << getNameByOrderType(order->getOrderType()) << ", ";
+        }
+        size++;
+    }
     return stream;
+}
+
+/*
+ * Assigns the players hand of cards.
+ */
+void Player::setHandCards(Hand* newHand) {
+    this->handCards = newHand;
 }
 

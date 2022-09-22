@@ -25,6 +25,7 @@ public:
     Cards(const Cards& cards);
     ~Cards();
     CardsType getType(std::string name) const;
+    CardsType getType();
     std::vector<SpecialOrders*> so;
     //void Play(SpecialOrders& so, Hand& hand, Deck& deck);
     void Play(OrdersList& ol,Orders& order, Hand& hand, Deck& deck);
@@ -48,6 +49,7 @@ public:
     Cards* draw();
 };
 
+
 class Hand{
 
 private:
@@ -63,6 +65,8 @@ public:
     void removecards(Cards* cards);
     std::vector<Cards*> getcards();
 };
+
+string getNameByCardType(CardsType cardsType);
 
 //define the stream operator
 std::ostream& operator <<(std::ostream& stream, const Cards& cards);
