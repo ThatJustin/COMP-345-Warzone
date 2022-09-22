@@ -125,7 +125,7 @@ Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory) {
 }
 
 Deploy::Deploy(const Deploy& deploy) {
-    this->m_targetTerritory = new Territory(*deploy.m_targetTerritory);
+    this->m_targetTerritory = deploy.m_targetTerritory;
     this->m_numberOfArmyUnits = deploy.m_numberOfArmyUnits;
 }
 
@@ -188,8 +188,8 @@ Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* t
 }
 
 Advance::Advance(const Advance& advance) {
-    this->m_targetTerritory = new Territory(*advance.m_targetTerritory);
-    this->m_sourceTerritory = new Territory(*advance.m_sourceTerritory);
+    this->m_targetTerritory = advance.m_targetTerritory;
+    this->m_sourceTerritory = advance.m_sourceTerritory;
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
 }
 
@@ -270,7 +270,7 @@ Bomb::Bomb(Territory* targetTerritory) {
 }
 
 Bomb::Bomb(const Bomb& bomb) {
-    this->m_targetTerritory = new Territory(*bomb.m_targetTerritory);
+    this->m_targetTerritory = bomb.m_targetTerritory;
 }
 
 Bomb::~Bomb() {
@@ -320,7 +320,7 @@ Blockade::Blockade(Territory* targetTerritory) {
 }
 
 Blockade::Blockade(const Blockade& blockade) {
-    this->m_targetTerritory = new Territory(*blockade.m_targetTerritory);
+    this->m_targetTerritory = blockade.m_targetTerritory;
 }
 
 Blockade::~Blockade() {
@@ -373,8 +373,8 @@ Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* t
 }
 
 Airlift::Airlift(const Airlift& airlift) {
-    this->m_targetTerritory = new Territory(*airlift.m_targetTerritory);
-    this->m_sourceTerritory = new Territory(*airlift.m_sourceTerritory);
+    this->m_targetTerritory = airlift.m_targetTerritory;
+    this->m_sourceTerritory = airlift.m_sourceTerritory;
     this->m_numberOfArmyUnits = airlift.m_numberOfArmyUnits;
 }
 
@@ -445,12 +445,11 @@ Negotiate::Negotiate(Player* targetPlayer) {
 }
 
 Negotiate::Negotiate(const Negotiate& airlift) {
-    this->m_targetPlayer = new Player(*airlift.m_targetPlayer);
+    this->m_targetPlayer = airlift.m_targetPlayer;
 }
 
 Negotiate::~Negotiate() {
     if (m_targetPlayer != nullptr) {
-        delete m_targetPlayer;
         m_targetPlayer = nullptr;
     }
 }

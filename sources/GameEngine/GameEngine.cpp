@@ -190,7 +190,7 @@ bool GameState::isValidTransition() {
  * Destructor
  */
 GameState::~GameState() {
-    delete gameEngine;
+
 }
 
 /**
@@ -199,7 +199,7 @@ GameState::~GameState() {
  */
 GameState::GameState(const GameState& start) {
     this->name = start.name;
-    this->gameEngine = new GameEngine(*start.gameEngine);
+    this->gameEngine = start.gameEngine;
 }
 
 /**
@@ -214,17 +214,13 @@ Start::Start(GameEngine* gameEngine) : GameState(gameEngine) {
 
 Start::Start(const Start& start) : GameState(start) {
     this->name = start.name;
-    this->gameEngine = new GameEngine(*start.gameEngine);
+    this->gameEngine = start.gameEngine;
 }
 
 /**
  * Destructor
  */
 Start::~Start() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -286,10 +282,6 @@ MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 MapLoaded::~MapLoaded() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -337,7 +329,7 @@ bool MapLoaded::isValidTransition() {
  */
 MapLoaded::MapLoaded(const MapLoaded& mapLoaded) : GameState(mapLoaded) {
     this->name = mapLoaded.name;
-    this->gameEngine = new GameEngine(*mapLoaded.gameEngine);
+    this->gameEngine = mapLoaded.gameEngine;
 }
 
 /**
@@ -362,10 +354,6 @@ MapValidated::MapValidated(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 MapValidated::~MapValidated() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -410,8 +398,7 @@ bool MapValidated::isValidTransition() {
  */
 MapValidated::MapValidated(const MapValidated& mapValidated) : GameState(mapValidated) {
     this->name = mapValidated.name;
-    this->gameEngine = new GameEngine(*mapValidated.gameEngine);
-
+    this->gameEngine = mapValidated.gameEngine;
 }
 
 /**
@@ -436,10 +423,6 @@ PlayersAdded::PlayersAdded(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 PlayersAdded::~PlayersAdded() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -487,7 +470,7 @@ bool PlayersAdded::isValidTransition() {
  */
 PlayersAdded::PlayersAdded(const PlayersAdded& playersAdded) : GameState(playersAdded) {
     this->name = playersAdded.name;
-    this->gameEngine = new GameEngine(*playersAdded.gameEngine);
+    this->gameEngine = playersAdded.gameEngine;
 }
 
 /**
@@ -512,10 +495,6 @@ AssignReinforcement::AssignReinforcement(GameEngine* gameEngine) : GameState(gam
  * Destructor
  */
 AssignReinforcement::~AssignReinforcement() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -561,7 +540,7 @@ bool AssignReinforcement::isValidTransition() {
 AssignReinforcement::AssignReinforcement(const AssignReinforcement& assignReinforcement) : GameState(
         assignReinforcement) {
     this->name = assignReinforcement.name;
-    this->gameEngine = new GameEngine(*assignReinforcement.gameEngine);
+    this->gameEngine = assignReinforcement.gameEngine;
 }
 
 /**
@@ -586,10 +565,6 @@ IssueOrders::IssueOrders(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 IssueOrders::~IssueOrders() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -633,7 +608,7 @@ bool IssueOrders::isValidTransition() {
 
 IssueOrders::IssueOrders(const IssueOrders& issueOrders) : GameState(issueOrders) {
     this->name = issueOrders.name;
-    this->gameEngine = new GameEngine(*issueOrders.gameEngine);
+    this->gameEngine = issueOrders.gameEngine;
 }
 
 /**
@@ -658,10 +633,6 @@ ExecuteOrders::ExecuteOrders(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 ExecuteOrders::~ExecuteOrders() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -712,7 +683,7 @@ bool ExecuteOrders::isValidTransition() {
  */
 ExecuteOrders::ExecuteOrders(const ExecuteOrders& executeOrders) : GameState(executeOrders) {
     this->name = executeOrders.name;
-    this->gameEngine = new GameEngine(*executeOrders.gameEngine);
+    this->gameEngine = executeOrders.gameEngine;
 }
 
 /**
@@ -737,10 +708,6 @@ Win::Win(GameEngine* gameEngine) : GameState(gameEngine) {
  * Destructor
  */
 Win::~Win() {
-    if (gameEngine != nullptr) {
-        delete gameEngine;
-        gameEngine = nullptr;
-    }
 }
 
 /**
@@ -788,7 +755,7 @@ bool Win::isValidTransition() {
  */
 Win::Win(const Win& win) : GameState(win) {
     this->name = win.name;
-    this->gameEngine = new GameEngine(*win.gameEngine);
+    this->gameEngine = win.gameEngine;
 }
 
 /**

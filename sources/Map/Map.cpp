@@ -333,7 +333,7 @@ MapLoader::~MapLoader() {
 
 MapLoader::MapLoader(const MapLoader& map_loader) {
     this->map_file_directory = map_loader.map_file_directory;
-    this->map = new Map(*map_loader.map);
+    this->map = map_loader.map;
 }
 
 Map* MapLoader::loadMap(string map_file_path) {
