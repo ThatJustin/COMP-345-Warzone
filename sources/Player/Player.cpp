@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include "Player.h"
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
@@ -20,10 +21,13 @@ Player::Player(const string& name) {
 
 // Copy Constructor
 Player::Player(const Player& player) {
-    this->territories = player.territories;
-    this->handCards = player.handCards;
+    this->territories = vector<Territory*>(player.territories.size());
+    for (auto& temp: player.territories) {
+        this->territories.push_back(new Territory(*temp));
+    }
+    this->handCards = new Hand(*player.handCards);
     this->name = player.name;
-    this->ordersList = player.ordersList;
+    this->ordersList = new OrdersList(*player.ordersList);
 }
 
 Player::~Player() {
@@ -85,6 +89,10 @@ bool Player::issueOrder() {
 
 string Player::getPlayerName() {
     return name;
+}
+
+void Player::setPlayerName(string newName) {
+    this->name = std::move(newName);
 }
 
 ostream& operator<<(ostream& stream, const Player& player) {

@@ -18,7 +18,7 @@ public:
     OrdersList* getOrdersList();
     Hand* getHandCards();
     string getPlayerName();
-
+    void setPlayerName(string newName);
     vector<Territory*> toDefend();
     vector<Territory*> toAttack();
 

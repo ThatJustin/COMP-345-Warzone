@@ -38,7 +38,7 @@ private:
 
 public:
     Deck();
-    Deck(std::vector<Cards*> cards);
+    Deck(const std::vector<Cards*>& cards);
     Deck(const Deck& deck);
     ~Deck();
     void addcards(Cards* cards);

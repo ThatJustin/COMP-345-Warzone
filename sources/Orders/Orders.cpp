@@ -69,7 +69,10 @@ OrdersList::~OrdersList() {
 }
 
 OrdersList::OrdersList(const OrdersList& ol) {
-    list = ol.list;
+    this->list = vector<Orders*>(ol.list.size());
+    for (auto& temp: ol.list) {
+        this->list.push_back(temp->copy());
+    }
 }
 
 void OrdersList::move(int to_move, int move_to) {
@@ -122,6 +125,11 @@ Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
 
+Deploy::Deploy(const Deploy& deploy) {
+    this->m_targetTerritory = new Territory(*deploy.m_targetTerritory);
+    this->m_numberOfArmyUnits = deploy.m_numberOfArmyUnits;
+}
+
 Deploy::~Deploy() {
     if (m_targetTerritory != nullptr) {
         delete m_targetTerritory;
@@ -135,6 +143,10 @@ bool Deploy::validate() {
 
 void Deploy::execute() {
     cout << "Executing Deploy Order" << endl;
+}
+
+Orders* Deploy::copy() {
+    return new Deploy(*this);
 }
 
 int Deploy::getNumberOfArmyUnits() const {
@@ -176,6 +188,12 @@ Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* t
     this->m_targetTerritory = targetTerritory;
 }
 
+Advance::Advance(const Advance& advance) {
+    this->m_targetTerritory = new Territory(*advance.m_targetTerritory);
+    this->m_sourceTerritory = new Territory(*advance.m_sourceTerritory);
+    this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
+}
+
 Advance::~Advance() {
     if (m_targetTerritory != nullptr) {
         delete m_sourceTerritory;
@@ -193,6 +211,10 @@ bool Advance::validate() {
 
 void Advance::execute() {
     cout << "Executing Advance Order" << endl;
+}
+
+Orders* Advance::copy() {
+    return new Advance(*this);
 }
 
 int Advance::getNumberOfArmyUnits() const {
@@ -248,6 +270,10 @@ Bomb::Bomb(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
 
+Bomb::Bomb(const Bomb& bomb) {
+    this->m_targetTerritory = new Territory(*bomb.m_targetTerritory);
+}
+
 Bomb::~Bomb() {
     if (m_targetTerritory != nullptr) {
         delete m_targetTerritory;
@@ -261,6 +287,10 @@ bool Bomb::validate() {
 
 void Bomb::execute() {
     cout << "Executing Bomb Order" << endl;
+}
+
+Orders* Bomb::copy() {
+    return new Bomb(*this);
 }
 
 Territory* Bomb::getTargetTerritory() {
@@ -286,6 +316,14 @@ Blockade::Blockade() {
     this->m_targetTerritory = nullptr;
 }
 
+Blockade::Blockade(Territory* targetTerritory) {
+    this->m_targetTerritory = targetTerritory;
+}
+
+Blockade::Blockade(const Blockade& blockade) {
+    this->m_targetTerritory = new Territory(*blockade.m_targetTerritory);
+}
+
 Blockade::~Blockade() {
     if (m_targetTerritory != nullptr) {
         delete m_targetTerritory;
@@ -301,15 +339,15 @@ void Blockade::execute() {
     cout << "Executing Blockade Order" << endl;
 }
 
+Orders* Blockade::copy() {
+    return new Blockade(*this);
+}
+
 Territory* Blockade::getTargetTerritory() {
     return m_targetTerritory;
 }
 
 void Blockade::setTargetTerritory(Territory* targetTerritory) {
-    this->m_targetTerritory = targetTerritory;
-}
-
-Blockade::Blockade(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
 
@@ -335,6 +373,12 @@ Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* t
     this->m_targetTerritory = targetTerritory;
 }
 
+Airlift::Airlift(const Airlift& airlift) {
+    this->m_targetTerritory = new Territory(*airlift.m_targetTerritory);
+    this->m_sourceTerritory = new Territory(*airlift.m_sourceTerritory);
+    this->m_numberOfArmyUnits = airlift.m_numberOfArmyUnits;
+}
+
 Airlift::~Airlift() {
     if (m_targetTerritory != nullptr) {
         delete m_sourceTerritory;
@@ -354,6 +398,9 @@ void Airlift::execute() {
     cout << "Executing Airlift Order" << endl;
 }
 
+Orders* Airlift::copy() {
+    return new Airlift(*this);
+}
 
 int Airlift::getNumberOfArmyUnits() const {
     return m_numberOfArmyUnits;
@@ -398,6 +445,10 @@ Negotiate::Negotiate(Player* targetPlayer) {
     this->m_targetPlayer = targetPlayer;
 }
 
+Negotiate::Negotiate(const Negotiate& airlift) {
+    this->m_targetPlayer = new Player(*airlift.m_targetPlayer);
+}
+
 Negotiate::~Negotiate() {
     if (m_targetPlayer != nullptr) {
         delete m_targetPlayer;
@@ -411,6 +462,10 @@ bool Negotiate::validate() {
 
 void Negotiate::execute() {
     cout << "Executing Negotiate Order" << endl;
+}
+
+Orders* Negotiate::copy() {
+    return new Negotiate(*this);
 }
 
 Player* Negotiate::getTargetPlayer() {

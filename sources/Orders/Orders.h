@@ -33,6 +33,8 @@ public:
 
     virtual void execute() = 0;
 
+    virtual Orders* copy() = 0;
+
     friend ostream& operator<<(ostream& stream, const Orders& orders);
 
 };
@@ -41,6 +43,8 @@ class Deploy : public Orders {
 public:
     Deploy();
 
+    Deploy(const Deploy& deploy);
+
     Deploy(int numberOfArmyUnits, Territory* targetTerritory);
 
     ~Deploy() override;
@@ -48,6 +52,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     int getNumberOfArmyUnits() const;
 
@@ -70,6 +76,8 @@ class Advance : public Orders {
 public:
     Advance();
 
+    Advance(const Advance& advance);
+
     Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
     ~Advance() override;
@@ -77,6 +85,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     int getNumberOfArmyUnits() const;
 
@@ -104,6 +114,8 @@ class Bomb : public Orders {
 public:
     Bomb();
 
+    Bomb(const Bomb& bomb);
+
     explicit Bomb(Territory* targetTerritory);
 
     ~Bomb() override;
@@ -111,6 +123,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     string toString() const;
 
@@ -128,6 +142,8 @@ class Blockade : public Orders {
 public:
     Blockade();
 
+    Blockade(const Blockade& blockade);
+
     explicit Blockade(Territory* targetTerritory);
 
     ~Blockade() override;
@@ -135,6 +151,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     string toString() const;
 
@@ -150,9 +168,9 @@ private:
 
 class Airlift : public Orders {
 public:
-
-
     Airlift();
+
+    Airlift(const Airlift& airlift);
 
     Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
 
@@ -161,6 +179,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     int getNumberOfArmyUnits() const;
 
@@ -188,6 +208,8 @@ class Negotiate : public Orders {
 public:
     Negotiate();
 
+    Negotiate(const Negotiate& negotiate);
+
     explicit Negotiate(Player* targetPlayer);
 
     ~Negotiate() override;
@@ -195,6 +217,8 @@ public:
     bool validate() override;
 
     void execute() override;
+
+    Orders* copy() override;
 
     string toString() const;
 
@@ -229,6 +253,7 @@ public:
 
 //free functions
 Orders* createOrderByCardType(int cardType);
+
 string getNameByType(OrderType cardType);
 
 #endif //COMP_345_ORDERS_H
