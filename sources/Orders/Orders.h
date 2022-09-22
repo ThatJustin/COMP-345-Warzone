@@ -6,27 +6,38 @@
 #define COMP_345_ORDERS_H
 
 #include <vector>
-#include "../Cards/Cards.h"
-#include "../Player/Player.h"
-#include "../Map/Map.h"
+#include <iostream>
 
 class Territory;
 
+class Cards;
+
 class Player;
 
+using namespace std;
+
+enum class OrderType {
+    DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
+};
+
 class Orders {
-    friend std::ostream& operator<<(std::ostream& out, Orders const& order);
 
 public:
     Orders();
 
-    ~Orders();
+    virtual ~Orders();
 
-    Orders* createOrderByCardType(CardType cardType);
+    //  static Orders* createOrderByCardType(CardsType cardType);
 
     virtual bool validate() = 0;
 
+    virtual OrderType getOrderType() = 0;
+
     virtual void execute() = 0;
+
+    friend ostream& operator<<(ostream& stream, const Orders& orders);
+
+    static string getNameByType(OrderType orderType);
 };
 
 class Deploy : public Orders {
@@ -35,7 +46,7 @@ public:
 
     Deploy(int numberOfArmyUnits, Territory* targetTerritory);
 
-    ~Deploy();
+    ~Deploy() override;
 
     bool validate() override;
 
@@ -45,16 +56,18 @@ public:
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
-    Territory* getTargetTerritory() const;
+    Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
 
-    string toString() const;
+    OrderType getOrderType() override;
+
+    std::string toString() const;
 
 private:
     int m_numberOfArmyUnits;
     Territory* m_targetTerritory;
-}
+};
 
 class Advance : public Orders {
 public:
@@ -62,7 +75,7 @@ public:
 
     Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
-    ~Advance();
+    ~Advance() override;
 
     bool validate() override;
 
@@ -74,13 +87,15 @@ public:
 
     string toString() const;
 
-    Territory* getSourceTerritory() const;
+    Territory* getSourceTerritory();
 
     void setSourceTerritory(Territory* sourceTerritory);
 
-    Territory* getTargetTerritory() const;
+    Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
 
 private:
     int m_numberOfArmyUnits;
@@ -94,7 +109,7 @@ public:
 
     explicit Bomb(Territory* targetTerritory);
 
-    ~Bomb();
+    ~Bomb() override;
 
     bool validate() override;
 
@@ -102,9 +117,11 @@ public:
 
     string toString() const;
 
-    Territory* getTargetTerritory() const;
+    Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
 
 private:
     Territory* m_targetTerritory;
@@ -116,7 +133,7 @@ public:
 
     explicit Blockade(Territory* targetTerritory);
 
-    ~Blockade();
+    ~Blockade() override;
 
     bool validate() override;
 
@@ -124,9 +141,11 @@ public:
 
     string toString() const;
 
-    Territory* getTargetTerritory() const;
+    Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
 
 private:
     Territory* m_targetTerritory;
@@ -140,7 +159,7 @@ public:
 
     Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
 
-    ~Airlift();
+    ~Airlift() override;
 
     bool validate() override;
 
@@ -150,15 +169,17 @@ public:
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
-    Territory* getSourceTerritory() const;
+    Territory* getSourceTerritory();
 
     void setSourceTerritory(Territory* sourceTerritory);
 
     string toString() const;
 
-    Territory* getTargetTerritory() const;
+    Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
+
+    OrderType getOrderType() override;
 
 private:
     int m_numberOfArmyUnits;
@@ -172,7 +193,7 @@ public:
 
     explicit Negotiate(Player* targetPlayer);
 
-    ~Negotiate();
+    ~Negotiate() override;
 
     bool validate() override;
 
@@ -180,9 +201,11 @@ public:
 
     string toString() const;
 
-    Player* getTargetPlayer() const;
+    Player* getTargetPlayer();
 
     void setTargetPlayer(Player* targetPlayer);
+
+    OrderType getOrderType() override;
 
 private:
     Player* m_targetPlayer;

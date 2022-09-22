@@ -2,24 +2,17 @@
 // Created by Alex De Luca on 2022-09-14.
 //
 #include "Orders.h"
-#include "Orders.h"
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include "../Cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Map/Map.h"
 
 using namespace std;
 
 
 Orders::Orders() {
-
-}
-
-bool Orders::validate() {
-    return true;
-}
-
-void Orders::execute() {
-
 }
 
 Orders::~Orders() {
@@ -30,23 +23,49 @@ std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream;
 }
 
-Orders* Orders::createOrderByCardType(CardsType cardType) {
-    switch (cardType) {
-        case BOMB:
-            return new Bomb();
-        case BLOCKADE:
-            return new Blockade();
-        case AIRLIFT:
-            return new Airlift();
-        case DIPLOMACY:
-            return new Negotiate();
-        default:
-            return nullptr;
+string Orders::getNameByType(OrderType orderType) {
+    switch (orderType) {
+        case OrderType::DEPLOY:
+            return "deploy";
+        case OrderType::ADVANCE:
+            return "advance";
+        case OrderType::BOMB:
+            return "bomb";
+        case OrderType::BLOCKADE:
+            return "blockade";
+        case OrderType::AIRLIFT:
+            return "airlift";
+        case OrderType::NEGOTIATE:
+            return "negotiate";
     }
+    return "none";
 }
+
+//Orders* Orders::createOrderByCardType(CardsType cardType) {
+//    switch (cardType) {
+//        case BOMB:
+//            return new Bomb();
+//        case BLOCKADE:
+//            return new Blockade();
+//        case AIRLIFT:
+//            return new Airlift();
+//        case DIPLOMACY:
+//            return new Negotiate();
+//        default:
+//            return nullptr;
+//    }
+//}
 
 OrdersList::OrdersList() {
     this->list = std::vector<Orders*>();
+}
+
+OrdersList::~OrdersList() {
+    for (auto order: list) {
+        delete order;
+        order = nullptr;
+    }
+    list.clear();
 }
 
 OrdersList::OrdersList(const OrdersList& ol) {
@@ -126,12 +145,23 @@ void Deploy::setNumberOfArmyUnits(int numberOfArmyUnits) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
 }
 
-Territory* Deploy::getTargetTerritory() const {
+Territory* Deploy::getTargetTerritory() {
     return m_targetTerritory;
 }
 
 void Deploy::setTargetTerritory(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
+}
+
+std::string Deploy::toString() const {
+    std::stringstream ss;
+    ss
+            << "move a certain number of army units from the current player’s reinforcement pool to one of the current player’s territories";
+    return ss.str();
+}
+
+OrderType Deploy::getOrderType() {
+    return OrderType::DEPLOY;
 }
 
 Advance::Advance() {
@@ -173,7 +203,7 @@ void Advance::setNumberOfArmyUnits(int numberOfArmyUnits) {
     m_numberOfArmyUnits = numberOfArmyUnits;
 }
 
-Territory* Advance::getSourceTerritory() const {
+Territory* Advance::getSourceTerritory() {
     return m_sourceTerritory;
 }
 
@@ -181,12 +211,33 @@ void Advance::setSourceTerritory(Territory* sourceTerritory) {
     m_sourceTerritory = sourceTerritory;
 }
 
-Territory* Advance::getTargetTerritory() const {
+Territory* Advance::getTargetTerritory() {
     return m_targetTerritory;
 }
 
 void Advance::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
+}
+
+std::string Advance::toString() const {
+    std::stringstream ss;
+    ss << "move a certain number of army units from one of the current player’s territories (source) to another\n"
+          "territory (target) that is adjacent to the source territory. If the target territory belongs to the current\n"
+          "player, the armies are moved from the source territory to the target territory. If the target territory\n"
+          "belongs to another player, an attack happens between the two territories. An attack is simulated by\n"
+          "the following battle simulation mechanism: First, the attacking player decides how many armies in\n"
+          "the source territory are involved in the attack. Then, each attacking army unit involved has 60%\n"
+          "chances of destroying one defending army. At the same time, each defending army unit has 70%\n"
+          "chances of destroying one attacking army unit. If all the army units on the target territory are\n"
+          "destroyed as a result of the battle, the remaining army units left from the attacking army units from\n"
+          "the source territory are moved to the target territory and the target territory now belongs to the player\n"
+          "that declared the advance order, i.e. the player has conquered this territory. In any given turn, a\n"
+          "player receives a card if they conquered at least one territory during this turn.";
+    return ss.str();
+}
+
+OrderType Advance::getOrderType() {
+    return OrderType::ADVANCE;
 }
 
 Bomb::Bomb() {
@@ -212,12 +263,23 @@ void Bomb::execute() {
     cout << "Executing Bomb Order" << endl;
 }
 
-Territory* Bomb::getTargetTerritory() const {
+Territory* Bomb::getTargetTerritory() {
     return m_targetTerritory;
 }
 
 void Bomb::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
+}
+
+string Bomb::toString() const {
+    std::stringstream ss;
+    ss << "destroy half of the army units located on an opponent’s territory that is adjacent to one of the current\n"
+          "player’s territories.";
+    return ss.str();
+}
+
+OrderType Bomb::getOrderType() {
+    return OrderType::BOMB;
 }
 
 Blockade::Blockade() {
@@ -239,7 +301,7 @@ void Blockade::execute() {
     cout << "Executing Blockade Order" << endl;
 }
 
-Territory* Blockade::getTargetTerritory() const {
+Territory* Blockade::getTargetTerritory() {
     return m_targetTerritory;
 }
 
@@ -249,6 +311,16 @@ void Blockade::setTargetTerritory(Territory* targetTerritory) {
 
 Blockade::Blockade(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
+}
+
+std::string Blockade::toString() const {
+    std::stringstream ss;
+    ss << "triple the number of army units on one of the current player’s territories and make it a neutral territory.";
+    return ss.str();
+}
+
+OrderType Blockade::getOrderType() {
+    return OrderType::BLOCKADE;
 }
 
 Airlift::Airlift() {
@@ -291,7 +363,7 @@ void Airlift::setNumberOfArmyUnits(int numberOfArmyUnits) {
     m_numberOfArmyUnits = numberOfArmyUnits;
 }
 
-Territory* Airlift::getSourceTerritory() const {
+Territory* Airlift::getSourceTerritory() {
     return m_sourceTerritory;
 }
 
@@ -299,12 +371,23 @@ void Airlift::setSourceTerritory(Territory* sourceTerritory) {
     m_sourceTerritory = sourceTerritory;
 }
 
-Territory* Airlift::getTargetTerritory() const {
+Territory* Airlift::getTargetTerritory() {
     return m_targetTerritory;
 }
 
 void Airlift::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
+}
+
+std::string Airlift::toString() const {
+    std::stringstream ss;
+    ss << "advance a certain number of army units from one of the current player’s territories to any another\n"
+          "territory.";
+    return ss.str();
+}
+
+OrderType Airlift::getOrderType() {
+    return OrderType::AIRLIFT;
 }
 
 Negotiate::Negotiate() {
@@ -330,7 +413,7 @@ void Negotiate::execute() {
     cout << "Executing Negotiate Order" << endl;
 }
 
-Player* Negotiate::getTargetPlayer() const {
+Player* Negotiate::getTargetPlayer() {
     return this->m_targetPlayer;
 }
 
@@ -339,61 +422,15 @@ void Negotiate::setTargetPlayer(Player* targetPlayer) {
     this->m_targetPlayer = targetPlayer;
 }
 
-
-OrdersList::~OrdersList() {
-    for (Orders* ol: list) {
-        delete ol;
-        ol = nullptr;
-    }
-}
-
-std::string Deploy::toString() const {
-    std::stringstream ss;
-    ss
-            << "move a certain number of army units from the current player’s reinforcement pool to one of the current player’s territories";
-    return ss.str();
-}
-
-std::string Advance::toString() const {
-    std::stringstream ss;
-    ss << "move a certain number of army units from one of the current player’s territories (source) to another\n"
-          "territory (target) that is adjacent to the source territory. If the target territory belongs to the current\n"
-          "player, the armies are moved from the source territory to the target territory. If the target territory\n"
-          "belongs to another player, an attack happens between the two territories. An attack is simulated by\n"
-          "the following battle simulation mechanism: First, the attacking player decides how many armies in\n"
-          "the source territory are involved in the attack. Then, each attacking army unit involved has 60%\n"
-          "chances of destroying one defending army. At the same time, each defending army unit has 70%\n"
-          "chances of destroying one attacking army unit. If all the army units on the target territory are\n"
-          "destroyed as a result of the battle, the remaining army units left from the attacking army units from\n"
-          "the source territory are moved to the target territory and the target territory now belongs to the player\n"
-          "that declared the advance order, i.e. the player has conquered this territory. In any given turn, a\n"
-          "player receives a card if they conquered at least one territory during this turn.";
-    return ss.str();
-}
-
-std::string Bomb::toString() const {
-    std::stringstream ss;
-    ss << "destroy half of the army units located on an opponent’s territory that is adjacent to one of the current\n"
-          "player’s territories.";
-    return ss.str();
-}
-
-std::string Blockade::toString() const {
-    std::stringstream ss;
-    ss << "triple the number of army units on one of the current player’s territories and make it a neutral territory.";
-    return ss.str();
-}
-
-std::string Airlift::toString() const {
-    std::stringstream ss;
-    ss << "advance a certain number of army units from one of the current player’s territories to any another\n"
-          "territory.";
-    return ss.str();
-}
-
 std::string Negotiate::toString() const {
     std::stringstream ss;
     ss << "prevent attacks between the current player and the player targeted by the negotiate order until the\n"
           "end of the turn.";
     return ss.str();
 }
+
+OrderType Negotiate::getOrderType() {
+    return OrderType::NEGOTIATE;
+}
+
+

@@ -64,7 +64,7 @@ class GameState {
 public:
     GameEngine* gameEngine;
 
-    GameState(GameEngine* gameEngine);
+    explicit GameState(GameEngine* gameEngine);
 
     //Name of the state in case we need it
     std::string name;
