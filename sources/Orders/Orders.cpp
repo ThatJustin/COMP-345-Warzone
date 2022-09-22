@@ -23,7 +23,7 @@ std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream;
 }
 
-string Orders::getNameByType(OrderType orderType) {
+string getNameByType(OrderType orderType) {
     switch (orderType) {
         case OrderType::DEPLOY:
             return "deploy";
@@ -41,20 +41,20 @@ string Orders::getNameByType(OrderType orderType) {
     return "none";
 }
 
-//Orders* Orders::createOrderByCardType(CardsType cardType) {
-//    switch (cardType) {
-//        case BOMB:
-//            return new Bomb();
-//        case BLOCKADE:
-//            return new Blockade();
-//        case AIRLIFT:
-//            return new Airlift();
-//        case DIPLOMACY:
-//            return new Negotiate();
-//        default:
-//            return nullptr;
-//    }
-//}
+Orders* createOrderByCardType(int cardType) {
+    switch (cardType) {
+        case BOMB:
+            return new Bomb();
+        case BLOCKADE:
+            return new Blockade();
+        case AIRLIFT:
+            return new Airlift();
+        case DIPLOMACY:
+            return new Negotiate();
+        default:
+            return nullptr;
+    }
+}
 
 OrdersList::OrdersList() {
     this->list = std::vector<Orders*>();

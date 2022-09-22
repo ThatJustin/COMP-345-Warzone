@@ -27,8 +27,6 @@ public:
 
     virtual ~Orders();
 
-    //  static Orders* createOrderByCardType(CardsType cardType);
-
     virtual bool validate() = 0;
 
     virtual OrderType getOrderType() = 0;
@@ -37,7 +35,6 @@ public:
 
     friend ostream& operator<<(ostream& stream, const Orders& orders);
 
-    static string getNameByType(OrderType orderType);
 };
 
 class Deploy : public Orders {
@@ -229,5 +226,9 @@ public:
 
     vector<Orders*> getOrdersList();
 };
+
+//free functions
+Orders* createOrderByCardType(int cardType);
+string getNameByType(OrderType cardType);
 
 #endif //COMP_345_ORDERS_H
