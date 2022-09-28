@@ -13,19 +13,19 @@ int main() {
     testLoadMaps();
 
     //Test Player
-    std::cout << "Testing Player" << std::endl;
+//    std::cout << "Testing Player" << std::endl;
     //testPlayers();
 
     //Test OrderList
-    std::cout << "Testing OrderList" << std::endl;
+//    std::cout << "Testing OrderList" << std::endl;
     //  testOrdersLists();
 
     //Test Cards deck/hand
-    std::cout << "Testing Cards deck/hand" << std::endl;
+//    std::cout << "Testing Cards deck/hand" << std::endl;
     // testCards();
 
     //Test GameEngine
-    std::cout << "Testing GameEngine" << std::endl;
+//    std::cout << "Testing GameEngine" << std::endl;
     // testGameStates();
     return 0;
 }
