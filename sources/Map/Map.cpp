@@ -136,7 +136,7 @@ ostream& operator<<(ostream& outs, const Territory& territory) {
     outs << "Territory Name: " << territory.territory_name << endl <<
     "Number of Armies: " << territory.number_of_armies << endl <<
     "Within Continent: " << territory.continent->getContinentName() << endl <<
-    "Owned by player: " << territory.player->getPlayerName() << endl;
+    "Owned by player: " << "MoMo" << endl;
     return outs;
 }
 
@@ -456,6 +456,11 @@ Map* MapLoader::loadMap(string map_file_path) {
         cout << "Error: This map file is empty." << endl;
         return nullptr;
     }
+
+//    if(map_file_lines.empty()) {
+//        cout << "Error: This map file is empty." << endl;
+//        return nullptr;
+//    }
     if(continents.empty()) {
         cout << "Error: This map file is missing continents." << endl;
         return nullptr;
