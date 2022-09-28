@@ -1,0 +1,109 @@
+[Map]
+author=
+image=Annys Piratenwelt.bmp
+wrap=yes
+scroll=none
+warn=yes
+
+[Continents]
+Bermuda Isle=3
+Afrika=7
+Atlantis=3
+Europa=7
+Nordpol=5
+Stumpf=2
+Asien=8
+Chinaland=4
+Australien=2
+Schatzinsel=1
+Sönke=2
+Südamerika=2
+Pirat Isle=2
+Annys World=5
+Nordamerika=4
+Popo=2
+
+[Territories]
+Territory01,52,221,Popo,Territory03,Territory02,Territory12
+Territory02,88,222,Popo,Territory10,Territory01
+Territory03,63,124,Nordamerika,Territory04,Territory49,Territory01,Territory05,Territory64
+Territory04,134,124,Nordamerika,Territory06,Territory05,Territory03,Territory08
+Territory05,145,158,Nordamerika,Territory06,Territory10,Territory04,Territory03
+Territory06,187,157,Nordamerika,Territory07,Territory09,Territory10,Territory05,Territory04,Territory08
+Territory07,247,169,Nordamerika,Territory06,Territory08,Territory09
+Territory08,331,98,Nordamerika,Territory06,Territory07,Territory53,Territory44,Territory38,Territory04
+Territory09,209,211,Nordamerika,Territory06,Territory11,Territory10,Territory07,Territory83!
+Territory10,171,203,Nordamerika,Territory06,Territory11,Territory02,Territory05,Territory09
+Territory11,172,246,Nordamerika,Territory25,Territory09,Territory10,Territory16,Territory19
+Territory12,58,317,Annys World,Territory01,Territory15,Territory14,Territory13
+Territory13,50,341,Annys World,Territory12,Territory14
+Territory14,73,347,Annys World,Territory12,Territory13,Territory15,Territory16,Territory17
+Territory15,98,328,Annys World,Territory12,Territory14,Territory16
+Territory16,127,353,Annys World,Territory11,Territory14,Territory17,Territory19,Territory20,Territory15
+Territory17,86,392,Annys World,Territory14,Territory18,Territory19,Territory16
+Territory18,47,402,Annys World,Territory17
+Territory19,57,456,Annys World,Territory11,Territory17,Territory16,Territory20
+Territory20,333,468,Pirat Isle,Territory16,Territory21,Territory22,Territory19
+Territory21,327,453,Pirat Isle,Territory20,Territory22
+Territory22,367,459,Pirat Isle,Territory20,Territory21,Territory23
+Territory23,407,456,Pirat Isle,Territory22,Territory68,Territory83
+Territory24,253,338,Südamerika,Territory26,Territory27,Territory25
+Territory25,255,304,Südamerika,Territory26,Territory24,Territory11
+Territory26,299,336,Südamerika,Territory32,Territory24,Territory25,Territory27
+Territory27,266,395,Südamerika,Territory26,Territory24
+Territory30,317,193,Bermuda Isle,Territory31
+Territory31,337,194,Bermuda Isle,Territory31!,Territory30
+Territory31!,367,207,Bermuda Isle,Territory32,Territory31
+Territory32,419,262,Afrika,Territory48,Territory42,Territory31!,Territory33,Territory34,Territory35,Territory26
+Territory33,468,245,Afrika,Territory59,Territory48,Territory32,Territory34
+Territory34,516,292,Afrika,Territory59,Territory32,Territory35,Territory36,Territory33,Territory37
+Territory35,471,313,Afrika,Territory32,Territory34,Territory36
+Territory36,479,366,Afrika,Territory35,Territory37,Territory34
+Territory37,533,359,Afrika,Territory36,Territory34
+Territory38,422,91,Atlantis,Territory08,Territory39,Territory53,Territory45
+Territory39,451,70,Atlantis,Territory38,Territory40
+Territory40,493,70,Atlantis,Territory39,Territory41
+Territory41,531,85,Atlantis,Territory40
+Territory42,428,190,Europa,Territory43,Territory47,Territory48,Territory32
+Territory43,414,158,Europa,Territory44,Territory45,Territory42,Territory47
+Territory44,375,126,Europa,Territory08,Territory43,Territory45
+Territory45,470,116,Europa,Territory44,Territory38,Territory46,Territory47,Territory43
+Territory46,520,152,Europa,Territory60,Territory61,Territory59,Territory48,Territory47,Territory45
+Territory47,462,172,Europa,Territory46,Territory45,Territory43,Territory48,Territory42
+Territory48,475,196,Europa,Territory46,Territory47,Territory42,Territory59,Territory33,Territory32
+Territory49,147,31,Nordpol,Territory50,Territory03
+Territory50,181,15,Nordpol,Territory49,Territory51
+Territory51,234,7,Nordpol,Territory50,Territory52
+Territory52,338,6,Nordpol,Territory51,Territory54,Territory53
+Territory53,426,25,Nordpol,Territory08,Territory38,Territory52,Territory54
+Territory54,495,12,Nordpol,Territory52,Territory55,Territory53,Territory56
+Territory55,555,32,Nordpol,Territory54,Territory56
+Territory56,616,14,Nordpol,Territory55,Territory54,Territory57
+Territory57,736,16,Nordpol,Territory56,Territory64
+Territory58,566,296,Stumpf,Territory59
+Territory59,532,235,Asien,Territory60,Territory46,Territory48,Territory33,Territory34,Territory58,Territory68
+Territory60,583,183,Asien,Territory67,Territory68,Territory61,Territory59,Territory46
+Territory61,605,133,Asien,Territory62,Territory67,Territory60,Territory46
+Territory62,651,108,Asien,Territory66,Territory65,Territory63,Territory61,Territory67
+Territory63,728,117,Asien,Territory64,Territory62,Territory65
+Territory64,819,122,Asien,Territory57,Territory74,Territory63,Territory70,Territory65,Territory03
+Territory65,696,149,Asien,Territory66,Territory62,Territory63,Territory64
+Territory66,710,189,Asien,Territory70,Territory67,Territory65,Territory62
+Territory67,652,213,Asien,Territory66,Territory62,Territory61,Territory60,Territory68,Territory69,Territory72
+Territory68,624,246,Asien,Territory67,Territory60,Territory59,Territory69,Territory23,Territory83
+Territory69,667,265,Asien,Territory67,Territory68,Territory79
+Territory70,755,218,Asien,Territory64,Territory66
+Territory71,795,256,Chinaland,Territory72,Territory73,Territory75
+Territory72,774,268,Chinaland,Territory67,Territory71
+Territory73,809,221,Chinaland,Territory71,Territory75,Territory74
+Territory74,850,197,Chinaland,Territory64,Territory75,Territory76,Territory73
+Territory75,833,230,Chinaland,Territory71,Territory73,Territory74,Territory76,Territory77,Territory78
+Territory76,866,213,Chinaland,Territory75,Territory74,Territory77
+Territory77,865,234,Chinaland,Territory75,Territory76
+Territory78,847,264,Chinaland,Territory83,Territory75
+Territory79,698,308,Australien,Territory69,Territory80,Territory81
+Territory80,768,321,Australien,Territory79,Territory81,Territory82
+Territory81,730,370,Australien,Territory79,Territory82,Territory80
+Territory82,773,373,Australien,Territory81,Territory80
+Territory83,644,451,Schatzinsel,Territory23,Territory78,Territory68
+Territory83!,259,247,Sönke,Territory09

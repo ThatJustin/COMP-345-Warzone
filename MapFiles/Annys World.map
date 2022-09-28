@@ -1,0 +1,98 @@
+[Map]
+author=Anna Klindworth
+image=Annys World.bmp
+wrap=no
+scroll=none
+warn=no
+
+[Continents]
+Annys World=5
+Pirateninsel=2
+Schatzinsel=1
+China World=3
+Atlantis=3
+Nordamerika=5
+Nordpol=5
+Südamerika=2
+Afrika=6
+Europa=8
+Asien=10
+Australien=2
+
+[Territories]
+1,60,319,Annys World,3,2,4,22
+2,49,345,Annys World,3,1
+3,77,344,Annys World,6,4,2,1
+4,96,334,Annys World,3,5,1
+5,122,355,Annys World,6,4,25
+6,89,388,Annys World,5,8,7,3
+7,42,406,Annys World,6
+8,59,455,Annys World,6,Any
+Hock,363,458,Pirateninsel,Any,Sparrow,Black Beard
+Black Beard,404,455,Pirateninsel,Hock,Schatz,Indien
+Any,332,470,Pirateninsel,8,Sparrow,Hock,25
+Sparrow,327,455,Pirateninsel,Any,Hock
+Schatz,642,451,Schatzinsel,Black Beard,11,Indien
+9,773,268,China World,10,Po
+10,797,256,China World,9,12
+11,836,266,China World,Schatz,12
+12,832,228,China World,11,10,13,14,15,16
+13,806,221,China World,12,14
+14,851,195,China World,12,15,13,China 2
+15,867,209,China World,12,14,16
+16,866,235,China World,12,15
+WAS,415,90,Atlantis,Tri,17,Martd,England
+Tri,452,74,Atlantis,WAS,Mop
+Mop,490,71,Atlantis,Tri,Wqa
+Wqa,531,83,Atlantis,Mop
+17,317,81,Nordamerika,WAS,18,20,19,Martd,Lappland
+18,251,166,Nordamerika,17,24,20
+19,145,124,Nordamerika,17,22,21,20
+20,188,166,Nordamerika,17,21,24,23,18,19
+21,147,165,Nordamerika,22,19,20,23
+22,77,125,Nordamerika,19,21,1,Dist,China 2
+23,151,202,Nordamerika,21,24,25,20
+24,214,218,Nordamerika,20,18,23,25
+25,174,247,Nordamerika,24,23,5,Any,26
+Dist,151,34,Nordpol,22,Molk
+Molk,182,16,Nordpol,Dist,Riop
+Riop,228,7,Nordpol,Molk,Lasto
+Lasto,285,5,Nordpol,Riop,Martd
+Martd,429,25,Nordpol,Lasto,17,WAS,Stioa
+Stioa,508,9,Nordpol,Martd,ramst,Laskr
+ramst,559,35,Nordpol,Stioa,Laskr
+Laskr,616,14,Nordpol,Stioa,ramst,Osti
+Osti,729,20,Nordpol,Laskr,China 2
+26,254,303,Südamerika,25,28,27
+27,305,338,Südamerika,26,28,29,30
+28,257,342,Südamerika,26,27,29
+29,262,401,Südamerika,28,27
+30,409,267,Afrika,27,32,31,Spanien,Italien
+31,478,246,Afrika,30,33,Italien,Türkei
+32,466,317,Afrika,30,34,33
+33,517,295,Afrika,32,31,35,Türkei
+34,479,370,Afrika,32,35
+35,534,361,Afrika,33,34
+Lappland,375,127,Europa,17,Norwegen,England
+England,457,131,Europa,Lappland,WAS,Norwegen,Polenländer
+Polenländer,515,161,Europa,Deutschland,Italien,England,Türkei,Krast,Luppi
+Deutschland,457,175,Europa,Norwegen,Spanien,Italien,Polenländer
+Italien,475,196,Europa,Deutschland,Polenländer,Spanien,30,31
+Spanien,429,189,Europa,Norwegen,Deutschland,Italien,30
+Norwegen,418,167,Europa,Lappland,England,Spanien,Deutschland
+Türkei,527,233,Asien,Polenländer,Krast,Indien,31,33
+Krast,572,188,Asien,Polenländer,Luppi,Türkei,Indien,Po
+Luppi,611,128,Asien,Polenländer,Krast,Napsi,Po
+Napsi,662,108,Asien,Luppi,Po,China1,Oberland,Happilo
+Po,643,207,Asien,Krast,Indien,Luppi,Napsi,Hmm,Happilo,9
+Indien,614,247,Asien,Krast,Po,Türkei,Hmm,Black Beard,Schatz
+Hmm,671,268,Asien,Po,Indien,Neuroppin
+Happilo,711,184,Asien,Po,Napsi,Oberland,Japan,China 2
+Oberland,688,151,Asien,Napsi,Happilo,China1,China 2
+China 2,817,123,Asien,Oberland,Happilo,China1,Japan,14,Osti,22
+China1,739,116,Asien,Napsi,Oberland,China 2
+Japan,756,221,Asien,Happilo,China 2
+Neuroppin,701,312,Australien,Hmm,Lala,Linkstralien
+Lala,764,323,Australien,Neuroppin,Linkstralien,Rechtstralien
+Linkstralien,721,376,Australien,Neuroppin,Lala,Rechtstralien
+Rechtstralien,777,373,Australien,Linkstralien,Lala
