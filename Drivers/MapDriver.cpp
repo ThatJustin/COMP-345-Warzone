@@ -12,7 +12,7 @@ using std::istringstream;
 
 void testLoadMaps() {
     auto *mapLoader = new MapLoader();
-    mapLoader->loadMap("./Map Files/World.map");
+    mapLoader->loadMap("./MapFiles/World.map");
 
     delete mapLoader;
 }
