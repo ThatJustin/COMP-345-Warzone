@@ -3,6 +3,7 @@
 
 #pragma once
 #include "../Player/Player.h"
+#include <sstream>
 
 class Player;
 
@@ -45,6 +46,7 @@ public:
     Player* getTerritoryOwner();
     void setTerritoryOwner(Player *player);
     string getPlayerName();
+    void addAdjacentTerritory(Territory* territory);
 
 private:
     int map_territory_id, number_of_armies;
@@ -67,8 +69,8 @@ public:
     Territory* getTerritory(int map_territory_id);
     Territory* getTerritoryInContinent(int map_territory_id, int map_continent_id);
     Continent* getContinent(int map_continent_id);
-    //void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
-  //  void depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
+    void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
+    void depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
     bool validate();
 
 
