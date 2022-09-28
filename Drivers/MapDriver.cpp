@@ -1,24 +1,19 @@
 #include <iostream>
 #include <string>
-#include <fstream>
 #include <vector>
 #include "sources/Map//Map.h"
 
+using std::cout;
+using std::endl;
+using std::string;
+using std::ifstream;
+using std::vector;
+using std::cerr;
+using std::istringstream;
+
 void testLoadMaps() {
-//    cout << "Map Continents:" << endl;
-//    for(const string& continent : continents) {
-//        cout << continent << endl;
-//    }
-//
-    cout << "\nMap Territories:" << endl;
-    for(Territory *territory : territories) {
-        cout << territory->getTerritoryName() << endl;
-    }
-//
-//    cout << "\nMap Adjacencies:" << endl;
-//    for(const string& adjacency : adjacencies) {
-//        cout << adjacency << endl;
-//    }
+    MapLoader mapLoader;
+    mapLoader.loadMap("./Map Files/World.map");
 }
 
 int main() {

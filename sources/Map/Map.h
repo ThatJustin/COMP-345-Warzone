@@ -3,13 +3,14 @@
 
 #pragma once
 #include "../Player/Player.h"
+#include <sstream>
 
 class Player;
 
 class Continent {
 public:
     Continent();
-    Continent(int map_continent_id, string continent_name);
+    Continent(int map_continent_id, const string &continent_name);
     ~Continent();
     Continent(const Continent &continent);
     Continent &operator = (const Continent &continent);
@@ -44,6 +45,7 @@ public:
     Player* getTerritoryOwner();
     void setTerritoryOwner(Player *player);
     string getPlayerName();
+    void addAdjacentTerritory(Territory* territory);
 
 private:
     int map_territory_id, number_of_armies;
