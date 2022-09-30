@@ -35,6 +35,8 @@ public:
 
     virtual Orders* copy() = 0;
 
+    virtual string toString() const = 0;
+
     friend ostream& operator<<(ostream& stream, const Orders& orders);
 
 };
@@ -242,13 +244,15 @@ public:
 
     ~OrdersList();
 
-    void move(int to_move, int move_to);
+    void move(int from, int to);
 
     void remove(int order);
 
     void add(Orders* o);
 
     vector<Orders*> getOrdersList();
+
+    void displayList();
 };
 
 //free functions

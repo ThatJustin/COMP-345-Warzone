@@ -20,7 +20,7 @@ Orders::~Orders() {
 }
 
 std::ostream& operator<<(ostream& stream, const Orders& order) {
-    return stream;
+    return stream<<order.toString();
 }
 
 string getNameByOrderType(OrderType cardType) {
@@ -74,32 +74,12 @@ OrdersList::OrdersList(const OrdersList& ol) {
     }
 }
 
-void OrdersList::move(int to_move, int move_to) {
-    Orders* temp;
-    if (to_move < move_to) {
-        temp = list[move_to];
-        list[move_to] = list[to_move];
-        list[to_move] = temp;
-        list.push_back(temp);
-        list.erase(list.begin() + to_move);
-        list.push_back(list[move_to]);
-        list.erase(list.begin() + move_to);
-        temp = list[move_to];
-        list[move_to] = list[move_to - 1];
-        list[move_to - 1] = temp;
-    }
-    if (to_move > move_to) {
-        temp = list[to_move];
-        list[to_move] = list[move_to];
-        list[move_to] = temp;
-        list.push_back(temp);
-        list.erase(list.begin() + move_to);
-        list.push_back(list[to_move]);
-        list.erase(list.begin() + to_move);
-        temp = list[to_move];
-        list[to_move] = list[to_move - 1];
-        list[to_move - 1] = temp;
-    }
+void OrdersList::move(int from, int to) {
+    if(from == to) return;
+    int index_from = from-1, index_to = to-1;
+    Orders* temp=list[index_from];
+    list.erase(list.begin()+index_from);
+    list.insert(list.begin()+index_to, temp);
 }
 
 void OrdersList::remove(int order) {
@@ -108,10 +88,17 @@ void OrdersList::remove(int order) {
 
 void OrdersList::add(Orders* o) {
     list.push_back(o);
+    cout<<*o;
 }
 
 vector<Orders*> OrdersList::getOrdersList() {
     return this->list;
+}
+
+void OrdersList::displayList() {
+    for(int i=0;i<list.size();i++){
+        cout<<i+1<<". "<<*list[i]<<endl;
+    }
 }
 
 Deploy::Deploy() {
@@ -166,6 +153,7 @@ void Deploy::setTargetTerritory(Territory* targetTerritory) {
 
 std::string Deploy::toString() const {
     std::stringstream ss;
+    ss<<"Deploy: "<<endl;
     ss
             << "move a certain number of army units from the current player’s reinforcement pool to one of the current player’s territories";
     return ss.str();
@@ -242,6 +230,7 @@ void Advance::setTargetTerritory(Territory* targetTerritory) {
 
 std::string Advance::toString() const {
     std::stringstream ss;
+    ss<<"Advance: "<<endl;
     ss << "move a certain number of army units from one of the current player’s territories (source) to another\n"
           "territory (target) that is adjacent to the source territory. If the target territory belongs to the current\n"
           "player, the armies are moved from the source territory to the target territory. If the target territory\n"
@@ -302,6 +291,7 @@ void Bomb::setTargetTerritory(Territory* targetTerritory) {
 
 string Bomb::toString() const {
     std::stringstream ss;
+    ss<<"Bomb: "<<endl;
     ss << "destroy half of the army units located on an opponent’s territory that is adjacent to one of the current\n"
           "player’s territories.";
     return ss.str();
@@ -352,6 +342,7 @@ void Blockade::setTargetTerritory(Territory* targetTerritory) {
 
 std::string Blockade::toString() const {
     std::stringstream ss;
+    ss<<"Blockade: "<<endl;
     ss << "triple the number of army units on one of the current player’s territories and make it a neutral territory.";
     return ss.str();
 }
@@ -427,6 +418,7 @@ void Airlift::setTargetTerritory(Territory* targetTerritory) {
 
 std::string Airlift::toString() const {
     std::stringstream ss;
+    ss<<"Airlift: "<<endl;
     ss << "advance a certain number of army units from one of the current player’s territories to any another\n"
           "territory.";
     return ss.str();
@@ -477,6 +469,7 @@ void Negotiate::setTargetPlayer(Player* targetPlayer) {
 
 std::string Negotiate::toString() const {
     std::stringstream ss;
+    ss<<"Negotiate: "<<endl;
     ss << "prevent attacks between the current player and the player targeted by the negotiate order until the\n"
           "end of the turn.";
     return ss.str();
