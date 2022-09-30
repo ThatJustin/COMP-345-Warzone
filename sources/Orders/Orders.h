@@ -234,7 +234,7 @@ private:
 
 class OrdersList {
 private:
-    std::vector<Orders*> list;
+    //std::vector<Orders*> list;
 public:
     OrdersList();
 
@@ -249,6 +249,8 @@ public:
     void add(Orders* o);
 
     vector<Orders*> getOrdersList();
+
+    std::vector<Orders*> list;//needed for cards play method to work from private to public
 };
 
 //free functions
@@ -256,4 +258,5 @@ Orders* createOrderByCardType(int cardType);
 
 string getNameByOrderType(OrderType cardType);
 
+std::ostream& operator <<(std::ostream& stream, const OrdersList& ordersList); //testing add stream
 #endif //COMP_345_ORDERS_H

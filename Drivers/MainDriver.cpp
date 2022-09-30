@@ -22,7 +22,7 @@ int main() {
 
     //Test Cards deck/hand
     std::cout << "Testing Cards deck/hand" << std::endl;
-    // testCards();
+    //testCards();
 
     //Test GameEngine
     std::cout << "Testing GameEngine" << std::endl;
