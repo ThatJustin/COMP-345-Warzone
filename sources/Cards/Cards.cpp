@@ -3,11 +3,11 @@
 //Each card has a type from: bomb, reinforcement, blockade, airlift and diplomacy. _/
 //The Deck class must have a draw() method that allows a player to draw a card at random from the cards remaining in the deck _/
 //and place it in their hand of cards. _/
-//The objects of type Card must have a play() method that is called to play the card, which creates an order and
-//adds it to the player’s list of orders and then returns the card to the deck.
+//The objects of type Card must have a play() method that is called to play the card, which creates an order and_/
+//adds it to the player’s list of orders and then returns the card to the deck._/
 //All the classes/functions that you implement for this component must all reside in a single .cpp/.h file duo named Cards.cpp/Cards.h._/
-//You must deliver a file named CardsDriver.cpp file that contains a free function named testCards() that creates a deck of Warzone cards,
-//then create a hand object that is filled by drawing cards from the deck.
+//You must deliver a file named CardsDriver.cpp file that contains a free function named testCards() that creates a deck of Warzone cards_/
+//then create a hand object that is filled by drawing cards from the deck._/
 //
 
 #include <iostream>

@@ -57,7 +57,12 @@ void testCards() {
     blockade->Play(ordersList,hand,deck);
     airlift->Play(ordersList,hand,deck);
     diplomacy->Play(ordersList,hand,deck);
-    std::cout <<*ordersList<<std::endl;
+    std::cout << "The cards are played: " <<std::endl;
+    std::cout << "There are: " <<*ordersList<<std::endl;
+    std::cout <<std::endl;
+
+    std::cout <<*hand <<" After the play method was called." <<std::endl;
+    std::cout <<"After play is called: " <<*deck << " Back in the deck."<<std::endl;
 
     //handle leaks for the cards type
     delete bomb;
