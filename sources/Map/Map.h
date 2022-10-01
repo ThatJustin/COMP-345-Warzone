@@ -1,9 +1,5 @@
-#ifndef MAP_H
-#define MAP_H
-
 #pragma once
 #include "../Player/Player.h"
-#include <sstream>
 
 class Player;
 
@@ -69,8 +65,8 @@ public:
     Territory* getTerritory(int map_territory_id);
     Territory* getTerritoryInContinent(int map_territory_id, int map_continent_id);
     Continent* getContinent(int map_continent_id);
-    void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
-    void depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
+    vector<Territory*> depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
+    vector<Territory*> depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
     bool validate();
 
 
@@ -90,5 +86,3 @@ private:
     string map_file_directory;
     Map* map;
 };
-
-#endif //MAP_H

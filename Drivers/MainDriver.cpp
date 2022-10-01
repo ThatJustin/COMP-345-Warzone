@@ -4,28 +4,31 @@
 #include "GameEngineDriver.cpp"
 #include "CardsDriver.cpp"
 
+using std::cout;
+using std::endl;
+
 
 int main() {
     // If you're debugging your stuff, just comment out the others when testing yours
 
     //Test Maps
-    std::cout << "Testing Maps" << std::endl;
+    cout << "Testing Maps\n" << endl;
     testLoadMaps();
 
     //Test Player
-//    std::cout << "Testing Player" << std::endl;
+//    cout << "Testing Player" << endl;
     //testPlayers();
 
     //Test OrderList
-//    std::cout << "Testing OrderList" << std::endl;
+//    cout << "Testing OrderList" << endl;
     //  testOrdersLists();
 
     //Test Cards deck/hand
-//    std::cout << "Testing Cards deck/hand" << std::endl;
+//    cout << "Testing Cards deck/hand" << endl;
     // testCards();
 
     //Test GameEngine
-//    std::cout << "Testing GameEngine" << std::endl;
+//    cout << "Testing GameEngine" << endl;
     // testGameStates();
     return 0;
 }
