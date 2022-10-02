@@ -1,15 +1,18 @@
-#include "PlayerDriver.cpp"
-#include "MapDriver.cpp"
-#include "OrdersDriver.cpp"
-#include "GameEngineDriver.cpp"
-#include "CardsDriver.cpp"
+#include <iostream>
+#include "headers/PlayerDriver.h"
+#include "headers/MapDriver.h"
+#include "headers/OrdersDriver.h"
+#include "headers/GameEngineDriver.h"
+#include "headers/CardsDriver.h"
+
+using namespace std;
 
 int main() {
     // If you're debugging your stuff, just comment out the others when testing yours
 
     //Test Maps
     cout << "Testing Maps\n" << endl;
-  //  testLoadMaps();
+    //  testLoadMaps();
 
     //Test Player
 //    cout << "Testing Player" << endl;
@@ -25,6 +28,6 @@ int main() {
 
     //Test GameEngine
 //    cout << "Testing GameEngine" << endl;
-    // testGameStates();
+    //testGameStates();
     return 0;
 }
