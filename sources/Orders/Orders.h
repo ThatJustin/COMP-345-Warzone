@@ -1,17 +1,12 @@
 //
 // Created by Alex De Luca on 2022-09-14.
 //
-
-#ifndef COMP_345_ORDERS_H
-#define COMP_345_ORDERS_H
-
+#pragma once
 #include <vector>
 #include <iostream>
 
 class Territory;
-
 class Cards;
-
 class Player;
 
 using namespace std;
@@ -255,8 +250,7 @@ public:
 
 //free functions
 Orders* createOrderByCardType(int cardType);
-
 string getNameByOrderType(OrderType cardType);
 
 std::ostream& operator <<(std::ostream& stream, const OrdersList& ordersList); //testing add stream
-#endif //COMP_345_ORDERS_H
+

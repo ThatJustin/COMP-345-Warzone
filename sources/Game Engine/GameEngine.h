@@ -1,29 +1,18 @@
-
-#ifndef COMP_345_WARZONE_GAMEENGINE_H
-#define COMP_345_WARZONE_GAMEENGINE_H
-
+#pragma once
 #include <string>
-
 
 using namespace std;
 
 class GameState;
-
 class Start;
-
 class MapLoaded;
-
 class MapValidated;
-
 class PlayersAdded;
-
 class AssignReinforcement;
-
 class IssueOrders;
-
 class ExecuteOrders;
-
 class Win;
+
 
 class GameEngine {
 private:
@@ -270,5 +259,3 @@ public:
 
     GameState* copy() override;
 };
-
-#endif //COMP_345_WARZONE_GAMEENGINE_H

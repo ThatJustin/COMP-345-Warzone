@@ -3,9 +3,9 @@
 #include "vector"
 #include "sources/Orders/Orders.h"
 
+
 class Deck; //define the deck class
 class Hand; //define the hand class
-
 class OrdersList; //define the orderlist class
 class Orders;     //define the orders class
 
