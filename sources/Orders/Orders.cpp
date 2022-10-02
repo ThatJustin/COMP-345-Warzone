@@ -484,5 +484,10 @@ std::string Negotiate::toString() const {
 OrderType Negotiate::getOrderType() {
     return OrderType::NEGOTIATE;
 }
+//testing add stream
+std::ostream& operator<<(std::ostream& stream, const OrdersList& ordersList) {
+    stream << "OrdersList (" << ordersList.list.size() << ")";//deck.cards.size()
+    return stream;
+}
 
 
