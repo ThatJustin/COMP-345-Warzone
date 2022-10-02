@@ -34,6 +34,7 @@ public:
     bool operator == (const Territory &territory) const;
     friend ostream &operator << (ostream &outs, const Territory &territory);
     int getMapTerritoryId();
+    void setMapTerritoryId(int map_territory_id);
     int getNumberOfArmies();
     void setNumberOfArmies(int number_of_armies);
     string getTerritoryName();

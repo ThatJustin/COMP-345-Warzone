@@ -16,6 +16,10 @@ void testLoadMaps() {
         }
         cout << "\tMap file: " << map_file.path().string().substr(12) << endl;
         map_file_names.push_back(map_file.path().string().substr(12));
+        if(mapLoader->loadMap(map_file.path().string()) == nullptr) {
+            map_file_names.pop_back();
+            continue;
+        }
         maps.push_back(mapLoader->loadMap(map_file.path().string()));
     }
 

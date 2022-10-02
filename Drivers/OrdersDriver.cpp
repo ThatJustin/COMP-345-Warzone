@@ -1,7 +1,7 @@
-
 #include "sources/Orders/Orders.h"
 
 using namespace std;
+
 void testOrdersLists(){
     Orders* de = new Deploy();
     Orders* ad = new Advance();

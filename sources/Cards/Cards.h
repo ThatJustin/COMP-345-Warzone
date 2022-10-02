@@ -6,7 +6,6 @@
 class Deck;
 class Hand;
 class SpecialOrders;//what is it?
-
 class OrdersList;
 class Orders;
 

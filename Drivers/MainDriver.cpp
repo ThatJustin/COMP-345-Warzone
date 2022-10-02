@@ -4,10 +4,6 @@
 #include "GameEngineDriver.cpp"
 #include "CardsDriver.cpp"
 
-using std::cout;
-using std::endl;
-
-
 int main() {
     // If you're debugging your stuff, just comment out the others when testing yours
 
@@ -27,8 +23,8 @@ int main() {
 //    cout << "Testing Cards deck/hand" << endl;
     // testCards();
 
-    //Test GameEngine
-//    cout << "Testing GameEngine" << endl;
+    //Test Game Engine
+//    cout << "Testing Game Engine" << endl;
     // testGameStates();
     return 0;
 }

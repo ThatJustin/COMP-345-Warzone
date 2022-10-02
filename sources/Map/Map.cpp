@@ -145,6 +145,11 @@ int Territory::getMapTerritoryId() {
     return this->map_territory_id;
 }
 
+void Territory::setMapTerritoryId(int territory_id) {
+    this->map_territory_id = territory_id;
+
+}
+
 int Territory::getNumberOfArmies() {
     return this->number_of_armies;
 }
@@ -276,7 +281,7 @@ vector<Territory*> Map::depthFirstSearch(int starting_territory_id, vector<Terri
         return visited_territories;
     }
     Territory* starting_territory = this->getTerritory(starting_territory_id);
-    if(starting_territory != nullptr) {
+    if(find(visited_territories.begin(), visited_territories.end(), starting_territory) == visited_territories.end()) {
         visited_territories.push_back(starting_territory);
         for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
             if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
@@ -292,13 +297,15 @@ vector<Territory*> Map::depthFirstSearch(vector<Territory*> continent, int start
         return visited_territories;
     }
     Territory* starting_territory = this->getTerritoryInContinent(starting_territory_id, continent[0]->getContinent()->getMapContinentId());
-    if(starting_territory != nullptr) {
-        visited_territories.push_back(starting_territory);
-        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
-            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-                this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
+    for(auto &territory : continent) {
+        if(find(visited_territories.begin(), visited_territories.end(), territory) != visited_territories.end()) {
+            for(auto &adjacent_territory: starting_territory->getAdjacentTerritories()) {
+                if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+                    depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
+                }
             }
         }
+        visited_territories.push_back(starting_territory);
     }
     return visited_territories;
 }
@@ -306,7 +313,7 @@ vector<Territory*> Map::depthFirstSearch(vector<Territory*> continent, int start
 bool Map::validate() {
     vector<Territory*> visited_territories;
 
-    if (this->getTerritories().empty() || this->getContinents().empty()) {
+    if(this->getTerritories().empty() || this->getContinents().empty()) {
         cout << "\tMap is not valid because it does not contain any territories or continents." << endl;
         return false;
     }
@@ -366,7 +373,7 @@ Map* MapLoader::loadMap(string map_file_path) {
 
     ifstream map_file(map_file_path);
     if (!map_file) {
-        cout << "Error: Unable to open this map file wih the following directory: " << map_file_directory << endl;
+        cout << "\tError: Unable to open the map file " << map_file_path.substr(12) << " wih the following directory: " << map_file_directory << endl;
         return nullptr;
     }
 
@@ -386,7 +393,7 @@ Map* MapLoader::loadMap(string map_file_path) {
             }
         }
         if (continents_section_count > 1) {
-            cout << "Error: Invalid map file format for continents." << endl;
+            cout << "\tError: Invalid map file format for continents in the map file " << map_file_path.substr(12) << "." << endl;
             return nullptr;
         }
 
@@ -394,9 +401,6 @@ Map* MapLoader::loadMap(string map_file_path) {
         if(map_file_line == "[Territories]") {
             territories_section_count++;
             while(getline(map_file, map_file_line)) {
-                if(map_file.eof()) {
-                    break;
-                }
                 if(map_file_line.empty() || map_file_line == " ") {
                     continue;
                 }
@@ -410,9 +414,9 @@ Map* MapLoader::loadMap(string map_file_path) {
                     map_file_line = map_file_line.substr(map_file_line.find_first_not_of(' '), map_file_line.find_last_not_of(' ') + 1);
                     skipped_strings_index++;
                     if(skipped_strings_index == 4) {
-                        auto iterator = find_if(continents.begin(), continents.end(), [&](Continent *continent) { return continent->getContinentName() == map_file_line; });
-                        if(iterator != continents.end()) {
-                            continent = *iterator;
+                        auto territory_iterator = find_if(continents.begin(), continents.end(), [&](Continent *continent) { return continent->getContinentName() == map_file_line; });
+                        if(territory_iterator != continents.end()) {
+                            continent = *territory_iterator;
                             auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name, continent);
                             territories.push_back(map_file_line_first_territory);
                             map_territory_id++;
@@ -429,32 +433,45 @@ Map* MapLoader::loadMap(string map_file_path) {
             }
         }
         if (territories_section_count > 1) {
-            cout << "Error: Invalid map file format for territories." << endl;
+            cout << "\tError: Invalid map file format for territories in the map file " << map_file_path.substr(12) << "." << endl;
             return nullptr;
         }
-
-//        if(territories_section_count == 0) {
-//            cout << "Error: Invalid map file format since it is missing the [Territories] section." << endl;
-//            return nullptr;
-//        }
     }
     map_file.close();
 
+    if(territories_section_count == 0) {
+        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12) << " since it is missing the [Territories] section." << endl;
+        return nullptr;
+    }
+
     if(continents_section_count == 0) {
-        cout << "Error: Invalid map file format since it is missing the [Continents] section." << endl;
+        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12) << " since it is missing the [Continents] section." << endl;
         return nullptr;
     }
     if(map_file_lines.empty()) {
-        cout << "Error: This map file is empty." << endl;
+        cout << "\tError: The map file " << map_file_path.substr(12) << " is empty." << endl;
         return nullptr;
     }
     if(continents.empty()) {
-        cout << "Error: This map file is missing continents." << endl;
+        cout << "\tError: The map file " << map_file_path.substr(12) << " is missing continents." << endl;
         return nullptr;
     }
     if (territories.empty()) {
-        cout << "Error: This map file is missing territories." << endl;
+        cout << "\tError: The map file " << map_file_path.substr(12) << " is missing territories." << endl;
         return nullptr;
+    }
+
+    for(auto &continent : continents) {
+        for(int i = 0; i < continent->getTerritories().size(); i++) {
+            for(int j = 0; j < continent->getTerritories()[i]->getAdjacentTerritories().size(); j++) {
+                if((continent->getTerritories()[i]->getMapTerritoryId() + 1) == continent->getTerritories()[i]->getAdjacentTerritories()[j]->getMapTerritoryId()) {
+                    auto iterator = find_if(territories.begin(), territories.end(), [&](Territory *territory) { return territory->getTerritoryName() == continent->getTerritories()[i]->getAdjacentTerritories()[j]->getTerritoryName(); });
+                    if(iterator != territories.end()) {
+                        continent->getTerritories()[i]->getAdjacentTerritories()[j]->setMapTerritoryId(territories.at(distance(territories.begin(), iterator))->getMapTerritoryId());
+                    }
+                }
+            }
+        }
     }
 
     map = new Map(territories, continents);
@@ -473,6 +490,7 @@ Map* MapLoader::loadMap(string map_file_path) {
 //    for(auto &territory : territories) {
 //        cout << territory->getTerritoryName() << " is adjacent to: ";
 //        for(auto &adjacentTerritory : territory->getAdjacentTerritories()) {
+//            cout << adjacentTerritory->getMapTerritoryId() << " ";
 //            if(adjacentTerritory == territory->getAdjacentTerritories().rbegin()[1]) {
 //                cout << adjacentTerritory->getTerritoryName() << " and ";
 //            }
