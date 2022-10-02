@@ -9,7 +9,7 @@ int main() {
 
     //Test Maps
     cout << "Testing Maps\n" << endl;
-    testLoadMaps();
+  //  testLoadMaps();
 
     //Test Player
 //    cout << "Testing Player" << endl;
@@ -23,8 +23,8 @@ int main() {
 //    cout << "Testing Cards deck/hand" << endl;
     // testCards
 
-    //Test Game Engine
-//    cout << "Testing Game Engine" << endl;
+    //Test GameEngine
+//    cout << "Testing GameEngine" << endl;
     // testGameStates();
     return 0;
 }
