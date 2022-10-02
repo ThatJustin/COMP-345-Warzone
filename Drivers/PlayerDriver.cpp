@@ -12,7 +12,7 @@ void testPlayers() {
 
     auto* card = new Cards(CardsType::DIPLOMACY);
     Hand* hand = new Hand;
-    hand->addcards(card);
+    hand->addCard(card);
     player->setHandCards(hand);
 
     cout << *player << endl;

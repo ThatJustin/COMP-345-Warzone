@@ -5,6 +5,7 @@
 #include "headers/GameEngineDriver.h"
 #include "headers/CardsDriver.h"
 
+
 using namespace std;
 
 int main() {
@@ -24,10 +25,11 @@ int main() {
 
     //Test Cards deck/hand
 //    cout << "Testing Cards deck/hand" << endl;
-    // testCards
+     testCards();
 
     //Test GameEngine
 //    cout << "Testing GameEngine" << endl;
     //testGameStates();
+
     return 0;
 }
