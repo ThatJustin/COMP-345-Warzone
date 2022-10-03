@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -60,12 +61,6 @@ CardsType Cards::getType(string name) const {
 //A Deck object contains a finite collection of Warzone cards.
 Deck::Deck() { //constructor definition
     this->cards = vector<Cards*>();
-
-//    this->cards.push_back(new Cards(CardsType::BOMB));
-//    this->cards.push_back(new Cards(CardsType::REINFORCEMENT));
-//    this->cards.push_back(new Cards(CardsType::BLOCKADE));
-//    this->cards.push_back(new Cards(CardsType::AIRLIFT));
-//    this->cards.push_back(new Cards(CardsType::DIPLOMACY));
 };
 
 //prevent leaks
@@ -80,10 +75,6 @@ Deck::~Deck() {
 //cards parametries constructor
 Deck::Deck(const vector<Cards*>& card) {
     this->cards = card;
-//    this->cards = vector<Cards*>(card.size()); //list of vector
-//    for (auto& temp: card) { //loop through each of the element inside the vector
-//        this->cards.push_back(new Cards(*temp)); //add cards to the list
-//    }
 };
 
 //copy constructor
@@ -115,29 +106,22 @@ std::vector<Cards*> Deck::getCards() {
 void Deck::draw(Hand* hand) {
     //implement code to draw cards
     if (Deck::cardSize() > 0) {//verify if there are still card in the deck
+        // Used to generate a random number
         std::random_device rd;
         default_random_engine randomEngine(rd());
         uniform_int_distribution<int> dis(0, cards.size() - 1);
 
         int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
-        auto it = std::next(cards.begin(), randCardIdx);
-        auto* drewCard = new Cards(*cards[randCardIdx]);
-        hand->addCard(drewCard);
-
-        cards.erase(it);
-
-//        cout << "Rand index " << randCardIdx << endl;
-//        Cards* card = cards[randCardIdx];//pick a random cards among the cards
-//        hand->removeCardByType(card->getType());
-//        cards.erase(cards.begin() + randCardIdx); // delete it from the deck
-        //  return card; //return the card from the deck that was just removed
+        hand->addCard(cards[randCardIdx]); // add the card to the hand
+        cards.erase(cards.begin() + randCardIdx); // delete it from the deck
+    } else {
+        cout << "Tried to pull a card from an empty deck." << endl;
     }
-    cout << "Tried to pull a card from an empty deck" << endl;
 }
 
 
 //A Hand object is a finite collection of Warzone cards.
-Hand::Hand() { //constructor definition outside of the class
+Hand::Hand() { //constructor definition outside the class
     this->cards = vector<Cards*>();
 };
 
@@ -149,15 +133,10 @@ Hand::Hand(vector<Cards*> cards) {
 //copy constructor
 Hand::Hand(const Hand& hand) {
     this->cards = hand.cards;
-//    this->cards = vector<Cards*>(hand.cards.size());
-//    for (auto& temp: hand.cards) {
-//        this->cards.push_back(new Cards(*temp));
-//    }
 };
 
 //remaining in the deck and place it in their hand
 void Hand::addCard(Cards* card) {
-    cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
     this->cards.push_back(card);
 }
 
@@ -185,9 +164,8 @@ void Cards::play(OrdersList* ol, Hand* hand, Deck* deck) {
 
     //  cout << "Card " << getNameByCardType(getType()) << " is going back to the deck!" << endl;
     deck->addCard(createCardByCardType(this->getType()));
-    cout << this << endl;
     //  cout << "Card " << getNameByCardType(getType()) << " is being removed from players hand." << endl;
-    hand->removeCardByType(this->getType());
+    hand->remove(this);
 }
 
 //return the type of the cards
@@ -214,7 +192,7 @@ string getNameByCardType(CardsType cardsType) {
 
 //output streams for cards
 std::ostream& operator<<(std::ostream& stream, const Cards& cards) {
-    stream << "The Cards type is:(" << cards.type << ")";
+    stream << "The Cards type is:(" << cards.type << ")" << endl;
     return stream;
 }
 
@@ -240,9 +218,9 @@ Cards* createCardByCardType(CardsType type) {
 
 //output streams for hand
 std::ostream& operator<<(std::ostream& stream, const Hand& hand) {
-    stream << "Hand has:(" << hand.cards.size() << ") cards." << endl;
+    stream << "Hand has: (" << hand.cards.size() << ") cards." << endl;
     for (auto cardss: hand.cards) {
-        stream << getNameByCardType(cardss->getType()) << ", ";
+        stream << getNameByCardType(cardss->getType()) << endl;
     }
     stream << endl;
     return stream;
@@ -254,32 +232,29 @@ Hand& Hand::operator=(const Hand& Hand) {
 }
 
 /**
- * Removes a card from the hand using the CardsType.
- * It shouldn't matter which card gets removes from the hand as long as it's the same time
- * that was being played.
- * @param type card type to remove
+ * Removes a card based on the pointer in the hands vector.
+ * @param card
  */
-void Hand::removeCardByType(CardsType type) {
-    /* I tried removing the card based on the Cards reference, but it didn't work.
-    I opted to just find the card in the hand and remove it, shouldn't matter which card is removed
-    as long as it's the same type. */
-    int index = 0;
-    for (auto cardds: this->getCards()) {
-        if (cardds->getType() == type) {
-            //    cout << "I have found the card " << getNameByCardType(type) << " in the players hand" << endl;
-            auto indexx = this->getCards().begin() + index;
-            this->getCards().erase(indexx);
-            break;
-        }
-        index++;
+void Hand::remove(Cards* card) {
+    //If it's null return
+    if (card == nullptr) {
+        cout << "Invalid null card trying to be removed." << endl;
+        return;
+    }
+    //Ensure the card is actually in the hand
+    if (std::find(cards.begin(), cards.end(), card) != cards.end()) {
+        //remove it
+        cards.erase(std::remove(cards.begin(), cards.end(), card), cards.end());
+    } else {
+        cout << "Unable to find card in hand." << endl;
     }
 }
 
 //output streams for deck
 std::ostream& operator<<(std::ostream& stream, const Deck& deck) {
-    stream << "Deck has:(" << deck.cards.size() << ") cards." << endl;
+    stream << "Deck has: (" << deck.cards.size() << ") cards." << endl;
     for (auto cardss: deck.cards) {
-        stream << getNameByCardType(cardss->getType()) << ", ";
+        stream << getNameByCardType(cardss->getType()) << endl;
     }
     stream << endl;
     return stream;

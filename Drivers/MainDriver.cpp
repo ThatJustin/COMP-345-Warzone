@@ -12,7 +12,7 @@ int main() {
     // If you're debugging your stuff, just comment out the others when testing yours
 
     //Test Maps
-    cout << "Testing Maps\n" << endl;
+  //  cout << "Testing Maps\n" << endl;
     //  testLoadMaps();
 
     //Test Player
@@ -24,7 +24,7 @@ int main() {
     //  testOrdersLists();
 
     //Test Cards deck/hand
-//    cout << "Testing Cards deck/hand" << endl;
+    cout << "Testing Cards deck/hand" << endl;
      testCards();
 
     //Test GameEngine

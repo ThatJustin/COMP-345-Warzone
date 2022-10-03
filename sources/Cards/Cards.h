@@ -67,8 +67,8 @@ public:
     Hand(const Hand& hand); //hand copy constructor
     ~Hand(); //hand deletor
     void addCard(Cards* card); //method that allow cards to be added to the hand
-    void removeCardByType(CardsType type); // remove card by type
     std::vector<Cards*> getCards(); //return cards in the hand
+    void remove(Cards* card);
 };
 
 //return the cards type by name through a string
