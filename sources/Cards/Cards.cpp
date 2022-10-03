@@ -12,7 +12,11 @@
 
 #include <iostream>
 #include "Cards.h"
+#include "../Player/Player.h"
+#include <utility>
 #include <vector>
+#include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -20,6 +24,11 @@ using namespace std;
 Cards::Cards() { //constructor definition outside of the class
 
 };
+
+//prevent leaks
+Cards::~Cards() {
+
+}
 
 //cards parametrised constructor
 Cards::Cards(CardsType type) {
@@ -48,22 +57,24 @@ CardsType Cards::getType(string name) const {
     }
 }
 
-//prevent leaks
-Cards::~Cards() {
-
-}
 
 //A Deck object contains a finite collection of Warzone cards.
-Deck::Deck() { //constructor definition outside of the class
-
+Deck::Deck() { //constructor definition
+    this->cards = vector<Cards*>();
 };
+
+//prevent leaks
+Deck::~Deck() {
+    for (auto& cardss: this->cards) {
+        delete cardss;
+        cardss = nullptr;
+    }
+    cards.clear();
+}
 
 //cards parametries constructor
 Deck::Deck(const vector<Cards*>& card) {
-    this->cards = vector<Cards*>(card.size()); //list of vector
-    for (auto& temp: card) { //loop through each of the element inside the vector
-        this->cards.push_back(new Cards(*temp)); //add cards to the list
-    }
+    this->cards = card;
 };
 
 //copy constructor
@@ -72,99 +83,93 @@ Deck::Deck(const Deck& deck) {
 };
 
 //Once a card has been played, it is removed from the hand and put back into the deck
-void Deck::addcards(Cards* cards) {
-    //implement cards addding
-    Deck::cards.push_back(cards);
-}
-
-//once a card is pick to the hand, it is removed from the deck
-void Deck::removecards(Cards* cards) {
-    //implement cards remove
-    Deck::cards.pop_back();
+void Deck::addCard(Cards* card) {
+    if (card != nullptr) {
+        cout << "Adding card to deck..." << endl;
+        this->cards.push_back(card);
+    } else {
+        cout << "Tried to add null card to deck." << endl;
+    }
 }
 
 //get the amount of cards in the set
-int Deck::cardsize() {
+int Deck::cardSize() {
     return cards.size();
 }
 
 //return the cards in the deck
-std::vector<Cards*> Deck::getcards() const {
+std::vector<Cards*> Deck::getCards() {
     return cards;
 }
 
 //Hand has a draw() method that allows a player to draw a card at random from the cards remaining in the deck
-Cards* Deck::draw() {
+void Deck::draw(Hand* hand) {
     //implement code to draw cards
-    if (Deck::cardsize() > 0) {//verify if there are still card in the deck
-        int randcard = rand() % cards.size(); //pull a number from the amount of cards
-        Cards* card = cards[randcard];//pick a random cards among the cards
-        removecards(card);//remove cards from deck
-        return card; //return the cards from the deck that was pick
+    if (Deck::cardSize() > 0) {//verify if there are still card in the deck
+        // Used to generate a random number
+        std::random_device rd;
+        default_random_engine randomEngine(rd());
+        uniform_int_distribution<int> dis(0, cards.size() - 1);
+
+        int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
+        hand->addCard(cards[randCardIdx]); // add the card to the hand
+        cards.erase(cards.begin() + randCardIdx); // delete it from the deck
+    } else {
+        cout << "Tried to pull a card from an empty deck." << endl;
     }
 }
 
-//prevent leaks
-Deck::~Deck() {
-
-    delete draw();
-}
 
 //A Hand object is a finite collection of Warzone cards.
-Hand::Hand() { //constructor definition outside of the class
-
+Hand::Hand() { //constructor definition outside the class
+    this->cards = vector<Cards*>();
 };
 
 //cards parametries constructor
 Hand::Hand(vector<Cards*> cards) {
-    this->cards = cards;
+    this->cards = std::move(cards);
 };
 
 //copy constructor
 Hand::Hand(const Hand& hand) {
-    this->cards = vector<Cards*>(hand.cards.size());
-    for (auto& temp: hand.cards) {
-        this->cards.push_back(new Cards(*temp));
-    }
+    this->cards = hand.cards;
 };
 
 //remaining in the deck and place it in their hand
-void Hand::addcards(Cards* cards) {
-    //implement cards adding
-    Hand::cards.push_back(cards);
-}
-
-//Once a card has been played, it is removed from the hand and put back into the deck
-void Hand::removecards(Cards* cards) {//testing
-    //implement cards remove
-    Hand::cards.pop_back();//testing
+void Hand::addCard(Cards* card) {
+    this->cards.push_back(card);
 }
 
 //prevent leaks
 Hand::~Hand() {
-
+    for (auto& cardss: this->cards) {
+        delete cardss;
+        cardss = nullptr;
+    }
+    this->cards.clear();
 }
 
 //return cards in the hand
-std::vector<Cards*> Hand::getcards() {
+std::vector<Cards*> Hand::getCards() {
     return cards;
 }
 
 //Each card has a play() method that enables a player to use it during game play by creating special orders.
 //Once a card has been played, it is removed from the hand and put back into the deck
-void Cards::Play(OrdersList* ol, Hand* hand, Deck* deck) {
+void Cards::play(OrdersList* ol, Hand* hand, Deck* deck) {
+    cout << "Playing card " << getNameByCardType(getType()) << endl;
 
-    //gen random number between 0 - 4 for each of the cards type
-    int randcard = rand() % 5;
+    Orders* orders = createOrderByCardType(this->getType()); //create an order with the card type
+    ol->add(orders); //add card type to the list
 
-    Orders* orders2 = createOrderByCardType(randcard); //create an order with the card type
-    ol->add(orders2); //add card type to the list
-    deck->addcards(this);//remove cards from the deck
-    hand->removecards(this);//add cards to the hand
+    //  cout << "Card " << getNameByCardType(getType()) << " is going back to the deck!" << endl;
+    deck->addCard(createCardByCardType(this->getType()));
+    //  cout << "Card " << getNameByCardType(getType()) << " is being removed from players hand." << endl;
+    hand->remove(this);
 }
 
 //return the type of the cards
-CardsType Cards::getType() {
+CardsType& Cards::getType() {
     return type;
 }
 
@@ -187,18 +192,75 @@ string getNameByCardType(CardsType cardsType) {
 
 //output streams for cards
 std::ostream& operator<<(std::ostream& stream, const Cards& cards) {
-    stream << "The Cards type is:(" << cards.type <<")";
+    stream << "The Cards type is:(" << cards.type << ")" << endl;
     return stream;
+}
+
+Cards& Cards::operator=(const Cards& cards) {
+    return *this;
+}
+
+Cards* createCardByCardType(CardsType type) {
+    switch (type) {
+        case BOMB:
+            return new Cards(BOMB);
+        case REINFORCEMENT:
+            return new Cards(REINFORCEMENT);
+        case BLOCKADE:
+            return new Cards(BLOCKADE);
+        case AIRLIFT:
+            return new Cards(AIRLIFT);
+        case DIPLOMACY:
+            return new Cards(DIPLOMACY);
+    }
+    return nullptr;
 }
 
 //output streams for hand
 std::ostream& operator<<(std::ostream& stream, const Hand& hand) {
-    stream << "Hand has:(" << hand.cards.size() << ") cards.";
+    stream << "Hand has: (" << hand.cards.size() << ") cards." << endl;
+    for (auto cardss: hand.cards) {
+        stream << getNameByCardType(cardss->getType()) << endl;
+    }
+    stream << endl;
     return stream;
+}
+
+Hand& Hand::operator=(const Hand& Hand) {
+    this->cards = Hand.cards;
+    return *this;
+}
+
+/**
+ * Removes a card based on the pointer in the hands vector.
+ * @param card
+ */
+void Hand::remove(Cards* card) {
+    //If it's null return
+    if (card == nullptr) {
+        cout << "Invalid null card trying to be removed." << endl;
+        return;
+    }
+    //Ensure the card is actually in the hand
+    if (std::find(cards.begin(), cards.end(), card) != cards.end()) {
+        //remove it
+        cards.erase(std::remove(cards.begin(), cards.end(), card), cards.end());
+    } else {
+        cout << "Unable to find card in hand." << endl;
+    }
 }
 
 //output streams for deck
 std::ostream& operator<<(std::ostream& stream, const Deck& deck) {
-    stream << "Deck has:(" << deck.cards.size() << ") cards.";
+    stream << "Deck has: (" << deck.cards.size() << ") cards." << endl;
+    for (auto cardss: deck.cards) {
+        stream << getNameByCardType(cardss->getType()) << endl;
+    }
+    stream << endl;
     return stream;
+}
+
+Deck& Deck::operator=(const Deck& deck) {
+    this->cards = deck.cards;
+    return *this;
 }

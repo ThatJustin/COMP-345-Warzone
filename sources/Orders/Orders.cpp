@@ -64,6 +64,7 @@ OrdersList::~OrdersList() {
         delete order;
         order = nullptr;
     }
+    list.clear();
 }
 
 OrdersList::OrdersList(const OrdersList& ol) {

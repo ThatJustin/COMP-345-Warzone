@@ -118,10 +118,11 @@ ostream& operator<<(ostream& stream, const Player& player) {
         }
         size++;
     }
+    stream << endl;
     stream << "HandCards: ";
     size = 1;
-    for (auto& card: player.handCards->getcards()) {
-        if (size == player.handCards->getcards().size()) {
+    for (auto& card: player.handCards->getCards()) {
+        if (size == player.handCards->getCards().size()) {
             cout << getNameByCardType(card->getType()) << "\r\n";
         } else {
             cout << getNameByCardType(card->getType()) << ", ";
