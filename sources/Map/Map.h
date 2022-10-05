@@ -66,8 +66,8 @@ public:
     Territory* getTerritory(int map_territory_id);
     Territory* getTerritoryInContinent(int map_territory_id, int map_continent_id);
     Continent* getContinent(int map_continent_id);
-    vector<Territory*> depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
-    vector<Territory*> depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories);
+    void depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories);
+    void depthFirstSearch(Continent* continent, int starting_territory_id, vector<Territory*> &visited_territories);
     bool validate();
 
 

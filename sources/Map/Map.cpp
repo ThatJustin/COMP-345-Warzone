@@ -276,38 +276,28 @@ Continent* Map::getContinent(int map_continent_id) {
     return nullptr;
 }
 
-vector<Territory*> Map::depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories) {
+void Map::depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories) {
     if(find(visited_territories.begin(), visited_territories.end(), this->getTerritory(starting_territory_id)) != visited_territories.end()) {
-        return visited_territories;
+        return;
     }
-    Territory* starting_territory = this->getTerritory(starting_territory_id);
-    if(find(visited_territories.begin(), visited_territories.end(), starting_territory) == visited_territories.end()) {
-        visited_territories.push_back(starting_territory);
-        for(auto &adjacent_territory : starting_territory->getAdjacentTerritories()) {
-            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-                this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
-            }
+    visited_territories.push_back(this->getTerritory(starting_territory_id));
+    for(auto &adjacent_territory : this->getTerritory(starting_territory_id)->getAdjacentTerritories()) {
+        if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+            this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
         }
     }
-    return visited_territories;
 }
 
-vector<Territory*> Map::depthFirstSearch(vector<Territory*> continent, int starting_territory_id, vector<Territory*> &visited_territories) {
-    if(visited_territories.size() == continent.size()) {
-        return visited_territories;
+void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vector<Territory*> &visited_territories) {
+    if(find(visited_territories.begin(), visited_territories.end(), this->getTerritoryInContinent(starting_territory_id, continent->getMapContinentId())) != visited_territories.end()) {
+        return;
     }
-    Territory* starting_territory = this->getTerritoryInContinent(starting_territory_id, continent[0]->getContinent()->getMapContinentId());
-    for(auto &territory : continent) {
-        if(find(visited_territories.begin(), visited_territories.end(), territory) != visited_territories.end()) {
-            for(auto &adjacent_territory: starting_territory->getAdjacentTerritories()) {
-                if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-                    depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
-                }
-            }
+    visited_territories.push_back(this->getTerritoryInContinent(starting_territory_id, continent->getMapContinentId()));
+    for(auto &adjacent_territory: continent->getTerritories()) {
+        if(adjacent_territory->getContinent()->getContinentName() != continent->getContinentName() && find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+            this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
         }
-        visited_territories.push_back(starting_territory);
     }
-    return visited_territories;
 }
 
 bool Map::validate() {
@@ -318,17 +308,25 @@ bool Map::validate() {
         return false;
     }
 
-    this->depthFirstSearch(this->getTerritories()[0]->getMapTerritoryId(), visited_territories);
-    if(visited_territories.size() != this->getTerritories().size()) {
-        cout << "\tMap is not valid because it is not a connected graph." << endl;
-        return false;
-    }
+//    for(auto &territory : this->getTerritories()) {
+//        visited_territories.clear();
+//        if(find(visited_territories.begin(), visited_territories.end(), territory) == visited_territories.end()) {
+//            this->depthFirstSearch(territory->getMapTerritoryId(), visited_territories);
+//        }
+//    }
+//    cout << visited_territories.size() << " " << this->territories.size() << endl;
+//    if (visited_territories.size() != this->getTerritories().size()) {
+//        cout << visited_territories.size() << " " << this->getTerritories().size() << endl;
+//        cout << "\tMap is not valid because it is not a connected graph." << endl;
+//        return false;
+//    }
 
     for(auto &continent : this->getContinents()) {
         visited_territories.clear();
-        this->depthFirstSearch(continent->getTerritories(), continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
+        this->depthFirstSearch(continent, continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
         if(visited_territories.size() != continent->getTerritories().size()) {
-            cout << "\tMap is not valid because continent " << continent->getContinentName() << " is not a connected graph." << endl;
+            cout << visited_territories.size() << " " << continent->getTerritories().size() << endl;
+            cout << "\tMap is not valid because continent " << continent->getContinentName() << " is not a connected subgraph." << endl;
             return false;
         }
     }
@@ -423,6 +421,10 @@ Map* MapLoader::loadMap(string map_file_path) {
                             continent->addTerritory(map_file_line_first_territory);
                             continue;
                         }
+                        else {
+                            map_file_line_first_territory_id--;
+                            break;
+                        }
                     }
                     if(skipped_strings_index < 4) {
                         continue;
@@ -489,6 +491,9 @@ Map* MapLoader::loadMap(string map_file_path) {
 //    cout << "\nMap Adjacencies:" << endl;
 //    for(auto &territory : territories) {
 //        cout << territory->getTerritoryName() << " is adjacent to: ";
+//        if(territory->getAdjacentTerritories().empty()) {
+//            cout << "No Other Territories";
+//        }
 //        for(auto &adjacentTerritory : territory->getAdjacentTerritories()) {
 //            cout << adjacentTerritory->getMapTerritoryId() << " ";
 //            if(adjacentTerritory == territory->getAdjacentTerritories().rbegin()[1]) {

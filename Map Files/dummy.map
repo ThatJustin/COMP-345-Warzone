@@ -1,0 +1,9 @@
+[Continents]
+continentA
+continentB
+continentC
+
+[Territories]
+territoryA,11,11,continentA,territoryB
+territoryB,22,22,continentB,territoryA,territoryC
+territoryC,33,33,continentB,territoryB
