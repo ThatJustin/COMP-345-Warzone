@@ -289,13 +289,21 @@ void Map::depthFirstSearch(int starting_territory_id, vector<Territory*> &visite
 }
 
 void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vector<Territory*> &visited_territories) {
-    if(find(visited_territories.begin(), visited_territories.end(), this->getTerritoryInContinent(starting_territory_id, continent->getMapContinentId())) != visited_territories.end()) {
+    if(find(visited_territories.begin(), visited_territories.end(), this->territories.at(starting_territory_id)) != visited_territories.end()) {
         return;
     }
-    visited_territories.push_back(this->getTerritoryInContinent(starting_territory_id, continent->getMapContinentId()));
-    for(auto &adjacent_territory: continent->getTerritories()) {
-        if(adjacent_territory->getContinent()->getContinentName() != continent->getContinentName() && find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
-            this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
+    visited_territories.push_back(this->territories.at(starting_territory_id));
+    for(auto &territory : continent->getTerritories()) {
+        for(auto &adjacent_territory : territory->getAdjacentTerritories()) {
+            if((this->territories.at(adjacent_territory->getMapTerritoryId())->getContinent()->getContinentName() != continent->getContinentName() || (adjacent_territory->getTerritoryName() == territory->getTerritoryName()))) {
+                continue;
+            }
+            if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+                if(find(visited_territories.begin(), visited_territories.end(), territory) == visited_territories.end()) {
+                    visited_territories.push_back(territory);
+                }
+                this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
+            }
         }
     }
 }
@@ -308,25 +316,21 @@ bool Map::validate() {
         return false;
     }
 
-//    for(auto &territory : this->getTerritories()) {
-//        visited_territories.clear();
-//        if(find(visited_territories.begin(), visited_territories.end(), territory) == visited_territories.end()) {
-//            this->depthFirstSearch(territory->getMapTerritoryId(), visited_territories);
-//        }
-//    }
-//    cout << visited_territories.size() << " " << this->territories.size() << endl;
-//    if (visited_territories.size() != this->getTerritories().size()) {
-//        cout << visited_territories.size() << " " << this->getTerritories().size() << endl;
-//        cout << "\tMap is not valid because it is not a connected graph." << endl;
-//        return false;
-//    }
+    this->depthFirstSearch(this->getTerritories()[0]->getMapTerritoryId(), visited_territories);
+    if (visited_territories.size() != this->getTerritories().size()) {
+        cout << "\tMap is not valid because it is not a connected graph." << endl;
+        return false;
+    }
 
     for(auto &continent : this->getContinents()) {
+        if(continent->getTerritories().empty()) {
+            cout << "\tMap is not valid because the continent \"" << continent->getContinentName() << "\" contains no territories." << endl;
+            return false;
+        }
         visited_territories.clear();
         this->depthFirstSearch(continent, continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
         if(visited_territories.size() != continent->getTerritories().size()) {
-            cout << visited_territories.size() << " " << continent->getTerritories().size() << endl;
-            cout << "\tMap is not valid because continent " << continent->getContinentName() << " is not a connected subgraph." << endl;
+            cout << "\tMap is not valid because the continent \"" << continent->getContinentName() << "\" is not a connected subgraph." << endl;
             return false;
         }
     }
@@ -334,7 +338,7 @@ bool Map::validate() {
     for(auto& territory: this->getTerritories()) {
         for(auto& comparing_territory: this->getTerritories()) {
             if(territory->getTerritoryName() == comparing_territory->getTerritoryName() && territory->getContinent()->getContinentName() != comparing_territory->getContinent()->getContinentName()) {
-                cout << "\tMap is not valid because territory " << territory->getTerritoryName() << " is in two different continents." << endl;
+                cout << "\tMap is not valid because the territory \"" << territory->getTerritoryName() << "\" is in two different continents." << endl;
                 return false;
             }
         }
