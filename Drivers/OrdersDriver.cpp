@@ -3,6 +3,7 @@
 
 using namespace std;
 void testOrdersLists(){
+    //creating order objects
     Orders* de = new Deploy();
     Orders* ad = new Advance();
     Orders* bo = new Bomb();
@@ -10,6 +11,7 @@ void testOrdersLists(){
     Orders* ai = new Airlift();
     Orders* ne = new Negotiate();
 
+    //adding the orders to the orders list
     OrdersList* ol = new OrdersList();
     cout<<"Added Deploy:"<<endl;
     ol->add(de);
@@ -28,9 +30,19 @@ void testOrdersLists(){
     ol->displayList();
     cout<<endl;
     cout<<"/////////////////////////////////////"<<endl;
+    cout<<endl;
+
+    //moving the 4th order to the 2nd position
     ol->move(4, 2);
     ol->displayList();
 
+    cout<<endl;
 
+    //removing the order in the 3rd position
+    ol->remove(3);
+    cout<<"/////////////////////////////////////"<<endl;
+    ol->displayList();
+
+    //delete the orders list once completed
     delete ol;
 }

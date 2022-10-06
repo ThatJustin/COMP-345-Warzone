@@ -11,14 +11,16 @@
 
 using namespace std;
 
-
+//default constructor
 Orders::Orders() {
 }
 
+//destructor
 Orders::~Orders() {
 
 }
 
+//<< operator
 std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream<<order.toString();
 }
@@ -75,7 +77,10 @@ OrdersList::OrdersList(const OrdersList& ol) {
 }
 
 void OrdersList::move(int from, int to) {
+    //if both inputs are equal
     if(from == to) return;
+
+    //if inputs are different
     int index_from = from-1, index_to = to-1;
     Orders* temp=list[index_from];
     list.erase(list.begin()+index_from);
@@ -150,6 +155,7 @@ Territory* Deploy::getTargetTerritory() {
 void Deploy::setTargetTerritory(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
+//toString output of the order descriptions
 
 std::string Deploy::toString() const {
     std::stringstream ss;
@@ -228,6 +234,8 @@ void Advance::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
+//toString output of the order descriptions
+
 std::string Advance::toString() const {
     std::stringstream ss;
     ss<<"Advance: "<<endl;
@@ -289,6 +297,8 @@ void Bomb::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
+//toString output of the order descriptions
+
 string Bomb::toString() const {
     std::stringstream ss;
     ss<<"Bomb: "<<endl;
@@ -339,6 +349,8 @@ Territory* Blockade::getTargetTerritory() {
 void Blockade::setTargetTerritory(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
+
+//toString output of the order descriptions
 
 std::string Blockade::toString() const {
     std::stringstream ss;
@@ -416,6 +428,8 @@ void Airlift::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
+//toString output of the order descriptions
+
 std::string Airlift::toString() const {
     std::stringstream ss;
     ss<<"Airlift: "<<endl;
@@ -466,6 +480,8 @@ void Negotiate::setTargetPlayer(Player* targetPlayer) {
     targetPlayer->getPlayerName();
     this->m_targetPlayer = targetPlayer;
 }
+
+//toString output of the order descriptions
 
 std::string Negotiate::toString() const {
     std::stringstream ss;
