@@ -4,18 +4,28 @@
 #include "sources/Cards/Cards.h"
 
 void testPlayers() {
+    //Create the player
     auto* player = new Player("Adam");
-    auto* territory1 = new Territory(9, "Xasnines", player);
-    player->addTerritory(territory1);
 
-    player->issueOrder();
+    //Create the territory and assign it to the player
+    auto* terrXasnines = new Territory(9, "Xasnines", player);
+    auto* terrZlami = new Territory(9, "Zlami", player);
+    player->addTerritory(terrXasnines);
+    player->addTerritory(terrZlami);
 
-    auto* card = new Cards(CardsType::DIPLOMACY);
+    //Test player cards by creating a card and giving it to the player
+    auto* cardB = new Cards(CardsType::BOMB);
+    auto* cardR = new Cards(CardsType::REINFORCEMENT);
     Hand* hand = new Hand;
-    hand->addCard(card);
+    hand->addCard(cardB);
+    hand->addCard(cardR);
     player->setHandCards(hand);
 
+    //Issues an order for assignment 1
+    player->issueOrder();
+
     cout << *player << endl;
+
     //Returns an arbitrary list of territories to be defended,
     cout << "Territories to Defend:\n" << endl;
     int size = 1;
@@ -33,7 +43,7 @@ void testPlayers() {
     // Returns an arbitrary list of territories to be attacked,
     cout << "Territories to Attack:\n" << endl;
     for (auto& terr: player->toAttack()) {
-        if (size == player->toDefend().size()) {
+        if (size == player->toAttack().size()) {
             cout << terr->getTerritoryName() << endl;
         } else {
             cout << terr->getTerritoryName() << ", ";
@@ -41,6 +51,8 @@ void testPlayers() {
         size++;
     }
     player->toAttack().clear();
-    delete territory1;
-    delete player;
+
+    delete terrXasnines;
+    delete terrZlami;
+    delete player; // player destructor will clean up hand and orderlist
 }
