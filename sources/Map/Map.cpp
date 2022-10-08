@@ -2,6 +2,7 @@
 #include "Map.h"
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 
 using std::cout;
 using std::endl;
@@ -24,7 +25,7 @@ Continent::Continent() {
  * @param map_continent_id The id of the continent
  * @param continent_name The name of the continent
  */
-Continent::Continent(int map_continent_id, const string &continent_name) {
+Continent::Continent(int map_continent_id, const string& continent_name) {
     this->map_continent_id = map_continent_id;
     this->continent_name = continent_name;
     this->territories = vector<Territory*>();
@@ -54,7 +55,7 @@ Continent::~Continent() {
  * @param continent The Continent object to assign
  * @return A reference to the Continent object assigned
  */
-Continent& Continent::operator = (const Continent& continent) {
+Continent& Continent::operator=(const Continent& continent) {
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
     this->territories = continent.territories;
@@ -71,7 +72,7 @@ ostream& operator<<(ostream& outs, const Continent& continent) {
     outs << "Continent Name: " << continent.continent_name << endl <<
          "Number of Territories: " << continent.territories.size() << endl <<
          "They are:" << endl;
-    for(auto territory : continent.territories) {
+    for (auto territory: continent.territories) {
         outs << territory->getTerritoryName() << endl;
     }
     return outs;
@@ -181,7 +182,7 @@ Territory::~Territory() {
  * @param territory The Territory object to assign
  * @return A reference to the Territory object assigned
  */
-Territory& Territory::operator = (const Territory& territory) {
+Territory& Territory::operator=(const Territory& territory) {
     this->map_territory_id = territory.map_territory_id;
     this->number_of_armies = territory.number_of_armies;
     this->territory_name = territory.territory_name;
@@ -199,12 +200,11 @@ Territory& Territory::operator = (const Territory& territory) {
  */
 ostream& operator<<(ostream& outs, const Territory& territory) {
     outs << "Territory Name: " << territory.territory_name << endl <<
-    "Number of Armies: " << territory.number_of_armies << endl <<
-    "Within Continent: " << territory.continent->getContinentName() << endl;
-    if(territory.player == nullptr || territory.player->getPlayerName().empty()) {
+         "Number of Armies: " << territory.number_of_armies << endl <<
+         "Within Continent: " << territory.continent->getContinentName() << endl;
+    if (territory.player == nullptr || territory.player->getPlayerName().empty()) {
         outs << "Owned by player: No player" << endl;
-    }
-    else {
+    } else {
         outs << "Owned by player: " << territory.player->getPlayerName() << endl;
     }
     return outs;
@@ -295,9 +295,9 @@ string Territory::getPlayerName() {
  * Adds an adjacent territory to the specified territory, if it is not already adjacent to it, by passing the pointer to the adjacent territory as a parameter
  * @param territory The pointer to the adjacent territory to add
  */
-void Territory::addAdjacentTerritory(Territory *territory) {
-    for(auto adjacent_territory : this->adjacent_territories) {
-        if(territory->getTerritoryName() == adjacent_territory->getTerritoryName()) {
+void Territory::addAdjacentTerritory(Territory* territory) {
+    for (auto adjacent_territory: this->adjacent_territories) {
+        if (territory->getTerritoryName() == adjacent_territory->getTerritoryName()) {
             return;
         }
     }
@@ -350,7 +350,7 @@ Map::~Map() {
  * @param map The Map object to assign
  * @return A reference to the Map object assigned
  */
-Map& Map::operator = (const Map& map) {
+Map& Map::operator=(const Map& map) {
     this->territories = map.territories;
     this->continents = map.continents;
     return *this;
@@ -362,9 +362,9 @@ Map& Map::operator = (const Map& map) {
  * @param map The Map object to output
  * @return A reference to the output stream which contains class information about the Map object
  */
-ostream &operator << (ostream &outs, const Map &map) {
+ostream& operator<<(ostream& outs, const Map& map) {
     outs << "Map contains the following number of territories: " << map.territories.size() << endl <<
-    "They are:" << endl;
+         "They are:" << endl;
     for (auto& territory: map.territories) {
         outs << *territory << endl;
     }
@@ -412,23 +412,25 @@ Territory* Map::getTerritory(int map_territory_id) {
  * @param starting_territory_id The id of the territory to start the traversal from
  * @param visited_territories The vector of territory pointers that point to the territories that have been visited during the traversal so far
  */
-void Map::depthFirstSearch(int starting_territory_id, vector<Territory*> &visited_territories) {
+void Map::depthFirstSearch(int starting_territory_id, vector<Territory*>& visited_territories) {
 
     // If the territory pointer points to a territory that has already been visited with that specific territory id, then return the recursive call
-    if(find(visited_territories.begin(), visited_territories.end(), this->getTerritory(starting_territory_id)) != visited_territories.end()) {
+    if (find(visited_territories.begin(), visited_territories.end(), this->getTerritory(starting_territory_id)) !=
+        visited_territories.end()) {
         return;
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id,
     // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
-    if(this->getTerritory(starting_territory_id) != nullptr) {
+    if (this->getTerritory(starting_territory_id) != nullptr) {
         visited_territories.push_back(this->getTerritory(starting_territory_id));
 
         // Here, I loop through all the adjacent territories of the territory being pointed to by the territory pointer
         // with that specific territory id and checking if those adjacent territories have been visited or not.
         // If they have not, then I call the DFS method recursively on them
-        for (auto &adjacent_territory: this->getTerritory(starting_territory_id)->getAdjacentTerritories()) {
-            if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+        for (auto& adjacent_territory: this->getTerritory(starting_territory_id)->getAdjacentTerritories()) {
+            if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) ==
+                visited_territories.end()) {
                 this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
             }
         }
@@ -441,34 +443,42 @@ void Map::depthFirstSearch(int starting_territory_id, vector<Territory*> &visite
  * @param starting_territory_id The id of the first territory inside the specific continent to start the traversal from
  * @param visited_territories The vector of territory pointers that point to the territories that have been visited during the traversal of the specific continent so far
  */
-void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vector<Territory*> &visited_territories) {
+void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vector<Territory*>& visited_territories) {
 
     // If the territory pointer points to a territory that has already been visited with that specific territory id
     // inside that specific continent, then return the recursive call
-    if(find(visited_territories.begin(), visited_territories.end(), this->territories.at(starting_territory_id)) != visited_territories.end()) {
+    if (find(visited_territories.begin(), visited_territories.end(), this->territories.at(starting_territory_id)) !=
+        visited_territories.end()) {
         return;
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id inside that specific continent,
     // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
-    if(this->territories.at(starting_territory_id) != nullptr) {
+    if (this->territories.at(starting_territory_id) != nullptr) {
         visited_territories.push_back(this->territories.at(starting_territory_id));
 
         // Here, I loop through all the territories inside the specific continent and their adjacent territories and
         // checking if those territories exist in the map/graph. If they do, then I make sure to only call the DFS method recursively
         // on adjacent territories that are inside the specific continent and have not been visited yet
-        for (auto &territory: continent->getTerritories()) {
-            for (auto &adjacent_territory: territory->getAdjacentTerritories()) {
-                auto iterator = find_if(this->territories.begin(), this->territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == adjacent_territory->getTerritoryName(); });
-                if(iterator != this->territories.end()) {
-                    if((this->territories.at(adjacent_territory->getMapTerritoryId())->getContinent()->getContinentName() != continent->getContinentName() || (adjacent_territory->getTerritoryName() == territory->getTerritoryName()))) {
+        for (auto& territory: continent->getTerritories()) {
+            for (auto& adjacent_territory: territory->getAdjacentTerritories()) {
+                auto iterator = find_if(this->territories.begin(), this->territories.end(), [&](Territory* territory) {
+                    return territory->getTerritoryName() == adjacent_territory->getTerritoryName();
+                });
+                if (iterator != this->territories.end()) {
+                    if ((this->territories.at(
+                            adjacent_territory->getMapTerritoryId())->getContinent()->getContinentName() !=
+                         continent->getContinentName() ||
+                         (adjacent_territory->getTerritoryName() == territory->getTerritoryName()))) {
                         continue;
                     }
-                    if(find(visited_territories.begin(), visited_territories.end(), adjacent_territory) == visited_territories.end()) {
+                    if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) ==
+                        visited_territories.end()) {
 
                         // Here, I need an extra check in case the territory with this adjacent territory has not been visited yet by
                         // adding it to the vector of visited territory pointers that point to visited territories
-                        if (find(visited_territories.begin(), visited_territories.end(), territory) == visited_territories.end()) {
+                        if (find(visited_territories.begin(), visited_territories.end(), territory) ==
+                            visited_territories.end()) {
                             visited_territories.push_back(territory);
                         }
                         this->depthFirstSearch(continent, adjacent_territory->getMapTerritoryId(), visited_territories);
@@ -488,10 +498,13 @@ bool Map::validate() {
 
     // Here, I am looping through all the territories and comparing each to each other to see
     // if there exists a territory pointer in the vector of territory pointers that points to a territory with two different continents
-    for(auto& territory: this->getTerritories()) {
-        for(auto& comparing_territory: this->getTerritories()) {
-            if(territory->getTerritoryName() == comparing_territory->getTerritoryName() && territory->getContinent()->getContinentName() != comparing_territory->getContinent()->getContinentName()) {
-                cout << "\tMap is not valid because the territory \"" << territory->getTerritoryName() << "\" is in two different continents." << endl;
+    for (auto& territory: this->getTerritories()) {
+        for (auto& comparing_territory: this->getTerritories()) {
+            if (territory->getTerritoryName() == comparing_territory->getTerritoryName() &&
+                territory->getContinent()->getContinentName() !=
+                comparing_territory->getContinent()->getContinentName()) {
+                cout << "\tMap is not valid because the territory \"" << territory->getTerritoryName()
+                     << "\" is in two different continents." << endl;
                 return false;
             }
         }
@@ -509,15 +522,17 @@ bool Map::validate() {
     // Here, I am looping through all the continents and using the DFS method to traverse each continent/subgraph one at a time
     // in order to check if each continent/subgraph is connected or not. If the continent/subgraph is not connected, then the map is not valid
     // (the DFS method will not visit all territories found in the continent/subgraph as some will be unreachable by the other territories within the same continent)
-    for(auto &continent : this->getContinents()) {
-        if(continent->getTerritories().empty()) {
-            cout << "\tMap is not valid because the continent \"" << continent->getContinentName() << "\" contains no territories." << endl;
+    for (auto& continent: this->getContinents()) {
+        if (continent->getTerritories().empty()) {
+            cout << "\tMap is not valid because the continent \"" << continent->getContinentName()
+                 << "\" contains no territories." << endl;
             return false;
         }
         visited_territories.clear();
         this->depthFirstSearch(continent, continent->getTerritories()[0]->getMapTerritoryId(), visited_territories);
-        if(visited_territories.size() != continent->getTerritories().size()) {
-            cout << "\tMap is not valid because the continent \"" << continent->getContinentName() << "\" is not a connected subgraph." << endl;
+        if (visited_territories.size() != continent->getTerritories().size()) {
+            cout << "\tMap is not valid because the continent \"" << continent->getContinentName()
+                 << "\" is not a connected subgraph." << endl;
             return false;
         }
     }
@@ -554,7 +569,7 @@ MapLoader::~MapLoader() {
  * @param map_loader The MapLoader object to assign
  * @return The MapLoader object that was assigned
  */
-MapLoader& MapLoader::operator = (const MapLoader& map_loader) {
+MapLoader& MapLoader::operator=(const MapLoader& map_loader) {
     this->map_file_directory = map_loader.map_file_directory;
     this->map = map_loader.map;
     return *this;
@@ -566,7 +581,7 @@ MapLoader& MapLoader::operator = (const MapLoader& map_loader) {
  * @param map The MapLoader object to output
  * @return A reference to the output stream which contains class information about the MapLoader object
  */
-ostream &operator << (ostream &outs, const MapLoader &map_loader) {
+ostream& operator<<(ostream& outs, const MapLoader& map_loader) {
     outs << "Map file directory: " << map_loader.map_file_directory << endl;
     outs << *map_loader.map;
     return outs;
@@ -577,7 +592,7 @@ ostream &operator << (ostream &outs, const MapLoader &map_loader) {
  * @param map_file_path The directory/path of the map file to load
  * @return The pointer to the map that was loaded from the map file if the map file was loaded successfully, otherwise it returns a null map pointer
  */
-Map* MapLoader::loadMap(string map_file_path) {
+Map* MapLoader::loadMap(const string& map_file_path) {
     this->map_file_directory = map_file_path;
     vector<Territory*> territories;
     vector<Continent*> continents;
@@ -593,30 +608,33 @@ Map* MapLoader::loadMap(string map_file_path) {
 
     // If the map file doesn't exist with this directory/path or this specific map file name, then return a null map pointer
     if (!map_file) {
-        cout << "\tError: Unable to open/load the map file " << map_file_path.substr(12) << " wih the following directory: " << map_file_directory << ". Make sure that this map file exists within the \"" << map_file_directory.substr(2, 9) << "\" folder." << endl;
+        cout << "\tError: Unable to open/load the map file " << map_file_path.substr(12)
+             << " wih the following directory: " << map_file_directory
+             << ". Make sure that this map file exists within the \"" << map_file_directory.substr(2, 9) << "\" folder."
+             << endl;
         return nullptr;
     }
 
     // Here, I am parsing each line of each map file in real time, separating this while loop into two sections:
     // One for the presence of the [Continents] section and one for the [Territories] section
-    while(getline(map_file, map_file_line)) {
+    while (getline(map_file, map_file_line)) {
 
         // I am storing the map file lines into a vector of strings in order to use them later on to check if the
         // map file is actually empty after closing it and print an error message before retuning a null map pointer
         map_file_lines.push_back(map_file_line);
-        if(map_file_line.empty() || map_file_line == "\r" || map_file_line == "\n" || map_file_line == " ") {
+        if (map_file_line.empty() || map_file_line == "\r" || map_file_line == "\n" || map_file_line == " ") {
             continue;
         }
         // If the map file line is the [Continents] section, then I am
         // incrementing the continents_section_count variable for error checking later on
-        if(map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
+        if (map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
             continents_section_count++;
-            while(getline(map_file, map_file_line)) {
-                if(map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
+            while (getline(map_file, map_file_line)) {
+                if (map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
                     continents_section_count++;
                     break;
                 }
-                if(map_file_line == "[Territories]" || map_file_line == "[Territories]\r" || map_file_line.empty()) {
+                if (map_file_line == "[Territories]" || map_file_line == "[Territories]\r" || map_file_line.empty()) {
                     break;
                 }
 
@@ -631,29 +649,32 @@ Map* MapLoader::loadMap(string map_file_path) {
 
         // If the map file line is the [Territories] section, then I am incrementing the
         // territories_section_count variable for error checking later on
-        if(map_file_line == "[Territories]" || map_file_line == "[Territories]\r") {
+        if (map_file_line == "[Territories]" || map_file_line == "[Territories]\r") {
             territories_section_count++;
-            while(getline(map_file, map_file_line)) {
-                if(map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
-                    if(continents_section_count == 0) {
-                        cout << "\tError: Invalid map file format for continents in the map file " << map_file_path.substr(12) << "." << endl;
+            while (getline(map_file, map_file_line)) {
+                if (map_file_line == "[Continents]" || map_file_line == "[Continents]\r") {
+                    if (continents_section_count == 0) {
+                        cout << "\tError: Invalid map file format for continents in the map file "
+                             << map_file_path.substr(12) << "." << endl;
                         return nullptr;
                     }
                     continents_section_count++;
                     break;
                 }
-                if(map_file_line == "[Territories]" || map_file_line == "[Territories]\r") {
-                    cout << "\tError: Invalid map file format for territories in the map file " << map_file_path.substr(12) << "." << endl;
+                if (map_file_line == "[Territories]" || map_file_line == "[Territories]\r") {
+                    cout << "\tError: Invalid map file format for territories in the map file "
+                         << map_file_path.substr(12) << "." << endl;
                     return nullptr;
                 }
-                if(continents.empty() || map_file_line.empty() || map_file_line == " " || map_file_line == "\n" || map_file_line == "\r") {
+                if (continents.empty() || map_file_line.empty() || map_file_line == " " || map_file_line == "\n" ||
+                    map_file_line == "\r") {
                     continue;
                 }
 
                 // Here, I am assigning the continent pointer to an arbitrary continent pointer using 0 for the map_continent_id since I will
                 // change it later on in the inner while loop anyway by making sure to change the newly added territory's
                 // continent pointer to the continent pointer that corresponds to the continent name parsed from that specific part of the map file line
-                Continent *continent = continents.at(map_continent_id);
+                Continent* continent = continents.at(map_continent_id);
 
                 // I am turning the map file line into a string stream in order to parse the map file line more easily
                 stringstream map_file_line_stream(map_file_line);
@@ -665,36 +686,40 @@ Map* MapLoader::loadMap(string map_file_path) {
 
                 // Here, I am skipping the first 2 strings in the map file line which correspond to the territory coordinates
                 // which are not relevant to the game or the project's implementation
-                while(getline(map_file_line_stream, map_file_line, ',')) {
-                    map_file_line = map_file_line.substr(map_file_line.find_first_not_of(' '), map_file_line.find_last_not_of(' ') + 1);
+                while (getline(map_file_line_stream, map_file_line, ',')) {
+                    map_file_line = map_file_line.substr(map_file_line.find_first_not_of(' '),
+                                                         map_file_line.find_last_not_of(' ') + 1);
                     skipped_strings_index++;
 
                     // When the map file line is equal to the continent name on each map file line, I make sure check
                     // that the continent actually exists in the vector of continent pointers that point to all the continents in the map using a Continent object iterator, and if it does,
                     // I create a new territory with the territory name and the continent pointer that corresponds to the continent name parsed from that specific part of the map file line
-                    if(skipped_strings_index == 4) {
-                        auto iterator = find_if(continents.begin(), continents.end(), [&](Continent *continent) { return continent->getContinentName() == map_file_line; });
-                        if(iterator != continents.end()) {
+                    if (skipped_strings_index == 4) {
+                        auto iterator = find_if(continents.begin(), continents.end(), [&](Continent* continent) {
+                            return continent->getContinentName() == map_file_line;
+                        });
+                        if (iterator != continents.end()) {
                             continent = *iterator;
-                            auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name, continent);
+                            auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name,
+                                                                                continent);
                             territories.push_back(map_file_line_first_territory);
                             map_territory_id++;
                             continent->addTerritory(map_file_line_first_territory);
                             continue;
-                        }
-                        else {
+                        } else {
                             map_file_line_first_territory_id--;
                             break;
                         }
                     }
-                    if(skipped_strings_index < 4) {
+                    if (skipped_strings_index < 4) {
                         continue;
                     }
 
                     // Here, I am adding the adjacent territories to the newly added territory using the same territory id as the newly added territory
                     // which will be changed later on so that each adjacent territory actually holds the right territory id to reference the first time they
                     // are parsed at the beginning of a new map file line
-                    territories.at(map_file_line_first_territory_id)->addAdjacentTerritory(new Territory(map_territory_id, map_file_line, continent));
+                    territories.at(map_file_line_first_territory_id)->addAdjacentTerritory(
+                            new Territory(map_territory_id, map_file_line, continent));
                 }
 
                 // This is the id that tracks the first territory  on each map file line
@@ -708,31 +733,34 @@ Map* MapLoader::loadMap(string map_file_path) {
 
     // If the map file is empty, then an error is printed and a null map pointer is returned:
     // This is where the vector of strings that hold the map file lines is used to check if the map file is empty
-    if(map_file_lines.empty()) {
+    if (map_file_lines.empty()) {
         cout << "\tError: The map file " << map_file_path.substr(12) << " is empty." << endl;
         return nullptr;
     }
 
     // If "[Continents]" appears more than once in a map file, which is not normal, then an error is printed and a null map pointer is returned
     if (continents_section_count > 1) {
-        cout << "\tError: Invalid map file format for continents in the map file " << map_file_path.substr(12) << "." << endl;
+        cout << "\tError: Invalid map file format for continents in the map file " << map_file_path.substr(12) << "."
+             << endl;
         return nullptr;
     }
 
     // If "[Territories]" never appears in a map file, which is not normal, then an error is printed and a null map pointer is returned
-    if(territories_section_count == 0) {
-        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12) << " since it is missing the [Territories] section." << endl;
+    if (territories_section_count == 0) {
+        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12)
+             << " since it is missing the [Territories] section." << endl;
         return nullptr;
     }
 
     // If "[Continents]" never appears in a map file, which is not normal, then an error is printed and a null map pointer is returned
-    if(continents_section_count == 0) {
-        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12) << " since it is missing the [Continents] section." << endl;
+    if (continents_section_count == 0) {
+        cout << "\tError: Invalid map file format in the map file " << map_file_path.substr(12)
+             << " since it is missing the [Continents] section." << endl;
         return nullptr;
     }
 
     // If there are no continents in the map file, then an error is printed and a null map pointer is returned
-    if(continents.empty()) {
+    if (continents.empty()) {
         cout << "\tError: The map file " << map_file_path.substr(12) << " is missing continents." << endl;
         return nullptr;
     }
@@ -747,13 +775,18 @@ Map* MapLoader::loadMap(string map_file_path) {
     // in each continent and making sure the adjacent territory's territory id is the same as the
     // territory id of the territory that has the same territory name as the adjacent territory:
     // This is done using a Territory object iterator
-    for(auto &continent : continents) {
-        for(int i = 0; i < continent->getTerritories().size(); i++) {
-            for(int j = 0; j < continent->getTerritories()[i]->getAdjacentTerritories().size(); j++) {
-                if((continent->getTerritories()[i]->getMapTerritoryId() + 1) == continent->getTerritories()[i]->getAdjacentTerritories()[j]->getMapTerritoryId()) {
-                    auto iterator = find_if(territories.begin(), territories.end(), [&](Territory *territory) { return territory->getTerritoryName() == continent->getTerritories()[i]->getAdjacentTerritories()[j]->getTerritoryName(); });
-                    if(iterator != territories.end()) {
-                        continent->getTerritories()[i]->getAdjacentTerritories()[j]->setMapTerritoryId(territories.at(distance(territories.begin(), iterator))->getMapTerritoryId());
+    for (auto& continent: continents) {
+        for (int i = 0; i < continent->getTerritories().size(); i++) {
+            for (int j = 0; j < continent->getTerritories()[i]->getAdjacentTerritories().size(); j++) {
+                if ((continent->getTerritories()[i]->getMapTerritoryId() + 1) ==
+                    continent->getTerritories()[i]->getAdjacentTerritories()[j]->getMapTerritoryId()) {
+                    auto iterator = find_if(territories.begin(), territories.end(), [&](Territory* territory) {
+                        return territory->getTerritoryName() ==
+                               continent->getTerritories()[i]->getAdjacentTerritories()[j]->getTerritoryName();
+                    });
+                    if (iterator != territories.end()) {
+                        continent->getTerritories()[i]->getAdjacentTerritories()[j]->setMapTerritoryId(
+                                territories.at(distance(territories.begin(), iterator))->getMapTerritoryId());
                     }
                 }
             }
