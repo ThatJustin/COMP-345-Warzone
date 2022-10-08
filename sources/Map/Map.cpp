@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <utility>
 
 using std::cout;
 using std::endl;
@@ -143,7 +144,7 @@ Territory::Territory(int map_territory_id, const string& territory_name, Player*
 Territory::Territory(int map_territory_id, string territory_name, Continent* continent) {
     this->map_territory_id = map_territory_id;
     this->number_of_armies = 0;
-    this->territory_name = territory_name;
+    this->territory_name = std::move(territory_name);
     this->continent = continent;
     this->player = nullptr;
     this->adjacent_territories = vector<Territory*>();
@@ -318,8 +319,8 @@ Map::Map() {
  * @param continents The vector of continent pointers that point to all continents found on the map
  */
 Map::Map(vector<Territory*> territories, vector<Continent*> continents) {
-    this->territories = territories;
-    this->continents = continents;
+    this->territories = std::move(territories);
+    this->continents = std::move(continents);
 }
 
 /**
