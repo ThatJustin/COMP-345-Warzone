@@ -4,7 +4,7 @@
 #include <algorithm>
 
 /**
- * Constructor of Game Engine
+ * Constructor of GameEngine
  */
 GameEngine::GameEngine() {
 
@@ -23,7 +23,7 @@ GameEngine::GameEngine() {
 }
 
 /**
- * Destructor of Game Engine
+ * Destructor of GameEngine
  */
 GameEngine::~GameEngine() {
     if (start != nullptr) {
@@ -134,7 +134,7 @@ GameEngine::GameEngine(const GameEngine& gameEngine) {
 }
 
 /**
- * Override the = operator for Game Engine.
+ * Override the = operator for GameEngine.
  */
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     if (this == &gameEngine) {
@@ -153,10 +153,10 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
 }
 
 /**
- * Override the << operator for Game Engine.
+ * Override the << operator for GameEngine.
  */
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
-    stream << "Current Game Engine State : " << gameEngine.currentGameState->name << endl;
+    stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
     return stream;
 }
 

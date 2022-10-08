@@ -1,67 +1,57 @@
 #include "iostream"
 #include "sources/Cards/Cards.h"
+#include "sources/Player/Player.h"
 #include "vector"
 
-//A free function named testCards()
 void testCards() {
 
-    //creates a deck of cards of all different kinds
-    std::vector<Cards*> DeckCards;
-    Cards* bomb = new Cards (CardsType::BOMB);
-    Cards* reinforcement = new Cards (CardsType::REINFORCEMENT);
-    Cards* blockade = new Cards(CardsType::BLOCKADE);
-    Cards* airlift = new Cards(CardsType::AIRLIFT);
-    Cards* diplomacy = new Cards(CardsType::DIPLOMACY);
 
-    DeckCards.push_back(bomb);
-    DeckCards.push_back(reinforcement);
-    DeckCards.push_back(blockade);
-    DeckCards.push_back(airlift);
-    DeckCards.push_back(diplomacy);
+    Cards* bomb = new Cards(CardsType::BOMB); //create type bomb
+    Cards* blockade = new Cards(CardsType::BLOCKADE); //create type blockade
+    Cards* reinforcement = new Cards(CardsType::REINFORCEMENT); //create type reinforcement
+    Cards* airlift = new Cards(CardsType::AIRLIFT); //create type airlift
+    Cards* diplomacy = new Cards(CardsType::DIPLOMACY); //create type diplomacy
+    OrdersList* ordersList = new OrdersList(); //create the orderlist
 
-    std::cout <<DeckCards.size()<<std::endl;
-    std::cout <<DeckCards.at(1)->getType("airlift")<<std::endl;//testing
+    std::vector<Cards*> deckCards;
+    deckCards.push_back(bomb); //add type bomb to the deckcards list
+    deckCards.push_back(reinforcement); //add type reinforcement to the deckcards list
+    deckCards.push_back(blockade); //add type blockade to the deckcards list
+    deckCards.push_back(airlift); //add type airlift to the deckcards list
+    deckCards.push_back(diplomacy); //add type diplomacy to the deckcards list
 
-    //creates a hand object that is filled by drawing cards from the deck by repeatedly calling its draw() method
+    Deck* deck = new Deck(deckCards);
     Hand* hand = new Hand();
-    Deck* deck = new Deck( DeckCards);
+    cout << "Before Deck Draw" << endl;;
 
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    //deck->addcards(DeckCards.at(1));
-    hand->addcards(deck->draw());
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    hand->addcards(deck->draw());
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    hand->addcards(deck->draw());
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    hand->addcards(deck->draw());
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    hand->addcards(deck->draw());
-    std::cout <<*hand<<std::endl;
-    std::cout <<*deck<<std::endl;
-    //hand->draw();
-    //hand->draw();
-    //hand->draw();
-    //hand->draw();
-    std::cout <<std::endl;
+    std::cout << *deck << std::endl;
+    std::cout << *hand << std::endl;
 
-    //then calls the play() method of all cards in the hand, resulting in the cards being put back in the deck.
+    //Simulate drawing from the deck
+    deck->draw(hand);
+    deck->draw(hand);
+    deck->draw(hand);
+    deck->draw(hand);
+    deck->draw(hand);
 
-    //handle leaks
-    //Deck::~Deck();
+    cout << "After Deck draw " << endl;;
+
+    std::cout << *deck << std::endl;
+    std::cout << *hand << std::endl;
+
+    //Play the cards
+    for (auto handCards: hand->getCards()) {
+        handCards->play(ordersList, hand, deck);
+    }
+
+    cout << "\r\nAfter Card Play " << endl;;
+
+    std::cout << *hand << std::endl;
+    std::cout << *deck << std::endl;
+
+    // clean up
+
+    delete deck;
+    delete hand;
+    delete ordersList;
 }
-/*
-//where all the action occurs
-int main() {
-
-    //testing
-    std::cout << "Hello, World!" << std::endl;
-
-    testCards();
-    return 0;
-}*/

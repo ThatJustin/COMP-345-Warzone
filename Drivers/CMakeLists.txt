@@ -1,4 +1,7 @@
 include_directories(..)
 
-add_executable(MainDriver MainDriver.cpp)
+set(SOURCES CardsDriver.cpp GameEngineDriver.cpp MapDriver.cpp OrdersDriver.cpp PlayerDriver.cpp)
+set(HEADERS headers/CardsDriver.h headers/GameEngineDriver.h headers/MapDriver.h headers/OrdersDriver.h headers/PlayerDriver.h)
+
+add_executable(MainDriver MainDriver.cpp ${SOURCES} ${HEADERS})
 target_link_libraries(MainDriver SourceLib)

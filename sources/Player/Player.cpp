@@ -5,6 +5,9 @@
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
 
+/**
+ * Default constructor.
+ */
 Player::Player() {
     this->territories = vector<Territory*>();
     this->name = "";
@@ -12,6 +15,10 @@ Player::Player() {
     this->ordersList = new OrdersList;
 }
 
+/**
+ * Parameterized Constructor.
+ * @param name name of the player
+ */
 Player::Player(const string& name) {
     this->territories = vector<Territory*>();
     this->name = name;
@@ -19,7 +26,10 @@ Player::Player(const string& name) {
     this->ordersList = new OrdersList;
 }
 
-// Copy Constructor
+/**
+ * Copy Constructor.
+ * @param player
+ */
 Player::Player(const Player& player) {
     this->territories = player.territories;
     this->handCards = new Hand(*player.handCards);
@@ -27,7 +37,12 @@ Player::Player(const Player& player) {
     this->ordersList = new OrdersList(*player.ordersList);
 }
 
+/**
+ * Destructor.
+ */
 Player::~Player() {
+    //Player doesn't delete the territory as the Continent class is what owns the territories,
+    // the player just points to it.
     if (!this->getTerritories().empty()) {
         for (auto& terr: this->getTerritories()) {
             terr = nullptr;
@@ -43,6 +58,10 @@ Player::~Player() {
     }
 }
 
+/**
+ * Getter fpr the list of player territories.
+ * @return vector of territory pointers
+ */
 vector<Territory*> Player::getTerritories() {
     return this->territories;
 }
@@ -54,14 +73,26 @@ void Player::addTerritory(Territory* territory) {
     this->territories.push_back(territory);
 }
 
+/**
+ * Getter for player orderlist which holds orders the player has issued.
+ * @return OrdersList pointer
+ */
 OrdersList* Player::getOrdersList() {
     return ordersList;
 }
 
+/**
+ * Getter for players hand which holds cards.
+ * @return Hand pointer
+ */
 Hand* Player::getHandCards() {
     return handCards;
 }
 
+/**
+ * Returns a vector of territories (pointer) the player defends.
+ * @return vector territories
+ */
 vector<Territory*> Player::toDefend() {
     // For now return an arbitrary list of territories to defend
     vector<Territory*> defendTerritories;
@@ -76,6 +107,10 @@ vector<Territory*> Player::toDefend() {
     return defendTerritories;
 }
 
+/**
+ * Returns a vector of territories (pointer) the player will attack.
+ * @return vector territories
+ */
 vector<Territory*> Player::toAttack() {
     // For now return an arbitrary list of territories to attack
     vector<Territory*> attackTerritories;
@@ -87,29 +122,56 @@ vector<Territory*> Player::toAttack() {
     attackTerritories.push_back(territory2);
     attackTerritories.push_back(territory3);
     attackTerritories.push_back(territory4);
-    //Temporary return
     return attackTerritories;
 }
 
+/**
+ * Issues an order during the payer issue order phase.
+ *
+ * @return
+ */
 bool Player::issueOrder() {
-    //For testing purposes in assignment 1
-    Orders* order = new Bomb();
+
+    //For testing purposes in assignment 1, will create an order and issue it
+    Orders* order = new Bomb();;
     this->ordersList->add(order);
     return true;
 }
 
+/**
+ * Getter for player name.
+ * @return payer name
+ */
 string Player::getPlayerName() {
     return name;
 }
 
+/**
+ * Set's the player named based on the passed input.
+ * @param newName
+ */
 void Player::setPlayerName(string newName) {
     this->name = std::move(newName);
 }
 
+/*
+ * Assigns the players hand of cards.
+ */
+void Player::setHandCards(Hand* newHand) {
+    this->handCards = newHand;
+}
+
+/**
+ * Overrides the stream insertion operator to show data for the player class.
+ * @param stream
+ * @param player
+ * @return Player class information
+ */
 ostream& operator<<(ostream& stream, const Player& player) {
     stream << "Player Name: " << player.name << endl;
     stream << "Owned Territories: ";
     int size = 1;
+    //Show all the owned territories of this player
     for (auto& terr: player.territories) {
         if (size == player.territories.size()) {
             cout << terr->getTerritoryName() << "\r\n";
@@ -118,10 +180,12 @@ ostream& operator<<(ostream& stream, const Player& player) {
         }
         size++;
     }
+    stream << endl;
     stream << "HandCards: ";
     size = 1;
-    for (auto& card: player.handCards->getcards()) {
-        if (size == player.handCards->getcards().size()) {
+    //Show all the hand cards of this player
+    for (auto& card: player.handCards->getCards()) {
+        if (size == player.handCards->getCards().size()) {
             cout << getNameByCardType(card->getType()) << "\r\n";
         } else {
             cout << getNameByCardType(card->getType()) << ", ";
@@ -130,6 +194,7 @@ ostream& operator<<(ostream& stream, const Player& player) {
     }
     stream << "OrderList: ";
     size = 1;
+    //Show all the orders issued for this player
     for (auto& order: player.ordersList->getOrdersList()) {
         if (size == player.ordersList->getOrdersList().size()) {
             cout << getNameByOrderType(order->getOrderType()) << "\r\n";
@@ -141,10 +206,16 @@ ostream& operator<<(ostream& stream, const Player& player) {
     return stream;
 }
 
-/*
- * Assigns the players hand of cards.
+/**
+ * Overrides the assignment operator for the player class.
+ * @param player
+ * @return
  */
-void Player::setHandCards(Hand* newHand) {
-    this->handCards = newHand;
+Player& Player::operator=(const Player& player) {
+    this->name = player.name;
+    this->ordersList = new OrdersList(*player.ordersList);
+    this->handCards = new Hand(*player.handCards);
+    this->territories = player.territories;
+    return *this;
 }
 

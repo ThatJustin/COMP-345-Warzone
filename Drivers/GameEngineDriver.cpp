@@ -1,4 +1,4 @@
-#include "sources/Game Engine/GameEngine.h"
+#include "sources/GameEngine/GameEngine.h"
 
 void testGameStates() {
     GameEngine* gameEngine = new GameEngine;
