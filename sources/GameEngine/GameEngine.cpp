@@ -59,6 +59,7 @@ GameEngine::~GameEngine() {
         win = nullptr;
     }
     if (currentGameState != nullptr) {
+        delete currentGameState;
         currentGameState = nullptr;
     }
 }
