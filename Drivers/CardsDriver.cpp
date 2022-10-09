@@ -30,7 +30,7 @@ void testCards() {
     std::cout << *deck << std::endl;
     std::cout << *player->getHandCards() << std::endl;
 
-    //Simulate drawing from the deck
+   //Simulate drawing from the deck
     deck->draw(player);
     deck->draw(player);
     deck->draw(player);
@@ -52,7 +52,7 @@ void testCards() {
     std::cout << *player->getHandCards() << std::endl;
     std::cout << *deck << std::endl;
 
-    //clean up prevent leaks
+  //  clean up prevent leaks
     delete deck;
     delete player;
 }

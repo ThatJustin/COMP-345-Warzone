@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void testOrdersLists(){
+void testOrdersLists() {
     //creating order objects
     Orders* de = new Deploy();
     Orders* ad = new Advance();
@@ -21,47 +21,45 @@ void testOrdersLists(){
 
     //adding the orders to the orders list
     OrdersList* ol = new OrdersList();
-    cout<<"Added Deploy:"<<endl;
+    cout << "Added Deploy Order to Orderslist.";
     ol->add(de);
-    cout<<endl<<"Added Advance: "<<endl;
+    cout << endl << "Added Advance Order to Orderslist.";
     ol->add(ad);
-    cout<<endl<<"Added Bomb: "<<endl;
+    cout << endl << "Added Bomb Order to Orderslist.";
     ol->add(bo);
-    cout<<endl<<"Added Blockade: "<<endl;
+    cout << endl << "Added Blockade Order to Orderslist.";
     ol->add(bl);
-    cout<<endl<<"Added Airlift: "<<endl;
+    cout << endl << "Added Airlift Order to Orderslist.";
     ol->add(ai);
-    cout<<endl<<"Added Negotiate: "<<endl;
+    cout << endl << "Added Negotiate Order to Orderslist.";
     ol->add(ne);
-    cout<<endl;
+    cout << endl << endl;
+
+    cout << *ol << endl;
 
     ol->displayList();
-    cout<<endl;
-    cout<<"/////////////////////////////////////"<<endl;
-    cout<<endl;
 
-    //moving the 4th order to the 2nd position
+    cout << "(Index's start at 1) Moving order at position 4 to 2." << endl;
     ol->move(4, 2);
     ol->displayList();
 
-    cout<<endl;
-
-    //removing the order in the 3rd position
+    cout << "(Index's start at 1) Removing order at position 3." << endl;
     ol->remove(3);
-    cout<<"/////////////////////////////////////"<<endl;
     ol->displayList();
 
-    //adding back the removed order
+    cout << "Adding back the order that was just removed." << endl;
     ol->add(ad);
     ol->displayList();
 
-    cout<<endl;
-    cout<<"/////////////////////////////////////"<<endl;
-    cout<<endl;
+    cout << "Testing validate and execute for orders." << endl;
 
-    //for loop through the orders list to execute them all
-    for(auto i=0;i<ol->getOrdersList().size();i++){
-        ol->getOrdersList().at(i)->execute();
+    for (auto* order: ol->getOrdersList()) {
+        if (order->validate()) {
+            cout << "Order is valid. ";
+            order->execute();
+        } else {
+            cout << "Order is NOT valid. ";
+        }
     }
 
     //delete the orders list once completed

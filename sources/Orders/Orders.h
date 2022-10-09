@@ -35,9 +35,11 @@ public:
 
     virtual Orders* copy() = 0;
 
-    virtual string toString() const = 0;
+    virtual string showDescription() = 0;
 
     friend ostream& operator<<(ostream& stream, const Orders& orders);
+
+    virtual void toStreamInsertion(std::ostream& os) const;
 
     Orders& operator=(const Orders& order);
 
@@ -59,7 +61,7 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
@@ -69,9 +71,11 @@ public:
 
     OrderType getOrderType() override;
 
-    std::string toString() const;
+    std::string showDescription() override;
 
     Deploy& operator=(const Deploy& deploy);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -94,11 +98,11 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getSourceTerritory();
 
@@ -111,6 +115,8 @@ public:
     OrderType getOrderType() override;
 
     Advance& operator=(const Advance& advance);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -134,7 +140,7 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
@@ -143,6 +149,8 @@ public:
     OrderType getOrderType() override;
 
     Bomb& operator=(const Bomb& bomb);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     Territory* m_targetTerritory;
@@ -164,7 +172,7 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
@@ -173,6 +181,8 @@ public:
     OrderType getOrderType() override;
 
     Blockade& operator=(const Blockade& blockade);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     Territory* m_targetTerritory;
@@ -194,7 +204,7 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
@@ -202,7 +212,7 @@ public:
 
     void setSourceTerritory(Territory* sourceTerritory);
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
@@ -211,6 +221,8 @@ public:
     OrderType getOrderType() override;
 
     Airlift& operator=(const Airlift& airlift);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -234,7 +246,7 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Player* getTargetPlayer();
 
@@ -243,6 +255,9 @@ public:
     OrderType getOrderType() override;
 
     Negotiate& operator=(const Negotiate& negotiate);
+
+    void toStreamInsertion(std::ostream& os) const override;
+
 private:
     Player* m_targetPlayer;
 };
@@ -259,16 +274,17 @@ public:
 
     OrdersList& operator=(const OrdersList& orderslist);
 
+    friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
+
     void move(int from, int to);
 
-    void remove(int order);
+    void remove(int index);
 
     void add(Orders* o);
 
     vector<Orders*> getOrdersList();
 
     void displayList();
-
 };
 
 //free functions
