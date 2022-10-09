@@ -47,3 +47,5 @@
 .idea/uiDesigner.xml
 
 /cmake-build-debug
+/MainDriver
+MainDriver.pdb

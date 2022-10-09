@@ -1,7 +1,7 @@
-
 #include "sources/Orders/Orders.h"
 
 using namespace std;
+
 void testOrdersLists(){
     //creating order objects
     Orders* de = new Deploy();
