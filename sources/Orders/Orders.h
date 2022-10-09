@@ -1,12 +1,17 @@
 //
 // Created by Alex De Luca on 2022-09-14.
 //
-#pragma once
+
+#ifndef COMP_345_ORDERS_H
+#define COMP_345_ORDERS_H
+
 #include <vector>
 #include <iostream>
 
 class Territory;
+
 class Cards;
+
 class Player;
 
 using namespace std;
@@ -30,7 +35,13 @@ public:
 
     virtual Orders* copy() = 0;
 
+    virtual string showDescription() = 0;
+
     friend ostream& operator<<(ostream& stream, const Orders& orders);
+
+    virtual void toStreamInsertion(std::ostream& os) const;
+
+    Orders& operator=(const Orders& order);
 
 };
 
@@ -50,7 +61,7 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
@@ -60,7 +71,11 @@ public:
 
     OrderType getOrderType() override;
 
-    std::string toString() const;
+    std::string showDescription() override;
+
+    Deploy& operator=(const Deploy& deploy);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -83,11 +98,11 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getSourceTerritory();
 
@@ -98,6 +113,10 @@ public:
     void setTargetTerritory(Territory* targetTerritory);
 
     OrderType getOrderType() override;
+
+    Advance& operator=(const Advance& advance);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -121,13 +140,17 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
 
     OrderType getOrderType() override;
+
+    Bomb& operator=(const Bomb& bomb);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     Territory* m_targetTerritory;
@@ -149,13 +172,17 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
 
     OrderType getOrderType() override;
+
+    Blockade& operator=(const Blockade& blockade);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     Territory* m_targetTerritory;
@@ -177,7 +204,7 @@ public:
 
     Orders* copy() override;
 
-    int getNumberOfArmyUnits() const;
+    int getNumberOfArmyUnits();
 
     void setNumberOfArmyUnits(int numberOfArmyUnits);
 
@@ -185,13 +212,17 @@ public:
 
     void setSourceTerritory(Territory* sourceTerritory);
 
-    string toString() const;
+    string showDescription() override;
 
     Territory* getTargetTerritory();
 
     void setTargetTerritory(Territory* targetTerritory);
 
     OrderType getOrderType() override;
+
+    Airlift& operator=(const Airlift& airlift);
+
+    void toStreamInsertion(std::ostream& os) const override;
 
 private:
     int m_numberOfArmyUnits;
@@ -215,7 +246,7 @@ public:
 
     Orders* copy() override;
 
-    string toString() const;
+    string showDescription() override;
 
     Player* getTargetPlayer();
 
@@ -223,13 +254,17 @@ public:
 
     OrderType getOrderType() override;
 
+    Negotiate& operator=(const Negotiate& negotiate);
+
+    void toStreamInsertion(std::ostream& os) const override;
+
 private:
     Player* m_targetPlayer;
 };
 
 class OrdersList {
 private:
-    //std::vector<Orders*> list;
+    std::vector<Orders*> list;
 public:
     OrdersList();
 
@@ -237,20 +272,24 @@ public:
 
     ~OrdersList();
 
-    void move(int to_move, int move_to);
+    OrdersList& operator=(const OrdersList& orderslist);
 
-    void remove(int order);
+    friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
+
+    void move(int from, int to);
+
+    void remove(int index);
 
     void add(Orders* o);
 
     vector<Orders*> getOrdersList();
 
-    std::vector<Orders*> list;//needed for cards play method to work from private to public
+    void displayList();
 };
 
 //free functions
 Orders* createOrderByCardType(int cardType);
+
 string getNameByOrderType(OrderType cardType);
 
-std::ostream& operator <<(std::ostream& stream, const OrdersList& ordersList); //testing add stream
-
+#endif //COMP_345_ORDERS_H
