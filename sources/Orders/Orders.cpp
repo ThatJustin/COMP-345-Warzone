@@ -253,7 +253,6 @@ Deploy::Deploy(const Deploy& deploy) {
  */
 Deploy::~Deploy() {
     if (m_targetTerritory != nullptr) {
-        delete m_targetTerritory;
         m_targetTerritory = nullptr;
     }
 }
@@ -395,11 +394,9 @@ Advance::Advance(const Advance& advance) {
  */
 Advance::~Advance() {
     if (m_targetTerritory != nullptr) {
-        delete m_sourceTerritory;
         m_sourceTerritory = nullptr;
     }
     if (m_targetTerritory != nullptr) {
-        delete m_targetTerritory;
         m_targetTerritory = nullptr;
     }
 }
@@ -563,7 +560,6 @@ Bomb::Bomb(const Bomb& bomb) {
  */
 Bomb::~Bomb() {
     if (m_targetTerritory != nullptr) {
-        delete m_targetTerritory;
         m_targetTerritory = nullptr;
     }
 }
@@ -682,7 +678,6 @@ Blockade::Blockade(const Blockade& blockade) {
  */
 Blockade::~Blockade() {
     if (m_targetTerritory != nullptr) {
-        delete m_targetTerritory;
         m_targetTerritory = nullptr;
     }
 }
@@ -808,11 +803,9 @@ Airlift::Airlift(const Airlift& airlift) {
  */
 Airlift::~Airlift() {
     if (m_targetTerritory != nullptr) {
-        delete m_sourceTerritory;
         m_sourceTerritory = nullptr;
     }
     if (m_targetTerritory != nullptr) {
-        delete m_targetTerritory;
         m_targetTerritory = nullptr;
     }
 }
