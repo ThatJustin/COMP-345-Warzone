@@ -7,8 +7,10 @@
  * Constructor of GameEngine
  */
 GameEngine::GameEngine() {
-
+    //Keep track of the current game state
+    currentGameState = nullptr;
     //Create the states which will be used throughout the game
+    // We create them now, so we don't have to create them when they are first being used
     start = new Start(this);
     loadMap = new MapLoaded(this);
     mapValidated = new MapValidated(this);
@@ -17,9 +19,6 @@ GameEngine::GameEngine() {
     issueOrders = new IssueOrders(this);
     executeOrders = new ExecuteOrders(this);
     win = new class Win(this);
-
-    //Keep track of the current game state
-    currentGameState = nullptr;
 }
 
 /**
@@ -191,7 +190,6 @@ bool GameState::isValidTransition() {
  * Destructor
  */
 GameState::~GameState() {
-
 }
 
 /**
@@ -210,12 +208,10 @@ GameState::GameState(const GameState& start) {
  */
 Start::Start(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "start";
-    this->gameEngine = gameEngine;
 }
 
 Start::Start(const Start& start) : GameState(start) {
     this->name = start.name;
-    this->gameEngine = start.gameEngine;
 }
 
 /**
@@ -276,7 +272,6 @@ GameState* Start::copy() {
 
 MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "loadmap";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -330,7 +325,6 @@ bool MapLoaded::isValidTransition() {
  */
 MapLoaded::MapLoaded(const MapLoaded& mapLoaded) : GameState(mapLoaded) {
     this->name = mapLoaded.name;
-    this->gameEngine = mapLoaded.gameEngine;
 }
 
 /**
@@ -348,7 +342,6 @@ GameState* MapLoaded::copy() {
  */
 MapValidated::MapValidated(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "mapvalidated";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -399,7 +392,6 @@ bool MapValidated::isValidTransition() {
  */
 MapValidated::MapValidated(const MapValidated& mapValidated) : GameState(mapValidated) {
     this->name = mapValidated.name;
-    this->gameEngine = mapValidated.gameEngine;
 }
 
 /**
@@ -417,7 +409,6 @@ GameState* MapValidated::copy() {
  */
 PlayersAdded::PlayersAdded(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "playersadded";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -471,7 +462,6 @@ bool PlayersAdded::isValidTransition() {
  */
 PlayersAdded::PlayersAdded(const PlayersAdded& playersAdded) : GameState(playersAdded) {
     this->name = playersAdded.name;
-    this->gameEngine = playersAdded.gameEngine;
 }
 
 /**
@@ -489,7 +479,6 @@ GameState* PlayersAdded::copy() {
  */
 AssignReinforcement::AssignReinforcement(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "assignreinforcement";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -541,7 +530,6 @@ bool AssignReinforcement::isValidTransition() {
 AssignReinforcement::AssignReinforcement(const AssignReinforcement& assignReinforcement) : GameState(
         assignReinforcement) {
     this->name = assignReinforcement.name;
-    this->gameEngine = assignReinforcement.gameEngine;
 }
 
 /**
@@ -559,7 +547,6 @@ GameState* AssignReinforcement::copy() {
  */
 IssueOrders::IssueOrders(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "issueorders";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -609,7 +596,6 @@ bool IssueOrders::isValidTransition() {
 
 IssueOrders::IssueOrders(const IssueOrders& issueOrders) : GameState(issueOrders) {
     this->name = issueOrders.name;
-    this->gameEngine = issueOrders.gameEngine;
 }
 
 /**
@@ -627,7 +613,6 @@ GameState* IssueOrders::copy() {
  */
 ExecuteOrders::ExecuteOrders(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "executeorders";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -684,7 +669,6 @@ bool ExecuteOrders::isValidTransition() {
  */
 ExecuteOrders::ExecuteOrders(const ExecuteOrders& executeOrders) : GameState(executeOrders) {
     this->name = executeOrders.name;
-    this->gameEngine = executeOrders.gameEngine;
 }
 
 /**
@@ -702,7 +686,6 @@ GameState* ExecuteOrders::copy() {
  */
 Win::Win(GameEngine* gameEngine) : GameState(gameEngine) {
     this->name = "win";
-    this->gameEngine = gameEngine;
 }
 
 /**
@@ -756,7 +739,6 @@ bool Win::isValidTransition() {
  */
 Win::Win(const Win& win) : GameState(win) {
     this->name = win.name;
-    this->gameEngine = win.gameEngine;
 }
 
 /**
