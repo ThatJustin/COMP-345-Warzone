@@ -1,5 +1,4 @@
 #include <iostream>
-#include <utility>
 #include "Player.h"
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
@@ -41,7 +40,7 @@ Player::Player(const Player& player) {
  * Destructor.
  */
 Player::~Player() {
-    //Player doesn't delete the territory as the Continent class is what owns the territories,
+    //Player doesn't delete the territory as it doesn't own the territories object,
     // the player just points to it.
     if (!this->getTerritories().empty()) {
         for (auto& terr: this->getTerritories()) {
@@ -133,8 +132,12 @@ vector<Territory*> Player::toAttack() {
 bool Player::issueOrder() {
 
     //For testing purposes in assignment 1, will create an order and issue it
-    Orders* order = new Bomb();;
-    this->ordersList->add(order);
+    Orders* bomb = new Bomb();
+    Orders* airlift = new Airlift();
+    Orders* negotiate = new Negotiate();
+    this->ordersList->add(bomb);
+    this->ordersList->add(airlift);
+    this->ordersList->add(negotiate);
     return true;
 }
 
@@ -212,6 +215,9 @@ ostream& operator<<(ostream& stream, const Player& player) {
  * @return
  */
 Player& Player::operator=(const Player& player) {
+    if (this == &player) {
+        return *this;
+    }
     this->name = player.name;
     this->ordersList = new OrdersList(*player.ordersList);
     this->handCards = new Hand(*player.handCards);

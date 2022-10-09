@@ -8,23 +8,28 @@
  */
 GameEngine::GameEngine() {
     //Keep track of the current game state
-    currentGameState = nullptr;
-    //Create the states which will be used throughout the game
-    // We create them now, so we don't have to create them when they are first being used
-    start = new Start(this);
-    loadMap = new MapLoaded(this);
-    mapValidated = new MapValidated(this);
-    playersAdded = new PlayersAdded(this);
-    assignReinforcement = new AssignReinforcement(this);
-    issueOrders = new IssueOrders(this);
-    executeOrders = new ExecuteOrders(this);
-    win = new class Win(this);
+    this->currentGameState = nullptr;
+
+    /*Create the states which will be used throughout the game.
+      We create them now, so we don't have to create them all over again when they are being transitioned to.*/
+    this->start = new Start(this);
+    this->loadMap = new MapLoaded(this);
+    this->mapValidated = new MapValidated(this);
+    this->playersAdded = new PlayersAdded(this);
+    this->assignReinforcement = new AssignReinforcement(this);
+    this->issueOrders = new IssueOrders(this);
+    this->executeOrders = new ExecuteOrders(this);
+    this->win = new class Win(this);
 }
 
 /**
  * Destructor of GameEngine
  */
 GameEngine::~GameEngine() {
+    if (currentGameState != nullptr) {
+        delete currentGameState;
+        currentGameState = nullptr;
+    }
     if (start != nullptr) {
         delete start;
         start = nullptr;
@@ -56,10 +61,6 @@ GameEngine::~GameEngine() {
     if (win != nullptr) {
         delete win;
         win = nullptr;
-    }
-    if (currentGameState != nullptr) {
-        delete currentGameState;
-        currentGameState = nullptr;
     }
 }
 
@@ -153,7 +154,10 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
 }
 
 /**
- * Override the << operator for GameEngine.
+ * Stream data for the class.
+ * @param stream
+ * @param gameEngine
+ * @return
  */
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
     stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
@@ -202,6 +206,20 @@ GameState::GameState(const GameState& start) {
 }
 
 /**
+ * Assignment operator for the class.
+ * @param gameState
+ * @return
+ */
+GameState& GameState::operator=(const GameState& gameState) {
+    if (this == &gameState) {
+        return *this;
+    }
+    this->name = gameState.name;
+    this->gameEngine = gameState.gameEngine;
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -224,7 +242,7 @@ Start::~Start() {
  * Handles what happens when entering a specific state.
  */
 void Start::enterState() {
-    cout << "Entering start state" << endl;
+    cout << "Entering " << *this << endl;
 
     cout << "What state would you like to transition to?" << endl;
     bool validInput = false;
@@ -263,6 +281,30 @@ GameState* Start::copy() {
     return new Start(*this);
 }
 
+/**
+ * Stream data for the class.
+ * @param stream
+ * @param start
+ * @return
+ */
+ostream& operator<<(ostream& stream, const Start& start) {
+    stream << "State: " << start.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param start
+ * @return
+ */
+Start& Start::operator=(const Start& start) {
+    if (this == &start) {
+        return *this;
+    }
+    GameState::operator=(start);
+    return *this;
+}
+
 
 /**
  * Constructor
@@ -284,7 +326,7 @@ MapLoaded::~MapLoaded() {
  * Handles what happens when entering a specific state.
  */
 void MapLoaded::enterState() {
-    cout << "Entering Loadmap state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -336,6 +378,30 @@ GameState* MapLoaded::copy() {
 }
 
 /**
+ * Stream data for the class.
+ * @param stream
+ * @param mapLoaded
+ * @return
+ */
+ostream& operator<<(ostream& stream, const MapLoaded& mapLoaded) {
+    stream << "State: " << mapLoaded.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param mapLoaded
+ * @return
+ */
+MapLoaded& MapLoaded::operator=(const MapLoaded& mapLoaded) {
+    if (this == &mapLoaded) {
+        return *this;
+    }
+    GameState::operator=(mapLoaded);
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -354,7 +420,7 @@ MapValidated::~MapValidated() {
  * Handles what happens when entering a specific state.
  */
 void MapValidated::enterState() {
-    cout << "Entering MapValidated state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -403,6 +469,30 @@ GameState* MapValidated::copy() {
 }
 
 /**
+ *  * Stream data for the class.
+ * @param stream
+ * @param mapValidated
+ * @return
+ */
+ostream& operator<<(ostream& stream, const MapValidated& mapValidated) {
+    stream << "State: " << mapValidated.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param mapValidated
+ * @return
+ */
+MapValidated& MapValidated::operator=(const MapValidated& mapValidated) {
+    if (this == &mapValidated) {
+        return *this;
+    }
+    GameState::operator=(mapValidated);
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -421,7 +511,7 @@ PlayersAdded::~PlayersAdded() {
  * Handles what happens when entering a specific state.
  */
 void PlayersAdded::enterState() {
-    cout << "Entering PlayersAdded state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -473,6 +563,30 @@ GameState* PlayersAdded::copy() {
 }
 
 /**
+ * Stream data for the class.
+ * @param stream
+ * @param playersAdded
+ * @return
+ */
+ostream& operator<<(ostream& stream, const PlayersAdded& playersAdded) {
+    stream << "State: " << playersAdded.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param playersAdded
+ * @return
+ */
+PlayersAdded& PlayersAdded::operator=(const PlayersAdded& playersAdded) {
+    if (this == &playersAdded) {
+        return *this;
+    }
+    GameState::operator=(playersAdded);
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -491,7 +605,7 @@ AssignReinforcement::~AssignReinforcement() {
  * Handles what happens when entering a specific state.
  */
 void AssignReinforcement::enterState() {
-    cout << "Entering AssignReinforcement state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -541,6 +655,30 @@ GameState* AssignReinforcement::copy() {
 }
 
 /**
+ * Stream data for the class.
+ * @param stream
+ * @param assignReinforcement
+ * @return
+ */
+ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement) {
+    stream << "State: " << assignReinforcement.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param assignReinforcement
+ * @return
+ */
+AssignReinforcement& AssignReinforcement::operator=(const AssignReinforcement& assignReinforcement) {
+    if (this == &assignReinforcement) {
+        return *this;
+    }
+    GameState::operator=(assignReinforcement);
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -559,7 +697,7 @@ IssueOrders::~IssueOrders() {
  * Handles what happens when entering a specific state.
  */
 void IssueOrders::enterState() {
-    cout << "Entering IssueOrders state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -607,6 +745,30 @@ GameState* IssueOrders::copy() {
 }
 
 /**
+ * Stream data for the class.
+ * @param stream
+ * @param issueOrders
+ * @return
+ */
+ostream& operator<<(ostream& stream, const IssueOrders& issueOrders) {
+    stream << "State: " << issueOrders.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param issueOrders
+ * @return
+ */
+IssueOrders& IssueOrders::operator=(const IssueOrders& issueOrders) {
+    if (this == &issueOrders) {
+        return *this;
+    }
+    GameState::operator=(issueOrders);
+    return *this;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -625,7 +787,7 @@ ExecuteOrders::~ExecuteOrders() {
  * Handles what happens when entering a specific state.
  */
 void ExecuteOrders::enterState() {
-    cout << "Entering ExecuteOrders state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -680,6 +842,30 @@ GameState* ExecuteOrders::copy() {
 }
 
 /**
+ * Assignment operator for the class.
+ * @param executeOrders
+ * @return
+ */
+ExecuteOrders& ExecuteOrders::operator=(const ExecuteOrders& executeOrders) {
+    if (this == &executeOrders) {
+        return *this;
+    }
+    GameState::operator=(executeOrders);
+    return *this;
+}
+
+/**
+ * Stream data for the class.
+ * @param stream
+ * @param executeOrders
+ * @return
+ */
+ostream& operator<<(ostream& stream, const ExecuteOrders& executeOrders) {
+    stream << "State: " << executeOrders.name << endl;
+    return stream;
+}
+
+/**
  * Constructor
  * @param name
  * @param gameEngine
@@ -698,7 +884,7 @@ Win::~Win() {
  * Handles what happens when entering a specific state.
  */
 void Win::enterState() {
-    cout << "Entering Win state" << endl;
+    cout << "Entering " << *this << endl;
 
 
     cout << "What state would you like to transition to?" << endl;
@@ -747,4 +933,28 @@ Win::Win(const Win& win) : GameState(win) {
  */
 GameState* Win::copy() {
     return new Win(*this);
+}
+
+/**
+ * Stream data for the class.
+ * @param stream
+ * @param win
+ * @return
+ */
+ostream& operator<<(ostream& stream, const Win& win) {
+    stream << "State: " << win.name << endl;
+    return stream;
+}
+
+/**
+ * Assignment operator for the class.
+ * @param win
+ * @return
+ */
+Win& Win::operator=(const Win& win) {
+    if (this == &win) {
+        return *this;
+    }
+    GameState::operator=(win);
+    return *this;
 }

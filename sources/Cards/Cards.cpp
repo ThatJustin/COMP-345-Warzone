@@ -2,7 +2,6 @@
 #include "Cards.h"
 #include "../Orders/Orders.h"
 #include "../Player/Player.h"
-#include <utility>
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -136,8 +135,9 @@ void Deck::draw(Player* player) {
         int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
         player->getHandCards()->addCard(cards[randCardIdx]); //add random card to hand
         cards.erase(cards.begin() + randCardIdx); //remove card from deck
+    } else {
+        cout << "Tried to pull a card from an empty deck" << endl;
     }
-    cout << "Tried to pull a card from an empty deck" << endl;
 }
 
 /**

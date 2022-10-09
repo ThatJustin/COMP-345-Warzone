@@ -15,10 +15,12 @@ void testPlayers() {
 
     //Test player cards by creating a card and giving it to the player
     auto* cardB = new Cards(CardsType::BOMB);
-    auto* cardR = new Cards(CardsType::REINFORCEMENT);
+    auto* cardA = new Cards(CardsType::AIRLIFT);
+    auto* cardD = new Cards(CardsType::DIPLOMACY);
     Hand* hand = new Hand;
     hand->addCard(cardB);
-    hand->addCard(cardR);
+    hand->addCard(cardA);
+    hand->addCard(cardD);
     player->setHandCards(hand);
 
     //Issues an order for assignment 1
