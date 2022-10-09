@@ -39,6 +39,8 @@ public:
 
     friend ostream& operator<<(ostream& stream, const Orders& orders);
 
+    Orders& operator=(const Orders& order);
+
 };
 
 class Deploy : public Orders {
@@ -68,6 +70,8 @@ public:
     OrderType getOrderType() override;
 
     std::string toString() const;
+
+    Deploy& operator=(const Deploy& deploy);
 
 private:
     int m_numberOfArmyUnits;
@@ -106,6 +110,8 @@ public:
 
     OrderType getOrderType() override;
 
+    Advance& operator=(const Advance& advance);
+
 private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
@@ -136,6 +142,8 @@ public:
 
     OrderType getOrderType() override;
 
+    Bomb& operator=(const Bomb& bomb);
+
 private:
     Territory* m_targetTerritory;
 };
@@ -163,6 +171,8 @@ public:
     void setTargetTerritory(Territory* targetTerritory);
 
     OrderType getOrderType() override;
+
+    Blockade& operator=(const Blockade& blockade);
 
 private:
     Territory* m_targetTerritory;
@@ -200,6 +210,8 @@ public:
 
     OrderType getOrderType() override;
 
+    Airlift& operator=(const Airlift& airlift);
+
 private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
@@ -230,6 +242,7 @@ public:
 
     OrderType getOrderType() override;
 
+    Negotiate& operator=(const Negotiate& negotiate);
 private:
     Player* m_targetPlayer;
 };
@@ -244,6 +257,8 @@ public:
 
     ~OrdersList();
 
+    OrdersList& operator=(const OrdersList& orderslist);
+
     void move(int from, int to);
 
     void remove(int order);
@@ -253,6 +268,7 @@ public:
     vector<Orders*> getOrdersList();
 
     void displayList();
+
 };
 
 //free functions

@@ -11,22 +11,36 @@
 
 using namespace std;
 
-//default constructor
+/**
+ * default constructor
+ */
 Orders::Orders() {
 }
 
-//destructor
+/**
+ * destructor
+ */
 Orders::~Orders() {
 
 }
 
-//stream insertion operator << to print the orders
+/**
+ * stream insertion operator << to print the orders
+ */
+
 std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream<<order.toString();
 }
 
+Orders &Orders::operator=(const Orders &order) {
+}
 
-//return the name based on the type of order
+
+/**
+ * return the name based on the type of order
+ * @param cardType
+ * @return
+ */
 string getNameByOrderType(OrderType cardType) {
     switch (cardType) {
         case OrderType::DEPLOY:
@@ -45,7 +59,11 @@ string getNameByOrderType(OrderType cardType) {
     return "none";
 }
 
-//return order type based on card type
+/**
+ * return order type based on card type
+ * @param cardType
+ * @return
+ */
 Orders* createOrderByCardType(int cardType) {
     switch (cardType) {
         case BOMB:
@@ -61,12 +79,17 @@ Orders* createOrderByCardType(int cardType) {
     }
 }
 
-//OrdersList default constructor
+
+/**
+ * OrdersList default constructor
+ */
 OrdersList::OrdersList() {
     this->list = std::vector<Orders*>();
 }
 
-//OrdersList destructor, also deletes every order in the list
+/**
+ * /OrdersList destructor, also deletes every order in the list
+ */
 OrdersList::~OrdersList() {
     for (auto order: list) {
         delete order;
@@ -74,7 +97,10 @@ OrdersList::~OrdersList() {
     }
 }
 
-//OrdersList copy constructor
+/**
+ * OrdersList copy constructor
+ * @param ol
+ */
 OrdersList::OrdersList(const OrdersList& ol) {
     this->list = vector<Orders*>(ol.list.size());
     for (auto& temp: ol.list) {
@@ -83,10 +109,14 @@ OrdersList::OrdersList(const OrdersList& ol) {
 }
 
 void OrdersList::move(int from, int to) {
-    //if both inputs are equal
+    /**
+     * if both inputs are equal
+     */
     if(from == to) return;
 
-    //if inputs are different
+    /*
+     * if inputs are different
+     */
     int index_from = from-1, index_to = to-1;
     Orders* temp=list[index_from];
     list.erase(list.begin()+index_from);
@@ -94,11 +124,15 @@ void OrdersList::move(int from, int to) {
 }
 
 void OrdersList::remove(int order) {
-    //deletes order - 1 to account for the index, as the user will delete orders starting from 1
+    /*
+     * deletes order - 1 to account for the index, as the user will delete orders starting from 1
+     */
     list.erase(list.begin() + order - 1);
 }
 
-//adds Order to the list
+/*
+ * adds Order to the list
+ */
 void OrdersList::add(Orders* o) {
     list.push_back(o);
     cout<<*o;
@@ -112,6 +146,11 @@ void OrdersList::displayList() {
     for(int i=0;i<list.size();i++){
         cout<<i+1<<". "<<*list[i]<<endl;
     }
+}
+
+OrdersList &OrdersList::operator=(const OrdersList &orderslist) {
+    this->list=orderslist.list;
+    return *this;
 }
 
 Deploy::Deploy() {
@@ -163,7 +202,9 @@ Territory* Deploy::getTargetTerritory() {
 void Deploy::setTargetTerritory(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
-//toString output of the order descriptions
+/*
+ * toString output of the order descriptions
+ */
 
 std::string Deploy::toString() const {
     std::stringstream ss;
@@ -175,6 +216,9 @@ std::string Deploy::toString() const {
 
 OrderType Deploy::getOrderType() {
     return OrderType::DEPLOY;
+}
+
+Deploy &Deploy::operator=(const Deploy &deploy) {
 }
 
 Advance::Advance() {
@@ -242,8 +286,6 @@ void Advance::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
-//toString output of the order descriptions
-
 std::string Advance::toString() const {
     std::stringstream ss;
     ss<<"Advance: "<<endl;
@@ -264,6 +306,9 @@ std::string Advance::toString() const {
 
 OrderType Advance::getOrderType() {
     return OrderType::ADVANCE;
+}
+
+Advance &Advance::operator=(const Advance &advance) {
 }
 
 Bomb::Bomb() {
@@ -305,7 +350,6 @@ void Bomb::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
-//toString output of the order descriptions
 
 string Bomb::toString() const {
     std::stringstream ss;
@@ -317,6 +361,9 @@ string Bomb::toString() const {
 
 OrderType Bomb::getOrderType() {
     return OrderType::BOMB;
+}
+
+Bomb &Bomb::operator=(const Bomb &bomb) {
 }
 
 Blockade::Blockade() {
@@ -358,7 +405,6 @@ void Blockade::setTargetTerritory(Territory* targetTerritory) {
     this->m_targetTerritory = targetTerritory;
 }
 
-//toString output of the order descriptions
 
 std::string Blockade::toString() const {
     std::stringstream ss;
@@ -369,6 +415,9 @@ std::string Blockade::toString() const {
 
 OrderType Blockade::getOrderType() {
     return OrderType::BLOCKADE;
+}
+
+Blockade &Blockade::operator=(const Blockade &blockade) {
 }
 
 Airlift::Airlift() {
@@ -436,8 +485,6 @@ void Airlift::setTargetTerritory(Territory* targetTerritory) {
     m_targetTerritory = targetTerritory;
 }
 
-//toString output of the order descriptions
-
 std::string Airlift::toString() const {
     std::stringstream ss;
     ss<<"Airlift: "<<endl;
@@ -448,6 +495,9 @@ std::string Airlift::toString() const {
 
 OrderType Airlift::getOrderType() {
     return OrderType::AIRLIFT;
+}
+
+Airlift &Airlift::operator=(const Airlift &airlift) {
 }
 
 Negotiate::Negotiate() {
@@ -489,7 +539,6 @@ void Negotiate::setTargetPlayer(Player* targetPlayer) {
     this->m_targetPlayer = targetPlayer;
 }
 
-//toString output of the order descriptions
 
 std::string Negotiate::toString() const {
     std::stringstream ss;
@@ -501,6 +550,9 @@ std::string Negotiate::toString() const {
 
 OrderType Negotiate::getOrderType() {
     return OrderType::NEGOTIATE;
+}
+
+Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
 }
 
 
