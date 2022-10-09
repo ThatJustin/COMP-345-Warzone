@@ -88,7 +88,7 @@ void OrdersList::move(int from, int to) {
 }
 
 void OrdersList::remove(int order) {
-    list.erase(list.begin() + order);
+    list.erase(list.begin() + order - 1);
 }
 
 void OrdersList::add(Orders* o) {

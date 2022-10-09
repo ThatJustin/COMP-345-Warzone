@@ -20,12 +20,12 @@ int main() {
     //testPlayers();
 
     //Test OrderList
-//    cout << "Testing OrderList" << endl;
-    //  testOrdersLists();
+    cout << "Testing OrderList" << endl;
+    testOrdersLists();
 
     //Test Cards deck/hand
-    cout << "Testing Cards deck/hand" << endl;
-     testCards();
+    //cout << "Testing Cards deck/hand" << endl;
+    //testCards();
 
     //Test GameEngine
 //    cout << "Testing GameEngine" << endl;

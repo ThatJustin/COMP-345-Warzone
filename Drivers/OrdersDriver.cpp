@@ -11,6 +11,14 @@ void testOrdersLists(){
     Orders* ai = new Airlift();
     Orders* ne = new Negotiate();
 
+    //testing validation
+    de->validate();
+    ad->validate();
+    bo->validate();
+    bl->validate();
+    ai->validate();
+    ne->validate();
+
     //adding the orders to the orders list
     OrdersList* ol = new OrdersList();
     cout<<"Added Deploy:"<<endl;
@@ -42,6 +50,19 @@ void testOrdersLists(){
     ol->remove(3);
     cout<<"/////////////////////////////////////"<<endl;
     ol->displayList();
+
+    //adding back the removed order
+    ol->add(ad);
+    ol->displayList();
+
+    cout<<endl;
+    cout<<"/////////////////////////////////////"<<endl;
+    cout<<endl;
+
+    //for loop through the orders list to execute them all
+    for(auto i=0;i<ol->getOrdersList().size();i++){
+        ol->getOrdersList().at(i)->execute();
+    }
 
     //delete the orders list once completed
     delete ol;
