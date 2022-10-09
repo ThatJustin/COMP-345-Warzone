@@ -28,10 +28,10 @@ private:
 
 public:
     Cards(); //cards default constructor
-    Cards(CardsType type); //cards parametrised constructor
+    explicit Cards(CardsType type); //cards parametrised constructor
     Cards(const Cards& cards); //cards copy constructor
     ~Cards(); //cards deletor
-    CardsType getType(std::string name) const; //card type with the enum element name
+    CardsType getType(const std::string& name) ; //card type with the enum element name
     CardsType& getType(); //return the type of the card
     void play(Player* player, Deck* deck); //play method for the card class
     Cards& operator=(const Cards& cards); //assignment operator
@@ -49,7 +49,7 @@ private:
 
 public:
     Deck(); //deck default constructor
-    Deck(const std::vector<Cards*>& cards); //deck parametrised constructor
+    explicit Deck(const std::vector<Cards*>& cards); //deck parametrised constructor
     Deck(const Deck& deck); //deck copy constructor
     ~Deck(); //deck deletor
     void addCard(Cards* card); //add cards to the deck method
@@ -70,11 +70,12 @@ private:
 
 public:
     Hand();//hand default constructor
-    Hand(std::vector<Cards*> cards); //hand parametrized constructor
+    explicit Hand(std::vector<Cards*> cards); //hand parametrized constructor
     Hand(const Hand& hand); //hand copy constructor
     ~Hand(); //hand deletor
     void addCard(Cards* card); //method that allow cards to be added to the hand
     void remove(Cards* card);
+
     std::vector<Cards*> getCards(); //return cards in the hand
 };
 

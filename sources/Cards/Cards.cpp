@@ -45,7 +45,7 @@ Cards::Cards(const Cards& cards) {
  * @param name
  * @return
  */
-CardsType Cards::getType(string name) const {
+CardsType Cards::getType(const string& name) {
 
     if (name == "bomb") {
         return BOMB;
