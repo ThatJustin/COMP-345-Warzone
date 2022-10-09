@@ -25,6 +25,8 @@ std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream<<order.toString();
 }
 
+
+//return the name based on the type of order
 string getNameByOrderType(OrderType cardType) {
     switch (cardType) {
         case OrderType::DEPLOY:
@@ -43,6 +45,7 @@ string getNameByOrderType(OrderType cardType) {
     return "none";
 }
 
+//return order type based on card type
 Orders* createOrderByCardType(int cardType) {
     switch (cardType) {
         case BOMB:
@@ -58,10 +61,12 @@ Orders* createOrderByCardType(int cardType) {
     }
 }
 
+//OrdersList default constructor
 OrdersList::OrdersList() {
     this->list = std::vector<Orders*>();
 }
 
+//OrdersList destructor, also deletes every order in the list
 OrdersList::~OrdersList() {
     for (auto order: list) {
         delete order;
@@ -69,6 +74,7 @@ OrdersList::~OrdersList() {
     }
 }
 
+//OrdersList copy constructor
 OrdersList::OrdersList(const OrdersList& ol) {
     this->list = vector<Orders*>(ol.list.size());
     for (auto& temp: ol.list) {
@@ -88,9 +94,11 @@ void OrdersList::move(int from, int to) {
 }
 
 void OrdersList::remove(int order) {
+    //deletes order - 1 to account for the index, as the user will delete orders starting from 1
     list.erase(list.begin() + order - 1);
 }
 
+//adds Order to the list
 void OrdersList::add(Orders* o) {
     list.push_back(o);
     cout<<*o;
