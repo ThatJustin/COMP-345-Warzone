@@ -3,7 +3,6 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-#include <utility>
 
 using std::cout;
 using std::endl;
@@ -57,6 +56,9 @@ Continent::~Continent() {
  * @return A reference to the Continent object assigned
  */
 Continent& Continent::operator=(const Continent& continent) {
+    if (this == &continent) {
+        return *this;
+    }
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
     this->territories = continent.territories;
@@ -184,6 +186,9 @@ Territory::~Territory() {
  * @return A reference to the Territory object assigned
  */
 Territory& Territory::operator=(const Territory& territory) {
+    if (this == &territory) {
+        return *this;
+    }
     this->map_territory_id = territory.map_territory_id;
     this->number_of_armies = territory.number_of_armies;
     this->territory_name = territory.territory_name;
@@ -352,6 +357,9 @@ Map::~Map() {
  * @return A reference to the Map object assigned
  */
 Map& Map::operator=(const Map& map) {
+    if (this == &map) {
+        return *this;
+    }
     this->territories = map.territories;
     this->continents = map.continents;
     return *this;
@@ -571,6 +579,9 @@ MapLoader::~MapLoader() {
  * @return The MapLoader object that was assigned
  */
 MapLoader& MapLoader::operator=(const MapLoader& map_loader) {
+    if (this == &map_loader) {
+        return *this;
+    }
     this->map_file_directory = map_loader.map_file_directory;
     this->map = map_loader.map;
     return *this;

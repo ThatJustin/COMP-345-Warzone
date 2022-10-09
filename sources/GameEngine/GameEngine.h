@@ -1,16 +1,25 @@
 #pragma once
+
 #include <string>
 
 using namespace std;
 
 class GameState;
+
 class Start;
+
 class MapLoaded;
+
 class MapValidated;
+
 class PlayersAdded;
+
 class AssignReinforcement;
+
 class IssueOrders;
+
 class ExecuteOrders;
+
 class Win;
 
 
@@ -56,6 +65,7 @@ public:
             Play = 10,
             End = 11;
 
+    //Handles changing states by a transition
     void changeStateByTransition(int transition);
 
     GameState* getStateFromTransition(int transition);
@@ -83,6 +93,7 @@ public:
 
     virtual ~GameState();
 
+    GameState& operator=(const GameState& gameState);
 };
 
 class Start : public GameState {
@@ -104,6 +115,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const Start& start);
+
+    Start& operator=(const Start& start);
 };
 
 class MapLoaded : public GameState {
@@ -126,6 +141,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const MapLoaded& mapLoaded);
+
+    MapLoaded& operator=(const MapLoaded& mapLoaded);
 };
 
 class MapValidated : public GameState {
@@ -148,6 +167,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const MapValidated& mapValidated);
+
+    MapValidated& operator=(const MapValidated& mapValidated);
 };
 
 class PlayersAdded : public GameState {
@@ -170,6 +193,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const PlayersAdded& playersAdded);
+
+    PlayersAdded& operator=(const PlayersAdded& playersAdded);
 };
 
 class AssignReinforcement : public GameState {
@@ -181,9 +208,9 @@ public:
     AssignReinforcement(const AssignReinforcement& assignReinforcement);
 
     //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::IssueOrder};
+    const int VALID_TRANSITIONS[1] = {GameEngine::IssueOrder};
     //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"issueorders"};
+    const string VALID_COMMANDS[1]{"issueorders"};
 
     ~AssignReinforcement() override;
 
@@ -192,6 +219,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement);
+
+    AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
 };
 
 class IssueOrders : public GameState {
@@ -214,6 +245,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const IssueOrders& issueOrders);
+
+    IssueOrders& operator=(const IssueOrders& issueOrders);
 };
 
 class ExecuteOrders : public GameState {
@@ -236,6 +271,10 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const ExecuteOrders& executeOrders);
+
+    ExecuteOrders& operator=(const ExecuteOrders& executeOrders);
 };
 
 class Win : public GameState {
@@ -258,4 +297,8 @@ public:
     bool isValidTransition() override;
 
     GameState* copy() override;
+
+    friend ostream& operator<<(ostream& stream, const Win& win);
+
+    Win& operator=(const Win& win);
 };

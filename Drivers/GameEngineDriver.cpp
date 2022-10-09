@@ -1,3 +1,4 @@
+#include <iostream>
 #include "sources/GameEngine/GameEngine.h"
 
 void testGameStates() {
@@ -5,6 +6,5 @@ void testGameStates() {
 
     // Show the transitions for demo by going to the start game first
     gameEngine->changeStateByTransition(GameEngine::StartGame);
-
     delete gameEngine;
 }

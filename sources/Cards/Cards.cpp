@@ -2,7 +2,6 @@
 #include "Cards.h"
 #include "../Orders/Orders.h"
 #include "../Player/Player.h"
-#include <utility>
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -136,8 +135,9 @@ void Deck::draw(Player* player) {
         int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
         player->getHandCards()->addCard(cards[randCardIdx]); //add random card to hand
         cards.erase(cards.begin() + randCardIdx); //remove card from deck
+    } else {
+        cout << "Tried to pull a card from an empty deck" << endl;
     }
-    cout << "Tried to pull a card from an empty deck" << endl;
 }
 
 /**
@@ -257,6 +257,9 @@ std::ostream& operator<<(std::ostream& stream, const Cards& cards) {
  * @return
  */
 Cards& Cards::operator=(const Cards& cards) {
+    if (this == &cards) {
+        return *this;
+    }
     return *this;
 }
 
@@ -298,11 +301,14 @@ std::ostream& operator<<(std::ostream& stream, const Hand& hand) {
 
 /**
  * assignment operator
- * @param Hand
+ * @param hand
  * @return
  */
-Hand& Hand::operator=(const Hand& Hand) {
-    this->cards = Hand.cards;
+Hand& Hand::operator=(const Hand& hand) {
+    if (this == &hand) {
+        return *this;
+    }
+    this->cards = hand.cards;
     return *this;
 }
 
@@ -342,6 +348,9 @@ std::ostream& operator<<(std::ostream& stream, const Deck& deck) {
  * @return
  */
 Deck& Deck::operator=(const Deck& deck) {
+    if (this == &deck) {
+        return *this;
+    }
     this->cards = deck.cards;
     return *this;
 }
