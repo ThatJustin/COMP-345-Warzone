@@ -20,7 +20,7 @@ Orders::~Orders() {
 
 }
 
-//<< operator
+//stream insertion operator << to print the orders
 std::ostream& operator<<(ostream& stream, const Orders& order) {
     return stream<<order.toString();
 }
