@@ -930,7 +930,7 @@ void Airlift::toStreamInsertion(ostream& os) const {
     if (this->m_targetTerritory != nullptr) {
         os << "\tTarget Territory: " << this->m_targetTerritory->getTerritoryName() << endl;
     } else {
-        os << "\target Territory: NONE " << endl;
+        os << "\tTarget Territory: NONE " << endl;
     }
 }
 
