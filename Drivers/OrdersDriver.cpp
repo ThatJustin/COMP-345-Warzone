@@ -11,14 +11,6 @@ void testOrdersLists() {
     Orders* ai = new Airlift();
     Orders* ne = new Negotiate();
 
-    //testing validation
-    de->validate();
-    ad->validate();
-    bo->validate();
-    bl->validate();
-    ai->validate();
-    ne->validate();
-
     //adding the orders to the orders list
     OrdersList* ol = new OrdersList();
     cout << "Added Deploy Order to Orderslist.";

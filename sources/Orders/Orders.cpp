@@ -195,15 +195,8 @@ OrdersList& OrdersList::operator=(const OrdersList& orderslist) {
  */
 ostream& operator<<(ostream& stream, const OrdersList& ordersList) {
     stream << "Order list contains these orders: " << endl;
-    //  int size = 1;
     for (auto order: ordersList.list) {
         cout << *order;
-//        if (size == ordersList.list.size()) {
-//            cout << *order << "\r\n" << endl;
-//        } else {
-//            cout << *order << ", ";
-//        }
-//        size++;
     }
     return stream;
 }

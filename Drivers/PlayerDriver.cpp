@@ -5,18 +5,18 @@
 
 void testPlayers() {
     //Create the player
-    auto* player = new Player("Adam");
+    Player* player = new Player("Adam");
 
     //Create the territory and assign it to the player
-    auto* terrXasnines = new Territory(9, "Xasnines", player);
-    auto* terrZlami = new Territory(9, "Zlami", player);
+    Territory* terrXasnines = new Territory(9, "Xasnines", player);
+    Territory* terrZlami = new Territory(9, "Zlami", player);
     player->addTerritory(terrXasnines);
     player->addTerritory(terrZlami);
 
     //Test player cards by creating a card and giving it to the player
-    auto* cardB = new Cards(CardsType::BOMB);
-    auto* cardA = new Cards(CardsType::AIRLIFT);
-    auto* cardD = new Cards(CardsType::DIPLOMACY);
+    Cards* cardB = new Cards(CardsType::BOMB);
+    Cards* cardA = new Cards(CardsType::AIRLIFT);
+    Cards* cardD = new Cards(CardsType::DIPLOMACY);
     Hand* hand = new Hand;
     hand->addCard(cardB);
     hand->addCard(cardA);
