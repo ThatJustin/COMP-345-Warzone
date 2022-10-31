@@ -69,6 +69,13 @@ public:
     void changeStateByTransition(int transition);
 
     GameState* getStateFromTransition(int transition);
+
+    //Part 4 main game loop
+    void reinforcementPhase();
+
+    void issueOrdersPhase();
+
+    void executeOrdersPhase();
 };
 
 class GameState {

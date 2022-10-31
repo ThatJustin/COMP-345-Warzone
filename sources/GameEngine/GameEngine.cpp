@@ -958,3 +958,53 @@ Win& Win::operator=(const Win& win) {
     GameState::operator=(win);
     return *this;
 }
+
+/**
+ * Phase to give player army:
+ * 1.Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down).
+ * 2.If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
+ * 3.In any case, the minimal number of reinforcement army units per turn for any player is 3.
+ * 4.These army units are placed in the player’s reinforcement pool.
+ * 5.This must be implemented in a function/method named reinforcementPhase() in the game engine. -
+ */
+void reinforcementPhase(){ //potentially take parameter
+
+    //if check the amount of territory own for each player and give army accordingly
+
+    //if player own all territory given a number of army units corresponding to teh continent control bonus value
+
+    //if minimum reinforcement per turn is 3
+
+}
+
+/**
+ * Phase that Player issue order:
+ * 1.Players issue orders and place them in their order list through a call to the Player::issueOrder() method.
+ * 2.This method is called in round-robin fashion across all players by the game engine.
+ * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
+ * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
+ */
+void issueOrdersPhase(){
+
+    //call the player issue order method to add order in their order list
+
+    //implement in a round robin fashion
+
+    //phase end when all player have no more order to issue for their turn
+
+}
+
+/**
+ * Phase to execute player's order:
+ * 1.Once all the players have signified in the same turn that they are not issuing one more order,
+ * the game engine proceeds to execute the top order on the list of orders of each player in a round-robin fashion (i.e. the “Order Execution Phase”—see below).
+ * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase.
+ * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine.
+ */
+void executeOrdersPhase(){
+
+    //once no more order, execute the top order on the list in a round robin fashion
+
+    //execute all order, then go back to the reinforcement phase
+
+}
