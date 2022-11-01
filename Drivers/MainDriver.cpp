@@ -30,5 +30,10 @@ int main() {
     //Test GameEngine
     cout << "Testing GameEngine" << endl;
     testGameStates();
+
+    //Test MainGameLoop
+    cout << "Testing MainGameLoop" << endl;
+    //testMainGameLoop();
+
     return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "sources/Player/Player.h"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ class ExecuteOrders;
 
 class Win;
 
+class MainGameLoop;
+
 
 class GameEngine {
 private:
@@ -35,6 +38,7 @@ private:
     IssueOrders* issueOrders;
     ExecuteOrders* executeOrders;
     Win* win;
+    MainGameLoop* mainGameLoop;
 
     // Keep track of the current state
     GameState* currentGameState;
@@ -62,6 +66,7 @@ public:
             Execorder = 7,
             Endexecorders = 8,
             Win = 9,
+            //need main game loop?
             Play = 10,
             End = 11;
 
@@ -70,12 +75,6 @@ public:
 
     GameState* getStateFromTransition(int transition);
 
-    //Part 4 main game loop
-    void reinforcementPhase();
-
-    void issueOrdersPhase();
-
-    void executeOrdersPhase();
 };
 
 class GameState {
@@ -101,6 +100,34 @@ public:
     virtual ~GameState();
 
     GameState& operator=(const GameState& gameState);
+};
+
+//need to verify if implemented the right way
+//or need to be a part of gamestate
+class MainGameLoop {
+
+private:
+    int army;
+    //int maxterritory;
+public:
+    GameEngine* gameEngine;
+
+    MainGameLoop();
+
+    //Part 4 main game loop
+    void reinforcementPhase(Player* player);
+
+    void issueOrdersPhase();
+
+    void executeOrdersPhase();
+
+    int getArmy();
+
+    void setArmy(int army);
+
+    int controlbonus;//need to privatise
+
+
 };
 
 class Start : public GameState {

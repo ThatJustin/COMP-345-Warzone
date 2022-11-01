@@ -13,6 +13,11 @@ void testGameStates() {
 void testMainGameLoop(){
 
     //add test cases in a round robin fashion
+    //reinforcementPhase();
+
+    //executeOrdersPhase();
+
+    //issueOrdersPhase();
 
     cout<<"The winner is: addwinnername variable" << endl;
 }
