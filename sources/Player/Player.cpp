@@ -11,7 +11,7 @@ Player::Player() {
     this->territories = vector<Territory*>();
     this->name = "";
     this->handCards = new Hand;
-    this->ordersList = new OrdersList;
+    this->ordersList = new OrdersList();
 }
 
 /**
@@ -22,7 +22,7 @@ Player::Player(const string& name) {
     this->territories = vector<Territory*>();
     this->name = name;
     this->handCards = new Hand;
-    this->ordersList = new OrdersList;
+    this->ordersList = new OrdersList();
 }
 
 /**
@@ -241,5 +241,22 @@ int Player::getArmy() {
 void Player::setArmy(int reinforcement) {
 
     army = reinforcement;
+}
+
+/**
+ *remove the order from the ordered list
+ * @return
+ */
+Orders* Player::removeOrder() {
+    //if there is no order in the list return null
+    if (ordersList->getOrdersList().size() == 0) {
+        return NULL;
+    }
+    //put the order in the orderlist
+    auto orderlist = ordersList->getOrdersList();
+
+    Orders* order = orderlist.at(0);
+    ordersList->remove(0);
+    return order;
 }
 

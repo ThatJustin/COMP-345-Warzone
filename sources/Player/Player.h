@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "sources/Orders/Orders.h"
 
 using namespace std;
 
@@ -68,6 +69,9 @@ public:
 
     //set the amount of army per player
     void setArmy(int army);
+
+    //remove the order
+    Orders* removeOrder();
 
 private:
     //Collection of territories

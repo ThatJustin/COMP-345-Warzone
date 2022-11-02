@@ -1,6 +1,7 @@
 #include "GameEngine.h"
-#include "../Player/Player.h"
-#include "sources/Map/Map.h"
+//#include "../Player/Player.h"
+#include "../Map/Map.h"
+//#include "../Orders/Orders.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -980,7 +981,6 @@ void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parame
     }
 
     //if player own all territory given a number of army units corresponding to the continent control bonus value
-
     for(Continent* continent: map->getContinents()){
         for(Territory* territory: continent->getTerritories()){
             //verify if the player is the one that own the territory
@@ -1015,15 +1015,34 @@ void MainGameLoop::issueOrdersPhase(){
 
 /**
  * Phase to execute player's order:
- * 1.Once all the players have signified in the same turn that they are not issuing one more order,
+ * 1.Once all the players have signified in the same turn that they are not issuing one more order,_/
  * the game engine proceeds to execute the top order on the list of orders of each player in a round-robin fashion (i.e. the “Order Execution Phase”—see below).
- * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase.
- * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine.
+ * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase._/
+ * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine._/
  */
-void MainGameLoop::executeOrdersPhase(){
+void MainGameLoop::executeOrdersPhase(Player* player) { //OrdersList* ordersList){
 
     //once no more order, execute the top order on the list in a round robin fashion
+    bool orderplayed = true;
+
+    //while there are still order to be executed
+    while (player->issueOrder() || orderplayed) {
+        orderplayed = false; //once there are no more order to execute break out
+        //remove the order from the player's orderlist
+        Orders *orders = player->removeOrder();
+
+        //check if there are orders left to execute
+        if (orders != NULL) {
+            orderplayed = true;
+            player->issueOrder();
+            //orders->execute(); //need part 4
+        }
+    }
 
     //execute all order, then go back to the reinforcement phase
+    if(player->getOrdersList() == 0){
+
+        reinforcementPhase(player);
+    }
 
 }

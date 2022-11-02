@@ -2,10 +2,12 @@
 
 #include <string>
 #include "sources/Player/Player.h"
+#include "sources/Orders/Orders.h"
 
 using namespace std;
 
 class Map;
+class OrdersList;
 
 class GameState;
 
@@ -28,7 +30,7 @@ class Win;
 class MainGameLoop;
 
 
-class GameEngine {
+class GameEngine { //need to inherit ilogable
 private:
 
     //each state
@@ -70,9 +72,9 @@ public:
             Execorder = 7,
             Endexecorders = 8,
             Win = 9,
-            //need main game loop?
             Play = 10,
             End = 11;
+            //need main game loop?
 
     //Handles changing states by a transition
     void changeStateByTransition(int transition);
@@ -110,7 +112,7 @@ public:
 
 //need to verify if implemented the right way
 //or need to be a part of gamestate
-class MainGameLoop {
+class MainGameLoop : public GameEngine {
 
 private:
     //int maxterritory;
@@ -124,7 +126,7 @@ public:
 
     void issueOrdersPhase();
 
-    void executeOrdersPhase();
+    void executeOrdersPhase(Player* player);
 
     int controlbonus;//need to privatise
 
