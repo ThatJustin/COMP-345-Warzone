@@ -5,6 +5,8 @@
 
 using namespace std;
 
+class Map;
+
 class GameState;
 
 class Start;
@@ -42,6 +44,8 @@ private:
 
     // Keep track of the current state
     GameState* currentGameState;
+
+
 public:
     GameEngine();
 
@@ -75,6 +79,8 @@ public:
 
     GameState* getStateFromTransition(int transition);
 
+    //Map
+    //Map* map = NULL;
 };
 
 class GameState {
@@ -107,7 +113,6 @@ public:
 class MainGameLoop {
 
 private:
-    int army;
     //int maxterritory;
 public:
     GameEngine* gameEngine;
@@ -121,13 +126,10 @@ public:
 
     void executeOrdersPhase();
 
-    int getArmy();
-
-    void setArmy(int army);
-
     int controlbonus;//need to privatise
 
-
+    //Map
+    Map* map = NULL;
 };
 
 class Start : public GameState {

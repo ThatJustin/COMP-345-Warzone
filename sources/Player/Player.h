@@ -63,6 +63,12 @@ public:
     //Assignment operator overload
     Player& operator=(const Player& player);
 
+    //get the amount of army per player
+    int getArmy();
+
+    //set the amount of army per player
+    void setArmy(int army);
+
 private:
     //Collection of territories
     vector<Territory*> territories;
@@ -75,4 +81,7 @@ private:
 
     //Player name
     string name;
+
+    //amount of soldier for the player
+    int army;
 };

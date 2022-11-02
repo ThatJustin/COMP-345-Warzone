@@ -225,3 +225,21 @@ Player& Player::operator=(const Player& player) {
     return *this;
 }
 
+/**
+ * for part 4
+ * @return
+ */
+int Player::getArmy() {
+
+    return army;
+}
+
+/**
+ * for part 4
+ * @param army
+ */
+void Player::setArmy(int reinforcement) {
+
+    army = reinforcement;
+}
+

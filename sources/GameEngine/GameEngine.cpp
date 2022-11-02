@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "../Player/Player.h"
+#include "sources/Map/Map.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -164,24 +165,6 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
     stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
     return stream;
-}
-
-/**
- * for part 4
- * @return
- */
-int MainGameLoop::getArmy() {
-
-    return army;
-}
-
-/**
- * for part 4
- * @param army
- */
-void MainGameLoop::setArmy(int reinforcement) {
-
-    army = reinforcement;
 }
 
 /**
@@ -993,17 +976,24 @@ void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parame
     if(player->getTerritories().size() != 0){
 
         //round down the amount of ary based on the amount of territory owned by the player
-        setArmy(std::round((player->getTerritories().size())/3));
+        player->setArmy(std::round((player->getTerritories().size())/3));
     }
 
     //if player own all territory given a number of army units corresponding to the continent control bonus value
-    if(player->getTerritories().size() == player->getTerritories().max_size()){//need to be changed
 
-        setArmy(controlbonus);
+    for(Continent* continent: map->getContinents()){
+        for(Territory* territory: continent->getTerritories()){
+            //verify if the player is the one that own the territory
+            if(territory->getTerritoryOwner() != player){
+                goto end;//continue the external loop
+            }
+        }
+        player->setArmy(controlbonus);//need to change controlbonus to get continent value
+        end:;//continue from this
     }
 
     //if minimum reinforcement per turn is 3
-    setArmy(+3);
+    player->setArmy(+3);
 }
 
 /**
