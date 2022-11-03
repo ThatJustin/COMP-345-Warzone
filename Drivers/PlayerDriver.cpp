@@ -24,7 +24,7 @@ void testPlayers() {
     player->setHandCards(hand);
 
     //Issues an order for assignment 1
-    player->issueOrder();
+    //player->issueOrder();
 
     cout << *player << endl;
 

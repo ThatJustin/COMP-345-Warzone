@@ -14,6 +14,10 @@ class OrdersList;
 
 class Hand;
 
+class Map;
+
+class Deck;
+
 class Player {
 public:
     //Constructor
@@ -53,7 +57,7 @@ public:
     vector<Territory*> toAttack();
 
     //Issues an order
-    bool issueOrder();
+    bool issueOrder(Map* map, Player* player, Deck* deck); //need to add commandprocessor as a parameter here
 
     //Adds a territory to be owned by player
     void addTerritory(Territory* territory);

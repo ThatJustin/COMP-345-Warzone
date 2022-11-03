@@ -242,6 +242,13 @@ public:
     friend ostream& operator<<(ostream& stream, const IssueOrders& issueOrders);
 
     IssueOrders& operator=(const IssueOrders& issueOrders);
+
+    //for maingameloop
+    std::vector<Player*> players;
+
+    Map* map = NULL;
+
+    Deck* deck = NULL;
 };
 
 class ExecuteOrders : public GameState {
@@ -263,6 +270,8 @@ public:
     friend ostream& operator<<(ostream& stream, const ExecuteOrders& executeOrders);
 
     ExecuteOrders& operator=(const ExecuteOrders& executeOrders);
+
+    std::vector<Player*> players;
 };
 
 class Win : public GameState {

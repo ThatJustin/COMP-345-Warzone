@@ -683,12 +683,26 @@ IssueOrders::~IssueOrders() {
 
 /**
  * Handles what happens when entering a specific state.
+ * Phase that Player issue order:
+ * 1.Players issue orders and place them in their order list through a call to the Player::issueOrder() method._/
+ * 2.This method is called in round-robin fashion across all players by the game engine.-
+ * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
+ * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
  */
 void IssueOrders::enterState() {
     cout << "Entering " << *this << endl;
 
-    //add issueorder code in here
+    //call the player issue order method to add order in their order list
+    for (Player* player : players) {
 
+        //issue the order
+        player->issueOrder(map, player, deck);
+
+        //phase end when all player have no more order to issue for their turn
+        //if(player.nomoreorder()){
+        //endturn();
+        //}
+    }
 }
 
 /**
@@ -752,12 +766,32 @@ ExecuteOrders::~ExecuteOrders() {
 
 /**
  * Handles what happens when entering a specific state.
+ * Phase to execute player's order:
+ * 1.Once all the players have signified in the same turn that they are not issuing one more order,_/
+ * the game engine proceeds to execute the top order on the list of orders of each player in a round-robin fashion (i.e. the “Order Execution Phase”—see below).
+ * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase._/
+ * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine._/
  */
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
 
-    //execute order code in here
-
+    //once no more order, execute the top order on the list in a round robin fashion
+    bool orderplayed = true;
+    //while there are still order to be executed
+    while (orderplayed) {
+        orderplayed = false; //once there are no more order to execute break out
+        for (Player* player : players) {
+            //remove the order from the player's orderlist
+            Orders *orders = player->removeOrder();
+            //check if there are orders left to execute
+            if (orders != NULL) {
+                orderplayed = true;
+                //orders->execute(); //need part 4
+            }
+        }
+    }
+    //execute all order, then go back to the reinforcement phase
+    this->gameEngine->changeStateByTransition(8);
 }
 
 /**

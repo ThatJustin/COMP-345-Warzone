@@ -126,11 +126,22 @@ vector<Territory*> Player::toAttack() {
 
 /**
  * Issues an order during the payer issue order phase.
- *
+ * OrderIssuingPhase:
+ * 1.The player decides which neighboring territories are to be attacked in priority
+    (as a list return by the toAttack() method),
+    and which of their own territories are to be defended in priority (as a list returned by the toDefend() method).
+ * 2.The player issues deploy orders on its own territories that are in the list returned by toDefend().
+    As long as the player has army units in their reinforcement pool (see startup phase and reinforcement phase),
+    it will issue a deploy order and no other order. Once it has deployed all its available army units, it can proceed with other kinds of orders.
+ * 3.The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories in order to defend it
+    (using toDefend() to make the decision), and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them
+    (using toAttack() to make the decision).
+ * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder() {
+bool Player::issueOrder(Map *map, Player *player, Deck *deck) { //need to add commandprocessor as a parameter here
 
+    /*
     //For testing purposes in assignment 1, will create an order and issue it
     Orders* bomb = new Bomb();
     Orders* airlift = new Airlift();
@@ -138,6 +149,14 @@ bool Player::issueOrder() {
     this->ordersList->add(bomb);
     this->ordersList->add(airlift);
     this->ordersList->add(negotiate);
+     */
+
+    //The player decides which neighboring territories are to be attacked in priority
+    //(as a list return by the toAttack() method),
+    //and which of their own territories are to be defended in priority (as a list returned by the toDefend() method).
+
+
+
     return true;
 }
 
