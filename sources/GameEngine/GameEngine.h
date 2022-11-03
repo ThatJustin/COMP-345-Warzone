@@ -22,6 +22,7 @@ class ExecuteOrders;
 
 class Win;
 
+class CommandProcessor;
 
 class GameEngine {
 private:
@@ -38,6 +39,8 @@ private:
 
     // Keep track of the current state
     GameState* currentGameState;
+
+    CommandProcessor* commandProcessor;
 public:
     GameEngine();
 
@@ -69,6 +72,12 @@ public:
     void changeStateByTransition(int transition);
 
     GameState* getStateFromTransition(int transition);
+
+    void setCommandProcessor(CommandProcessor* commandProcessor);
+
+    void startupPhase();
+
+    void mainGameLoop();
 };
 
 class GameState {
@@ -103,11 +112,6 @@ public:
 
     Start(const Start& start);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::LoadMap};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"loadmap"};
-
     ~Start() override;
 
     void enterState() override;
@@ -128,11 +132,6 @@ public:
     explicit MapLoaded(GameEngine* gameEngine);
 
     MapLoaded(const MapLoaded& mapLoaded);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::LoadMap, GameEngine::ValidateMap};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"loadmap", "validatemap"};
 
     ~MapLoaded() override;
 
@@ -155,11 +154,6 @@ public:
 
     MapValidated(const MapValidated& mapValidated);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::AddPlayer};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"addplayer"};
-
     ~MapValidated() override;
 
     void enterState() override;
@@ -180,11 +174,6 @@ public:
     explicit PlayersAdded(GameEngine* gameEngine);
 
     PlayersAdded(const PlayersAdded& playersAdded);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::AddPlayer, GameEngine::AssignCountries};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"addplayer", "assigncountries"};
 
     ~PlayersAdded() override;
 
@@ -207,11 +196,6 @@ public:
 
     AssignReinforcement(const AssignReinforcement& assignReinforcement);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::IssueOrder};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"issueorders"};
-
     ~AssignReinforcement() override;
 
     void enterState() override;
@@ -232,11 +216,6 @@ public:
     explicit IssueOrders(GameEngine* gameEngine);
 
     IssueOrders(const IssueOrders& issueOrders);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::IssueOrder, GameEngine::EndIssueOrders};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"issueorders", "endissueorders"};
 
     ~IssueOrders() override;
 
@@ -259,11 +238,6 @@ public:
 
     ExecuteOrders(const ExecuteOrders& executeOrders);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[3] = {GameEngine::Execorder, GameEngine::Endexecorders, GameEngine::Win};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[3]{"execorder", "endexecorders", "win"};
-
     ~ExecuteOrders() override;
 
     void enterState() override;
@@ -284,11 +258,6 @@ public:
     explicit Win(GameEngine* gameEngine);
 
     Win(const Win& win);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::Play, GameEngine::End};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"play", "end"};
 
     ~Win() override;
 

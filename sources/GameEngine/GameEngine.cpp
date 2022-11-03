@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include "CommandProcessor.h"
 
 /**
  * Constructor of GameEngine
@@ -20,6 +21,8 @@ GameEngine::GameEngine() {
     this->issueOrders = new IssueOrders(this);
     this->executeOrders = new ExecuteOrders(this);
     this->win = new class Win(this);
+
+    this->commandProcessor = new CommandProcessor();
 }
 
 /**
@@ -61,6 +64,10 @@ GameEngine::~GameEngine() {
     if (win != nullptr) {
         delete win;
         win = nullptr;
+    }
+    if (commandProcessor != nullptr) {
+        delete commandProcessor;
+        commandProcessor = nullptr;
     }
 }
 
@@ -132,6 +139,7 @@ GameEngine::GameEngine(const GameEngine& gameEngine) {
     executeOrders = dynamic_cast<ExecuteOrders*>(gameEngine.executeOrders->copy());
     win = dynamic_cast<class Win*>(gameEngine.win->copy());
     currentGameState = gameEngine.currentGameState->copy();
+    commandProcessor = gameEngine.commandProcessor;
 }
 
 /**
@@ -150,7 +158,16 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     this->executeOrders = gameEngine.executeOrders;
     this->win = gameEngine.win;
     this->currentGameState = gameEngine.currentGameState;
+    this->commandProcessor = gameEngine.commandProcessor;
     return *this;
+}
+
+/**
+ * Set the commandProcessor object for the game engine.
+ * @param commandProcessor
+ */
+void GameEngine::setCommandProcessor(CommandProcessor* commandProc) {
+    this->commandProcessor = commandProc;
 }
 
 /**
@@ -162,6 +179,47 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
     stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
     return stream;
+}
+
+/**
+ * Startup Phase
+ */
+void GameEngine::startupPhase() {
+
+    changeStateByTransition(StartGame);
+
+    bool runningStartupPhase = true;
+    while (runningStartupPhase) {
+        string curStateName = this->getCurrentGameState()->name;
+        Command* c = this->commandProcessor->getCommand(curStateName);
+        if (c == nullptr) {
+            cout << "This command is not valid for this state." << endl;
+            continue;
+        }
+        if (c->command == "loadmap") {
+            changeStateByTransition(LoadMap);
+        } else if (c->command == "validatemap") {
+            changeStateByTransition(ValidateMap);
+        } else if (c->command == "addplayer") {
+            changeStateByTransition(AddPlayer);
+        } else if (c->command == "gamestart") {
+            //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
+            // will return here
+            mainGameLoop();
+        } else if (c->command == "replay") {
+            changeStateByTransition(StartGame);
+        } else if (c->command == "quit") {
+            exit(0);
+        }
+    }
+}
+
+/**
+ * The maincame loop is handled here with no user interfering with it.
+ * The valid states aer AssignReinforcement, IssueOrders and ExecuteOrders
+ */
+void GameEngine::mainGameLoop() {
+
 }
 
 /**
@@ -244,25 +302,6 @@ Start::~Start() {
 void Start::enterState() {
     cout << "Entering " << *this << endl;
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::LoadMap);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -313,7 +352,7 @@ Start& Start::operator=(const Start& start) {
  */
 
 MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
-    this->name = "loadmap";
+    this->name = "maploaded";
 }
 
 /**
@@ -329,28 +368,6 @@ void MapLoaded::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::LoadMap);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::ValidateMap);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -422,26 +439,6 @@ MapValidated::~MapValidated() {
 void MapValidated::enterState() {
     cout << "Entering " << *this << endl;
 
-
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -514,28 +511,6 @@ void PlayersAdded::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::AssignCountries);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -608,25 +583,6 @@ void AssignReinforcement::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -700,28 +656,6 @@ void IssueOrders::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::EndIssueOrders);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -790,31 +724,6 @@ void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::Execorder);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::Endexecorders);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[2]) {
-            gameEngine->changeStateByTransition(GameEngine::Win);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -886,29 +795,6 @@ Win::~Win() {
 void Win::enterState() {
     cout << "Entering " << *this << endl;
 
-
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::Play);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            validInput = true;
-            exit(0);
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
