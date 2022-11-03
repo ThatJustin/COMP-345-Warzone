@@ -1,11 +1,8 @@
 #include "GameEngine.h"
-//#include "../Player/Player.h"
-#include "../Map/Map.h"
-//#include "../Orders/Orders.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include "math.h"
+#include "CommandProcessor.h"
 
 /**
  * Constructor of GameEngine
@@ -24,6 +21,8 @@ GameEngine::GameEngine() {
     this->issueOrders = new IssueOrders(this);
     this->executeOrders = new ExecuteOrders(this);
     this->win = new class Win(this);
+
+    this->commandProcessor = new CommandProcessor();
 }
 
 /**
@@ -65,6 +64,10 @@ GameEngine::~GameEngine() {
     if (win != nullptr) {
         delete win;
         win = nullptr;
+    }
+    if (commandProcessor != nullptr) {
+        delete commandProcessor;
+        commandProcessor = nullptr;
     }
 }
 
@@ -109,11 +112,11 @@ GameState* GameEngine::getStateFromTransition(int transition) {
         return mapValidated;
     } else if (transition == AddPlayer) {
         return playersAdded;
-    } else if (transition == AssignCountries || transition == Endexecorders) {
+    } else if (transition == GameStart || transition == Endexecorders) {
         return assignReinforcement;
     } else if (transition == IssueOrder) {
         return issueOrders;
-    } else if (transition == EndIssueOrders || transition == Execorder) {
+    } else if (transition == IssueOrdersEnd || transition == Execorder) {
         return executeOrders;
     } else if (transition == Win) {
         return win;
@@ -136,6 +139,7 @@ GameEngine::GameEngine(const GameEngine& gameEngine) {
     executeOrders = dynamic_cast<ExecuteOrders*>(gameEngine.executeOrders->copy());
     win = dynamic_cast<class Win*>(gameEngine.win->copy());
     currentGameState = gameEngine.currentGameState->copy();
+    commandProcessor = gameEngine.commandProcessor;
 }
 
 /**
@@ -154,7 +158,16 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
     this->executeOrders = gameEngine.executeOrders;
     this->win = gameEngine.win;
     this->currentGameState = gameEngine.currentGameState;
+    this->commandProcessor = gameEngine.commandProcessor;
     return *this;
+}
+
+/**
+ * Set the commandProcessor object for the game engine.
+ * @param commandProcessor
+ */
+void GameEngine::setCommandProcessor(CommandProcessor* commandProc) {
+    this->commandProcessor = commandProc;
 }
 
 /**
@@ -166,6 +179,48 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine) {
 ostream& operator<<(ostream& stream, const GameEngine& gameEngine) {
     stream << "Current GameEngine State : " << gameEngine.currentGameState->name << endl;
     return stream;
+}
+
+/**
+ * Startup Phase
+ */
+void GameEngine::startupPhase() {
+
+    changeStateByTransition(StartGame);
+
+    bool runningStartupPhase = true;
+    while (runningStartupPhase) {
+        string curStateName = this->getCurrentGameState()->name;
+        Command* c = this->commandProcessor->getCommand(curStateName);
+        if (c == nullptr) {
+            cout << "This command is not valid for this state." << endl;
+            continue;
+        }
+        if (c->command == "loadmap") {
+            changeStateByTransition(LoadMap);
+        } else if (c->command == "validatemap") {
+            changeStateByTransition(ValidateMap);
+        } else if (c->command == "addplayer") {
+            changeStateByTransition(AddPlayer);
+        } else if (c->command == "gamestart") {
+            //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
+            // will return here
+            mainGameLoop();
+        } else if (c->command == "replay") {
+            changeStateByTransition(StartGame);
+        } else if (c->command == "quit") {
+            exit(0);
+        }
+    }
+}
+
+/**
+ * The main game loop is handled here with no user interfering with it.
+ * The valid states are AssignReinforcement, IssueOrders and ExecuteOrders.
+ * The valid transitions are IssueOrder, IssueOrdersEnd, Execorder, Endexecorders, Win
+ */
+void GameEngine::mainGameLoop() {
+
 }
 
 /**
@@ -248,25 +303,6 @@ Start::~Start() {
 void Start::enterState() {
     cout << "Entering " << *this << endl;
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::LoadMap);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -317,7 +353,7 @@ Start& Start::operator=(const Start& start) {
  */
 
 MapLoaded::MapLoaded(GameEngine* gameEngine) : GameState(gameEngine) {
-    this->name = "loadmap";
+    this->name = "maploaded";
 }
 
 /**
@@ -333,28 +369,6 @@ void MapLoaded::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::LoadMap);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::ValidateMap);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -426,26 +440,6 @@ MapValidated::~MapValidated() {
 void MapValidated::enterState() {
     cout << "Entering " << *this << endl;
 
-
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -518,28 +512,6 @@ void PlayersAdded::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::AssignCountries);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -609,53 +581,9 @@ AssignReinforcement::~AssignReinforcement() {
  * Handles what happens when entering a specific state.
  */
 void AssignReinforcement::enterState() {
-
-    /*
     cout << "Entering " << *this << endl;
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
 
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
-     */
-
-    for(Player* player: players) {
-        //if check the amount of territory own for each player and give army accordingly
-        if (player->getTerritories().size() != 0) {
-
-            //round down the amount of ary based on the amount of territory owned by the player
-            player->setArmy(std::round((player->getTerritories().size()) / 3));
-        }
-
-        //if player own all territory given a number of army units corresponding to the continent control bonus value
-        for (Continent *continent: map->getContinents()) {
-            for (Territory *territory: continent->getTerritories()) {
-                //verify if the player is the one that own the territory
-                if (territory->getTerritoryOwner() != player) {
-                    goto end;//continue the external loop
-                }
-            }
-            player->setArmy(controlbonus);//need to change controlbonus to get continent value
-            end:;//continue from this
-        }
-        //if minimum reinforcement per turn is 3
-        player->setArmy(+3);
-    }
 }
 
 /**
@@ -729,28 +657,6 @@ void IssueOrders::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::IssueOrder);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::EndIssueOrders);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -819,31 +725,6 @@ void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
 
 
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::Execorder);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            gameEngine->changeStateByTransition(GameEngine::Endexecorders);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[2]) {
-            gameEngine->changeStateByTransition(GameEngine::Win);
-            validInput = true;
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -915,29 +796,6 @@ Win::~Win() {
 void Win::enterState() {
     cout << "Entering " << *this << endl;
 
-
-    cout << "What state would you like to transition to?" << endl;
-    bool validInput = false;
-    while (!validInput) {
-        cout << "Valid transitions : ";
-        for (auto const& value: VALID_COMMANDS) {
-            std::cout << value << " ";
-        }
-        std::cout << "\n";
-
-        string input;
-        cin >> input;
-        transform(input.begin(), input.end(), input.begin(), ::tolower);
-        if (input == VALID_COMMANDS[0]) {
-            gameEngine->changeStateByTransition(GameEngine::Play);
-            validInput = true;
-        } else if (input == VALID_COMMANDS[1]) {
-            validInput = true;
-            exit(0);
-        } else {
-            cout << "An invalid transition was entered. Please try again." << endl;
-        }
-    }
 }
 
 /**
@@ -987,90 +845,3 @@ Win& Win::operator=(const Win& win) {
     GameState::operator=(win);
     return *this;
 }
-
-/**
- * Phase to give player army:
- * 1.Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down)._/
- * 2.If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
- * 3.In any case, the minimal number of reinforcement army units per turn for any player is 3._/
- * 4.These army units are placed in the player’s reinforcement pool.-
- * 5.This must be implemented in a function/method named reinforcementPhase() in the game engine. -
- */
- /*
-void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parameter
-
-    //if check the amount of territory own for each player and give army accordingly
-    if(player->getTerritories().size() != 0){
-
-        //round down the amount of ary based on the amount of territory owned by the player
-        player->setArmy(std::round((player->getTerritories().size())/3));
-    }
-
-    //if player own all territory given a number of army units corresponding to the continent control bonus value
-    for(Continent* continent: map->getContinents()){
-        for(Territory* territory: continent->getTerritories()){
-            //verify if the player is the one that own the territory
-            if(territory->getTerritoryOwner() != player){
-                goto end;//continue the external loop
-            }
-        }
-        player->setArmy(controlbonus);//need to change controlbonus to get continent value
-        end:;//continue from this
-    }
-
-    //if minimum reinforcement per turn is 3
-    player->setArmy(+3);
-}
-*/
-
-/**
- * Phase that Player issue order:
- * 1.Players issue orders and place them in their order list through a call to the Player::issueOrder() method.
- * 2.This method is called in round-robin fashion across all players by the game engine.
- * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
- * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
- */
- /*
-void MainGameLoop::issueOrdersPhase(){
-
-    //call the player issue order method to add order in their order list
-
-    //implement in a round robin fashion
-
-    //phase end when all player have no more order to issue for their turn
-
-}
-*/
-/**
- * Phase to execute player's order:
- * 1.Once all the players have signified in the same turn that they are not issuing one more order,_/
- * the game engine proceeds to execute the top order on the list of orders of each player in a round-robin fashion (i.e. the “Order Execution Phase”—see below).
- * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase._/
- * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine._/
- */
- /*
-void MainGameLoop::executeOrdersPhase(Player* player) { //OrdersList* ordersList){
-
-    //once no more order, execute the top order on the list in a round robin fashion
-    bool orderplayed = true;
-
-    //while there are still order to be executed
-    while (player->issueOrder() || orderplayed) {
-        orderplayed = false; //once there are no more order to execute break out
-        //remove the order from the player's orderlist
-        Orders *orders = player->removeOrder();
-
-        //check if there are orders left to execute
-        if (orders != NULL) {
-            orderplayed = true;
-            player->issueOrder();
-            //orders->execute(); //need part 4
-        }
-    }
-
-    //execute all order, then go back to the reinforcement phase
-    if(player->getOrdersList() == 0){
-
-        reinforcementPhase(player);
-    }
-}*/

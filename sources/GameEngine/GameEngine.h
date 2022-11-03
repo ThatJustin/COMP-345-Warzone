@@ -1,13 +1,8 @@
 #pragma once
 
 #include <string>
-#include "sources/Player/Player.h"
-#include "sources/Orders/Orders.h"
 
 using namespace std;
-
-class Map;
-class OrdersList;
 
 class GameState;
 
@@ -27,10 +22,9 @@ class ExecuteOrders;
 
 class Win;
 
-//class MainGameLoop;
+class CommandProcessor;
 
-
-class GameEngine { //need to inherit ilogable
+class GameEngine {
 private:
 
     //each state
@@ -42,12 +36,11 @@ private:
     IssueOrders* issueOrders;
     ExecuteOrders* executeOrders;
     Win* win;
-    //MainGameLoop* mainGameLoop;
 
     // Keep track of the current state
     GameState* currentGameState;
 
-
+    CommandProcessor* commandProcessor;
 public:
     GameEngine();
 
@@ -66,35 +59,24 @@ public:
             LoadMap = 1,
             ValidateMap = 2,
             AddPlayer = 3,
-            AssignCountries = 4,
+            GameStart = 4,
             IssueOrder = 5,
-            EndIssueOrders = 6,
+            IssueOrdersEnd = 6,
             Execorder = 7,
             Endexecorders = 8,
             Win = 9,
-            Play = 10,
-            End = 11;
-            //need main game loop?
-            //AssignReinforcement = 12,
-            //IssueOrders = 13,
-            //ExecuteOrders = 14;
+            Play = 10;
 
     //Handles changing states by a transition
     void changeStateByTransition(int transition);
 
     GameState* getStateFromTransition(int transition);
 
-    //for the maingameloop
-    //void IssueOrders::enterState();
+    void setCommandProcessor(CommandProcessor* commandProcessor);
 
-    //void ExecuteOrders::enterState();
+    void startupPhase();
 
-    //void AssignReinforcement::enterState();
-
-    //int controlbonus;//need to privatise
-
-    //Map
-    //Map* map = NULL;
+    void mainGameLoop();
 };
 
 class GameState {
@@ -122,48 +104,12 @@ public:
     GameState& operator=(const GameState& gameState);
 };
 
-/*
-//need to verify if implemented the right way
-//or need to be a part of gamestate
-class MainGameLoop : public GameEngine {
-
-private:
-    //int maxterritory;
-public:
-    GameEngine* gameEngine;
-
-    MainGameLoop();
-
-    //Part 4 main game loop
-    //void reinforcementPhase(Player* player);
-
-    //void issueOrdersPhase();
-
-    //void executeOrdersPhase(Player* player);
-    void IssueOrders::enterState();
-
-    void ExecuteOrders::enterState();
-
-    void AssignReinforcement::enterState();
-
-    int controlbonus;//need to privatise
-
-    //Map
-    Map* map = NULL;
-};
- */
-
 class Start : public GameState {
 private:
 public:
     explicit Start(GameEngine* gameEngine);
 
     Start(const Start& start);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::LoadMap};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"loadmap"};
 
     ~Start() override;
 
@@ -186,11 +132,6 @@ public:
 
     MapLoaded(const MapLoaded& mapLoaded);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::LoadMap, GameEngine::ValidateMap};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"loadmap", "validatemap"};
-
     ~MapLoaded() override;
 
     void enterState() override;
@@ -211,11 +152,6 @@ public:
     explicit MapValidated(GameEngine* gameEngine);
 
     MapValidated(const MapValidated& mapValidated);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::AddPlayer};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"addplayer"};
 
     ~MapValidated() override;
 
@@ -238,11 +174,6 @@ public:
 
     PlayersAdded(const PlayersAdded& playersAdded);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::AddPlayer, GameEngine::AssignCountries};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"addplayer", "assigncountries"};
-
     ~PlayersAdded() override;
 
     void enterState() override;
@@ -264,11 +195,6 @@ public:
 
     AssignReinforcement(const AssignReinforcement& assignReinforcement);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[1] = {GameEngine::IssueOrder};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[1]{"issueorders"};
-
     ~AssignReinforcement() override;
 
     void enterState() override;
@@ -280,15 +206,6 @@ public:
     friend ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement);
 
     AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
-
-    //for maingameloop
-    std::vector<Player*> players;
-
-    //Map
-    Map* map = NULL;
-
-    int controlbonus;//need to privatise
-
 };
 
 class IssueOrders : public GameState {
@@ -298,11 +215,6 @@ public:
     explicit IssueOrders(GameEngine* gameEngine);
 
     IssueOrders(const IssueOrders& issueOrders);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::IssueOrder, GameEngine::EndIssueOrders};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"issueorders", "endissueorders"};
 
     ~IssueOrders() override;
 
@@ -325,11 +237,6 @@ public:
 
     ExecuteOrders(const ExecuteOrders& executeOrders);
 
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[3] = {GameEngine::Execorder, GameEngine::Endexecorders, GameEngine::Win};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[3]{"execorder", "endexecorders", "win"};
-
     ~ExecuteOrders() override;
 
     void enterState() override;
@@ -350,11 +257,6 @@ public:
     explicit Win(GameEngine* gameEngine);
 
     Win(const Win& win);
-
-    //These are the valid transitions from this state
-    const int VALID_TRANSITIONS[2] = {GameEngine::Play, GameEngine::End};
-    //These are the valid commands (input) for this state
-    const string VALID_COMMANDS[2]{"play", "end"};
 
     ~Win() override;
 
