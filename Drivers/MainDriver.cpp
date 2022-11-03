@@ -4,31 +4,16 @@
 #include "headers/OrdersDriver.h"
 #include "headers/GameEngineDriver.h"
 #include "headers/CardsDriver.h"
-
+#include "headers/CommandProcessingDriver.h"
 
 using namespace std;
 
-int main() {
-    //Testing the functionality for Assignment 1.
+int main(int argc, char** argv) {
+    //Testing the functionality for Assignment 2.
 
-    //Test Maps
-//     cout << "Testing Maps\n" << endl;
-//     testLoadMaps();
+    cout << "Testing CommandProcessor" << endl;
+    testCommandProcessor(argc, argv);
 
-    //Test Player
-//     cout << "Testing Player" << endl;
-//     testPlayers();
 
-    //Test OrderList
-    // cout << "Testing OrderList" << endl;
-    // testOrdersLists();
-
-    //Test Cards deck/hand
-    //  cout << "Testing Cards deck/hand" << endl;
-    // testCards();
-
-    //Test GameEngine
-      cout << "Testing GameEngine" << endl;
-      testGameStates();
     return 0;
 }
