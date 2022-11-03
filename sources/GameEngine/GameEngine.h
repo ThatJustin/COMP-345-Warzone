@@ -27,7 +27,7 @@ class ExecuteOrders;
 
 class Win;
 
-class MainGameLoop;
+//class MainGameLoop;
 
 
 class GameEngine { //need to inherit ilogable
@@ -42,7 +42,7 @@ private:
     IssueOrders* issueOrders;
     ExecuteOrders* executeOrders;
     Win* win;
-    MainGameLoop* mainGameLoop;
+    //MainGameLoop* mainGameLoop;
 
     // Keep track of the current state
     GameState* currentGameState;
@@ -75,11 +75,23 @@ public:
             Play = 10,
             End = 11;
             //need main game loop?
+            //AssignReinforcement = 12,
+            //IssueOrders = 13,
+            //ExecuteOrders = 14;
 
     //Handles changing states by a transition
     void changeStateByTransition(int transition);
 
     GameState* getStateFromTransition(int transition);
+
+    //for the maingameloop
+    //void IssueOrders::enterState();
+
+    //void ExecuteOrders::enterState();
+
+    //void AssignReinforcement::enterState();
+
+    //int controlbonus;//need to privatise
 
     //Map
     //Map* map = NULL;
@@ -110,6 +122,7 @@ public:
     GameState& operator=(const GameState& gameState);
 };
 
+/*
 //need to verify if implemented the right way
 //or need to be a part of gamestate
 class MainGameLoop : public GameEngine {
@@ -122,17 +135,23 @@ public:
     MainGameLoop();
 
     //Part 4 main game loop
-    void reinforcementPhase(Player* player);
+    //void reinforcementPhase(Player* player);
 
-    void issueOrdersPhase();
+    //void issueOrdersPhase();
 
-    void executeOrdersPhase(Player* player);
+    //void executeOrdersPhase(Player* player);
+    void IssueOrders::enterState();
+
+    void ExecuteOrders::enterState();
+
+    void AssignReinforcement::enterState();
 
     int controlbonus;//need to privatise
 
     //Map
     Map* map = NULL;
 };
+ */
 
 class Start : public GameState {
 private:
@@ -261,6 +280,15 @@ public:
     friend ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement);
 
     AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
+
+    //for maingameloop
+    std::vector<Player*> players;
+
+    //Map
+    Map* map = NULL;
+
+    int controlbonus;//need to privatise
+
 };
 
 class IssueOrders : public GameState {

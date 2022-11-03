@@ -609,8 +609,9 @@ AssignReinforcement::~AssignReinforcement() {
  * Handles what happens when entering a specific state.
  */
 void AssignReinforcement::enterState() {
-    cout << "Entering " << *this << endl;
 
+    /*
+    cout << "Entering " << *this << endl;
 
     cout << "What state would you like to transition to?" << endl;
     bool validInput = false;
@@ -630,6 +631,30 @@ void AssignReinforcement::enterState() {
         } else {
             cout << "An invalid transition was entered. Please try again." << endl;
         }
+    }
+     */
+
+    for(Player* player: players) {
+        //if check the amount of territory own for each player and give army accordingly
+        if (player->getTerritories().size() != 0) {
+
+            //round down the amount of ary based on the amount of territory owned by the player
+            player->setArmy(std::round((player->getTerritories().size()) / 3));
+        }
+
+        //if player own all territory given a number of army units corresponding to the continent control bonus value
+        for (Continent *continent: map->getContinents()) {
+            for (Territory *territory: continent->getTerritories()) {
+                //verify if the player is the one that own the territory
+                if (territory->getTerritoryOwner() != player) {
+                    goto end;//continue the external loop
+                }
+            }
+            player->setArmy(controlbonus);//need to change controlbonus to get continent value
+            end:;//continue from this
+        }
+        //if minimum reinforcement per turn is 3
+        player->setArmy(+3);
     }
 }
 
@@ -971,6 +996,7 @@ Win& Win::operator=(const Win& win) {
  * 4.These army units are placed in the player’s reinforcement pool.-
  * 5.This must be implemented in a function/method named reinforcementPhase() in the game engine. -
  */
+ /*
 void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parameter
 
     //if check the amount of territory own for each player and give army accordingly
@@ -995,6 +1021,7 @@ void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parame
     //if minimum reinforcement per turn is 3
     player->setArmy(+3);
 }
+*/
 
 /**
  * Phase that Player issue order:
@@ -1003,6 +1030,7 @@ void MainGameLoop::reinforcementPhase(Player* player){ //potentially take parame
  * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
  * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
  */
+ /*
 void MainGameLoop::issueOrdersPhase(){
 
     //call the player issue order method to add order in their order list
@@ -1012,7 +1040,7 @@ void MainGameLoop::issueOrdersPhase(){
     //phase end when all player have no more order to issue for their turn
 
 }
-
+*/
 /**
  * Phase to execute player's order:
  * 1.Once all the players have signified in the same turn that they are not issuing one more order,_/
@@ -1020,6 +1048,7 @@ void MainGameLoop::issueOrdersPhase(){
  * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase._/
  * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine._/
  */
+ /*
 void MainGameLoop::executeOrdersPhase(Player* player) { //OrdersList* ordersList){
 
     //once no more order, execute the top order on the list in a round robin fashion
@@ -1044,5 +1073,4 @@ void MainGameLoop::executeOrdersPhase(Player* player) { //OrdersList* ordersList
 
         reinforcementPhase(player);
     }
-
-}
+}*/
