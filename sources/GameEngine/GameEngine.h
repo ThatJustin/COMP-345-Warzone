@@ -1,8 +1,14 @@
 #pragma once
 
 #include <string>
+#include "sources/Player/Player.h"
+#include "sources/Orders/Orders.h"
 
 using namespace std;
+
+//for part 3
+class Map;
+class OrdersList;
 
 class GameState;
 
@@ -206,6 +212,15 @@ public:
     friend ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement);
 
     AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
+
+    //for maingameloop
+    std::vector<Player*> players;
+
+    //Map
+    Map* map = NULL;
+
+    int controlbonus;//need to privatise
+
 };
 
 class IssueOrders : public GameState {
