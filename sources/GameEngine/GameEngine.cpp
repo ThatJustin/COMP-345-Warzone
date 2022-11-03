@@ -112,11 +112,11 @@ GameState* GameEngine::getStateFromTransition(int transition) {
         return mapValidated;
     } else if (transition == AddPlayer) {
         return playersAdded;
-    } else if (transition == AssignCountries || transition == Endexecorders) {
+    } else if (transition == GameStart || transition == Endexecorders) {
         return assignReinforcement;
     } else if (transition == IssueOrder) {
         return issueOrders;
-    } else if (transition == EndIssueOrders || transition == Execorder) {
+    } else if (transition == IssueOrdersEnd || transition == Execorder) {
         return executeOrders;
     } else if (transition == Win) {
         return win;
@@ -215,8 +215,9 @@ void GameEngine::startupPhase() {
 }
 
 /**
- * The maincame loop is handled here with no user interfering with it.
- * The valid states aer AssignReinforcement, IssueOrders and ExecuteOrders
+ * The main game loop is handled here with no user interfering with it.
+ * The valid states are AssignReinforcement, IssueOrders and ExecuteOrders.
+ * The valid transitions are IssueOrder, IssueOrdersEnd, Execorder, Endexecorders, Win
  */
 void GameEngine::mainGameLoop() {
 
