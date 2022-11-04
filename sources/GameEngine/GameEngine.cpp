@@ -223,6 +223,38 @@ void GameEngine::startupPhase() {
  */
 void GameEngine::mainGameLoop() {
 
+    //reinforcement phase
+    assignReinforcement;
+
+    //issue order phase
+    issueOrders;
+
+    //execute order phase
+    executeOrders;
+
+    //check for ever player
+    for(Player* player: players){
+        //check if a player has territory
+        bool checkTerritory = false;
+        //check among all territory if they are own by the player
+        for(Territory* territory: territories){
+            if(territory->getTerritoryOwner() == player){
+                checkTerritory = true;
+                break;
+            }
+        }
+        //check id player doesnt have any territory
+        if(!(checkTerritory)){
+            //remove player from the list of players
+            players.erase(std::remove(players.begin(), players.end(), player), players.end());
+        }
+    }
+
+    //check if there is only one player left
+    if(players.size() == 1){
+        cout<< "The winner is: " << players.at(0)->getPlayerName()<< endl;
+        currentGameState = win;
+    }
 }
 
 /**
@@ -786,7 +818,7 @@ void ExecuteOrders::enterState() {
             //check if there are orders left to execute
             if (orders != NULL) {
                 orderplayed = true;
-                //orders->execute(); //need part 4
+                orders->execute(); //need part 4
             }
         }
     }

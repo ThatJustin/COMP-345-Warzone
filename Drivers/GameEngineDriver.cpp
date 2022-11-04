@@ -12,8 +12,8 @@ void testGameStates() {
 //free function for the main game loop
 void testMainGameLoop(){
 
-    //add test cases in a round robin fashion
-    //reinforcementPhase();
+    //add test cases in a round robin fashion by part 2
+    //assignReinforcement();
 
     //executeOrdersPhase();
 

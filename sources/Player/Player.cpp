@@ -182,20 +182,52 @@ vector<Territory*> Player::toDefend() {
  */
 bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck) { //need to add commandprocessor as a parameter here
 
-    /*
-    //For testing purposes in assignment 1, will create an order and issue it
-    Orders* bomb = new Bomb();
-    Orders* airlift = new Airlift();
-    Orders* negotiate = new Negotiate();
-    this->ordersList->add(bomb);
-    this->ordersList->add(airlift);
-    this->ordersList->add(negotiate);
-     */
+    //while there is still army to the player, deploy them to conquer other territories
+    while (getArmy() > 0){
 
-    //The player decides which neighboring territories are to be attacked in priority
-    //(as a list return by the toAttack() method),
-    //and which of their own territories are to be defended in priority (as a list returned by the toDefend() method).
+        //show the player the amount of territory they own
+        cout<< "You own the territory: "<<endl;
 
+        //list all the territory own by the player as well as the army in each
+        for(Territory* territory: toDefend()){
+
+            cout<< territory->getTerritoryName() << " and you have " << territory->getNumberOfArmies()<< " soldier, in that territory" <<endl;
+        }
+
+        //create territory to be attack by the player
+        Territory* toDefendTerritory = NULL;
+
+        //loop through all the territory in the game
+        for(Territory* territory: territories){
+            //set the territory as the target territory to be deployed at
+            //if(territory->getTerritoryName() == player.territoryname()) {//verify if the terrritory the player want to defend is in thelist
+                toDefendTerritory = territory;
+                break;
+           //}
+        }
+
+        //check if the territory is invalid
+        if(toDefendTerritory == NULL){
+
+            cout<< "Invalid Territory: "<<endl;
+        }
+
+        //army available for specific player
+        int deployArmy = getArmy();
+
+        //it will issue a deploy order and no other order
+        Orders* orders = new Deploy(deployArmy, toDefendTerritory);
+        orders->execute();
+        delete orders;
+    }
+
+    //Once it has deployed all its available army units, it can proceed with other kinds of orders.
+    while (getArmy() == 0){
+        //The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories
+        //in order to defend it (using toDefend() to make the decision)
+        //and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
+        Orders* orders = new Advance();//missing attribute from part 4 to know what to modify
+    }
 
 
     return true;

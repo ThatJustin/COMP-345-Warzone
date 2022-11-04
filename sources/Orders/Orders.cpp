@@ -227,7 +227,7 @@ Deploy::Deploy() {
  * @param numberOfArmyUnits
  * @param targetTerritory
  */
-Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory) {
+Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory) { //need to add player as a parameter
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_targetTerritory = targetTerritory;
 }

@@ -83,6 +83,10 @@ public:
     void startupPhase();
 
     void mainGameLoop();
+
+    std::vector<Player*> players;
+
+    std::vector<Territory*> territories;
 };
 
 class GameState {
