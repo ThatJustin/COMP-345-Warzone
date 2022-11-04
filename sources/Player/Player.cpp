@@ -3,7 +3,9 @@
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
-
+#include <set>
+#include <algorithm>
+#include <vector>
 /**
  * Default constructor.
  */
@@ -88,29 +90,36 @@ Hand* Player::getHandCards() {
     return handCards;
 }
 
-/**
- * Returns a vector of territories (pointer) the player defends.
- * @return vector territories
- */
-vector<Territory*> Player::toDefend() {
-    // For now return an arbitrary list of territories to defend
-    vector<Territory*> defendTerritories;
-    auto* territory1 = new Territory(1, "Plule", this);
-    auto* territory2 = new Territory(2, "Woflington", this);
-    auto* territory3 = new Territory(3, "Chuih Cha", this);
-    auto* territory4 = new Territory(4, "Soscele", this);
-    defendTerritories.push_back(territory1);
-    defendTerritories.push_back(territory2);
-    defendTerritories.push_back(territory3);
-    defendTerritories.push_back(territory4);
-    return defendTerritories;
-}
 
 /**
  * Returns a vector of territories (pointer) the player will attack.
  * @return vector territories
  */
 vector<Territory*> Player::toAttack() {
+
+    //create list of attack territories
+    vector<Territory*> attackTerritories;
+
+    //for all territory
+    for(Territory* terrritory: territories){
+
+        //check if the territory is adjacent
+        for(Territory* adjacent: terrritory->getAdjacentTerritories()){
+
+            //if does not belong to the same player
+            if(adjacent->getTerritoryOwner() != this){
+
+                //if adjacent territory not already in list
+                if(!(find(attackTerritories.begin(),attackTerritories.end(), adjacent) != attackTerritories.end())){
+
+                    //add to the list of territories that can be attacked
+                    attackTerritories.push_back(adjacent);
+                }
+            }
+        }
+    }
+
+    /*
     // For now return an arbitrary list of territories to attack
     vector<Territory*> attackTerritories;
     auto* territory1 = new Territory(5, "Voflein", this);
@@ -121,7 +130,39 @@ vector<Territory*> Player::toAttack() {
     attackTerritories.push_back(territory2);
     attackTerritories.push_back(territory3);
     attackTerritories.push_back(territory4);
+     */
+
     return attackTerritories;
+}
+
+/**
+ * Returns a vector of territories (pointer) the player defends.
+ * @return vector territories
+ */
+vector<Territory*> Player::toDefend() {
+
+    vector<Territory*> defendTerritories;
+
+    //loop through every territory own by the player
+    for(int i = 0; i < getTerritories().size(); i++){
+
+        //add the territory to the list of territory to be defended
+        defendTerritories.push_back(getTerritories().at(i));
+    }
+    /*
+    // For now return an arbitrary list of territories to defend
+    vector<Territory*> defendTerritories;
+    auto* territory1 = new Territory(1, "Plule", this);
+    auto* territory2 = new Territory(2, "Woflington", this);
+    auto* territory3 = new Territory(3, "Chuih Cha", this);
+    auto* territory4 = new Territory(4, "Soscele", this);
+    defendTerritories.push_back(territory1);
+    defendTerritories.push_back(territory2);
+    defendTerritories.push_back(territory3);
+    defendTerritories.push_back(territory4);
+
+     */
+    return defendTerritories;
 }
 
 /**
@@ -139,7 +180,7 @@ vector<Territory*> Player::toAttack() {
  * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder(Map *map, Player *player, Deck *deck) { //need to add commandprocessor as a parameter here
+bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck) { //need to add commandprocessor as a parameter here
 
     /*
     //For testing purposes in assignment 1, will create an order and issue it

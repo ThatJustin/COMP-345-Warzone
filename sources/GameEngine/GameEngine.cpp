@@ -696,10 +696,10 @@ void IssueOrders::enterState() {
     for (Player* player : players) {
 
         //issue the order
-        player->issueOrder(map, player, deck);
+        player->issueOrder(map, players, deck);
 
         //phase end when all player have no more order to issue for their turn
-        //if(player.nomoreorder()){
+        //if(player->getOrdersList() == 0){
         //endturn();
         //}
     }
