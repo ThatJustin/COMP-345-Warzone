@@ -101,7 +101,7 @@ void Deck::addCard(Cards* card) {
         cout << "Adding card to deck..." << getNameByCardType(card->getType()) << endl;
         this->cards.push_back(card);
     } else {
-        cout << "Tried to add null card to deck." << endl;
+        cout << "Tried to addOrder null card to deck." << endl;
     }
 }
 
@@ -133,7 +133,7 @@ void Deck::draw(Player* player) {
         uniform_int_distribution<int> dis(0, cards.size() - 1); //set potential number
 
         int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
-        player->getHandCards()->addCard(cards[randCardIdx]); //add random card to hand
+        player->getHandCards()->addCard(cards[randCardIdx]); //addOrder random card to hand
         cards.erase(cards.begin() + randCardIdx); //remove card from deck
     } else {
         cout << "Tried to pull a card from an empty deck" << endl;
@@ -204,9 +204,9 @@ void Cards::play(Player* player, Deck* deck) {
 
     Orders* orders = createOrderByCardType(this->getType()); //create an order with the card type
 
-    player->getOrdersList()->add(orders); //add card type to the list
+    player->getOrdersList()->addOrder(orders); //addOrder card type to the list
 
-    deck->addCard(createCardByCardType(this->getType())); //add card base on their type
+    deck->addCard(createCardByCardType(this->getType())); //addOrder card base on their type
 
     player->getHandCards()->remove(this); //remove the cards by type from hand
 }

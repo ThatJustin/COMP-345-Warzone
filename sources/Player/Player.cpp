@@ -135,9 +135,9 @@ bool Player::issueOrder() {
     Orders* bomb = new Bomb();
     Orders* airlift = new Airlift();
     Orders* negotiate = new Negotiate();
-    this->ordersList->add(bomb);
-    this->ordersList->add(airlift);
-    this->ordersList->add(negotiate);
+    this->ordersList->addOrder(bomb);
+    this->ordersList->addOrder(airlift);
+    this->ordersList->addOrder(negotiate);
     return true;
 }
 

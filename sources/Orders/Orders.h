@@ -280,7 +280,7 @@ public:
 
     void remove(int index);
 
-    void add(Orders* o);
+    void addOrder(Orders* o);
 
     vector<Orders*> getOrdersList();
 

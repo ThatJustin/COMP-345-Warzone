@@ -160,9 +160,9 @@ void OrdersList::remove(int index) {
 
 /**
  * Pushes an order to the orderslist.
- * @param o order to add
+ * @param o order to addOrder
  */
-void OrdersList::add(Orders* o) {
+void OrdersList::addOrder(Orders* o) {
     list.push_back(o);
 }
 

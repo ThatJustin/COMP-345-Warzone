@@ -52,7 +52,7 @@ public:
     explicit Deck(const std::vector<Cards*>& cards); //deck parametrised constructor
     Deck(const Deck& deck); //deck copy constructor
     ~Deck(); //deck deletor
-    void addCard(Cards* card); //add cards to the deck method
+    void addCard(Cards* card); //addOrder cards to the deck method
     std::vector<Cards*> getCards(); //return the cards vector
     int cardSize(); //the amount of cards in the deck
     void draw(Player* player); //draw method that draws a card amd adds to hand

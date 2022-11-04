@@ -99,7 +99,7 @@ vector<Territory*> Continent::getTerritories() {
 
 /**
  * Adds a territory to the continent if it is not already on the continent
- * @param territory The pointer to the territory to add to the continent
+ * @param territory The pointer to the territory to addOrder to the continent
  */
 void Continent::addTerritory(Territory* territory) {
     for (auto a_territory: this->territories) {
@@ -299,7 +299,7 @@ string Territory::getPlayerName() {
 
 /**
  * Adds an adjacent territory to the specified territory, if it is not already adjacent to it, by passing the pointer to the adjacent territory as a parameter
- * @param territory The pointer to the adjacent territory to add
+ * @param territory The pointer to the adjacent territory to addOrder
  */
 void Territory::addAdjacentTerritory(Territory* territory) {
     for (auto adjacent_territory: this->adjacent_territories) {
@@ -430,7 +430,7 @@ void Map::depthFirstSearch(int starting_territory_id, vector<Territory*>& visite
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id,
-    // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
+    // is not a null territory pointer, then addOrder it to the vector of visited territory pointers that point to visited territories
     if (this->getTerritory(starting_territory_id) != nullptr) {
         visited_territories.push_back(this->getTerritory(starting_territory_id));
 
@@ -462,7 +462,7 @@ void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vect
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id inside that specific continent,
-    // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
+    // is not a null territory pointer, then addOrder it to the vector of visited territory pointers that point to visited territories
     if (this->territories.at(starting_territory_id) != nullptr) {
         visited_territories.push_back(this->territories.at(starting_territory_id));
 
