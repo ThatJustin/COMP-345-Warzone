@@ -1,8 +1,11 @@
 #include <iostream>
+#include <sstream>
 #include "Drivers/headers/CommandProcessingDriver.h"
 #include "sources/GameEngine/CommandProcessor.h"
 #include "sources/GameEngine/GameEngine.h"
+
 using namespace std::literals;
+
 void testCommandProcessor(int argc, char** argv) {
     if (argc < 2 || (argv[1] != "-console"sv && argv[1] != "-file"sv)) {
         cout<< "Please run the program using either -console or -file filename arguments." << endl;
@@ -20,8 +23,15 @@ void testCommandProcessor(int argc, char** argv) {
     }
 
 
-    CommandProcessor* commandProcessor = new CommandProcessor(isUsingConsole, mapFileName);
+    CommandProcessor* commandProcessor;
+    if (isUsingConsole) {
+        commandProcessor  = new CommandProcessor(isUsingConsole, mapFileName);
+        cout << "not Using adapter" << endl;
 
+    } else {
+        commandProcessor = new FileCommandProcessorAdapter(mapFileName);
+        cout << "Using adapter" << endl;
+    }
 //    cout << *commandProcessor << endl;
 
     GameEngine* gameEngine = new GameEngine();

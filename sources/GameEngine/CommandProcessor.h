@@ -20,6 +20,9 @@ public:
     Command& operator=(const Command& command);
 
 
+    std::string getParam();
+
+    std::string getTransitionName();
 };
 
 class CommandProcessor {
@@ -44,11 +47,23 @@ public:
     CommandProcessor& operator=(const CommandProcessor& commandProcessor);
 
 private:
-    std::string readCommand();
+    virtual std::string readCommand();
 
     void saveCommand(Command* command);
 
     bool validate(Command* pCommand, const std::string& currentState);
 };
+class FileLineReader {
 
+};
+
+class FileCommandProcessorAdapter : public CommandProcessor {
+public:
+    FileCommandProcessorAdapter(const std::string& inputFileName);
+
+    FileLineReader* fileLineReader;
+private:
+    std::string readCommand() override;
+
+};
 

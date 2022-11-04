@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <sstream>
 #include "CommandProcessor.h"
 
 using namespace std;
@@ -21,6 +22,18 @@ std::ostream& operator<<(ostream& stream, const Command& command) {
     stream << "Name - " << command.command << endl;
     stream << "Effect - " << command.effect << endl;
     return stream;
+}
+
+std::string Command::getParam() {
+    std::string param;
+    if (command.find_first_of(' ') != string::npos)  {
+        param = command.substr(command.find_first_of(" \t")+1);
+    }
+    return param;
+}
+
+std::string Command::getTransitionName() {
+    return command.substr(0, command.find(' '));
 }
 
 CommandProcessor::CommandProcessor() {
@@ -90,10 +103,14 @@ std::ostream& operator<<(ostream& stream, const CommandProcessor& commandProcess
  * @return
  */
 bool CommandProcessor::validate(Command* pCommand, const std::string& currentState) {
-    string com = pCommand->command;
+    string com = pCommand->getTransitionName();
     bool success = false;
     // Check if the transition is valid from the current state
     if (com == "loadmap") {
+        if (pCommand->getParam().empty()) {
+            pCommand->saveEffect("[INVALID COMMAND] Missing map name for loadmap.");
+            return false;
+        }
         if (currentState == "start" || currentState == "maploaded") {
             success = true;
         }
@@ -102,6 +119,10 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
             success = true;
         }
     } else if (com == "addplayer") {
+        if (pCommand->getParam().empty()) {
+            pCommand->saveEffect("[INVALID COMMAND] Missing player name for addplayer");
+            return false;
+        }
         if (currentState == "mapvalidated" || currentState == "playersadded") {
             success = true;
         }
@@ -115,9 +136,17 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     }
     if (success) {
-        pCommand->saveEffect("[VALID COMMAND]" + com + " used in valid state " + currentState);
+        pCommand->saveEffect("[VALID COMMAND]" + com + " used in valid state " + currentState + ".");
         return true;
     }
-    pCommand->saveEffect("[INVALID COMMAND] Tried to use command " + com + " while in state " + currentState);
+    pCommand->saveEffect("[INVALID COMMAND] Tried to use command " + com + " while in state " + currentState + ".");
     return false;
 }
+
+string FileCommandProcessorAdapter::readCommand() {
+    
+    return "";
+}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName)
+        : CommandProcessor(false, inputFileName) {}

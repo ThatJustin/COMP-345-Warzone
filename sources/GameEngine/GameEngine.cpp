@@ -23,6 +23,7 @@ GameEngine::GameEngine() {
     this->win = new class Win(this);
 
     this->commandProcessor = new CommandProcessor();
+    this->commandParam = "";
 }
 
 /**
@@ -196,19 +197,21 @@ void GameEngine::startupPhase() {
             cout << "This command is not valid for this state." << endl;
             continue;
         }
-        if (c->command == "loadmap") {
+        if (c->getTransitionName() == "loadmap") {
+            this->commandParam = c->getParam();
             changeStateByTransition(LoadMap);
-        } else if (c->command == "validatemap") {
+        } else if (c->getTransitionName() == "validatemap") {
             changeStateByTransition(ValidateMap);
-        } else if (c->command == "addplayer") {
+        } else if (c->getTransitionName() == "addplayer") {
+            this->commandParam = c->getParam();
             changeStateByTransition(AddPlayer);
-        } else if (c->command == "gamestart") {
+        } else if (c->getTransitionName() == "gamestart") {
             //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
             // will return here
             mainGameLoop();
-        } else if (c->command == "replay") {
+        } else if (c->getTransitionName() == "replay") {
             changeStateByTransition(StartGame);
-        } else if (c->command == "quit") {
+        } else if (c->getTransitionName() == "quit") {
             exit(0);
         }
     }
@@ -367,7 +370,6 @@ MapLoaded::~MapLoaded() {
  */
 void MapLoaded::enterState() {
     cout << "Entering " << *this << endl;
-
 
 }
 
