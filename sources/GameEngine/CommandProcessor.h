@@ -30,11 +30,11 @@ class CommandProcessor {
 public:
     CommandProcessor();
 
-    CommandProcessor(bool isUsingConsole, std::string  inputFileName);
+    CommandProcessor(bool isUsingConsole, std::string inputFileName);
 
     explicit CommandProcessor(const std::vector<Command*>& commands);
 
-    ~CommandProcessor();
+    virtual ~CommandProcessor();
 
     std::vector<Command*> commands;
     bool isUsingConsole;
@@ -53,13 +53,27 @@ private:
 
     bool validate(Command* pCommand, const std::string& currentState);
 };
+
 class FileLineReader {
 
+public:
+    FileLineReader();
+
+    ~FileLineReader();
+
+    std::string readLineFromFile(const std::string& fileName);
+
+    int filelinePosition;
+
+    //Stores the positions of the replay commands
+    std::vector<int> replayPositions;
 };
 
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
-    FileCommandProcessorAdapter(const std::string& inputFileName);
+    explicit FileCommandProcessorAdapter(const std::string& inputFileName);
+
+    ~FileCommandProcessorAdapter() override;
 
     FileLineReader* fileLineReader;
 private:

@@ -1,7 +1,10 @@
 #include <iostream>
 #include <utility>
 #include <sstream>
+#include <filesystem>
+#include <fstream>
 #include "CommandProcessor.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -26,8 +29,8 @@ std::ostream& operator<<(ostream& stream, const Command& command) {
 
 std::string Command::getParam() {
     std::string param;
-    if (command.find_first_of(' ') != string::npos)  {
-        param = command.substr(command.find_first_of(" \t")+1);
+    if (command.find_first_of(' ') != string::npos) {
+        param = command.substr(command.find_first_of(" \t") + 1);
     }
     return param;
 }
@@ -60,7 +63,7 @@ CommandProcessor::CommandProcessor(const std::vector<Command*>& commands) : comm
 
 string CommandProcessor::readCommand() {
     string command;
-    cout << "Enter command: " << endl;
+    cout << "Please enter a command: " << endl;
     //TODO maybe show valid commands in this state
     cin >> std::ws;
     getline(cin, command);
@@ -73,7 +76,6 @@ void CommandProcessor::saveCommand(Command* command) {
 }
 
 Command* CommandProcessor::getCommand(const string& currentState) {
-
     string inputCommand = readCommand();
     Command* command = new Command(inputCommand);
     bool isValidTransition = validate(command, currentState);
@@ -136,7 +138,7 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     }
     if (success) {
-        pCommand->saveEffect("[VALID COMMAND]" + com + " used in valid state " + currentState + ".");
+        pCommand->saveEffect("[VALID COMMAND] " + com + " used in valid state " + currentState + ".");
         return true;
     }
     pCommand->saveEffect("[INVALID COMMAND] Tried to use command " + com + " while in state " + currentState + ".");
@@ -144,9 +146,46 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
 }
 
 string FileCommandProcessorAdapter::readCommand() {
-    
-    return "";
+    std::string command = fileLineReader->readLineFromFile(inputFileName);
+    return command;
 }
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName)
-        : CommandProcessor(false, inputFileName) {}
+        : CommandProcessor(false, inputFileName) {
+    this->fileLineReader = new FileLineReader();
+}
+
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
+    delete fileLineReader;
+}
+
+string FileLineReader::readLineFromFile(const std::string& fileName) {
+
+    std::string path = std::filesystem::current_path().string() + "\\Games\\" + fileName;
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        cout << "Game with file name " << fileName << " doesn't exist." << endl;
+        exit(-1);
+    }
+    std::string lineText;
+    skipReplayEmpty:
+    //find the text on the specific line
+    for (int i = 1; i <= filelinePosition; i++) {
+        if (std::find(replayPositions.begin(), replayPositions.end(), filelinePosition) == replayPositions.end()) {
+            std::getline(file, lineText);
+        }
+    }
+
+    filelinePosition++;
+    // if it's empty, it most of been a replay we already did, skip it
+    if (lineText.empty()) {
+        goto skipReplayEmpty;
+    }
+    return lineText;
+}
+
+FileLineReader::FileLineReader() {
+    filelinePosition = 1;
+}
+
+FileLineReader::~FileLineReader() {}

@@ -80,6 +80,10 @@ public:
     void startupPhase();
 
     void mainGameLoop();
+
+    void prepareForReplay();
+
+    bool isUsingConsole();
 };
 
 class GameState {

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <filesystem>
 #include "Drivers/headers/CommandProcessingDriver.h"
 #include "sources/GameEngine/CommandProcessor.h"
 #include "sources/GameEngine/GameEngine.h"
@@ -22,18 +24,13 @@ void testCommandProcessor(int argc, char** argv) {
         isUsingConsole = false;
     }
 
-
     CommandProcessor* commandProcessor;
     if (isUsingConsole) {
         commandProcessor  = new CommandProcessor(isUsingConsole, mapFileName);
-        cout << "not Using adapter" << endl;
-
     } else {
         commandProcessor = new FileCommandProcessorAdapter(mapFileName);
-        cout << "Using adapter" << endl;
     }
-//    cout << *commandProcessor << endl;
-
+    //TODO for testing, I will emulate the actual code here and not call the GameEngine
     GameEngine* gameEngine = new GameEngine();
     gameEngine->setCommandProcessor(commandProcessor);
 
