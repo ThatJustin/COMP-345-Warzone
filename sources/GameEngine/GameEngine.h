@@ -37,9 +37,6 @@ private:
     ExecuteOrders* executeOrders;
     Win* win;
 
-    // Keep track of the current state
-    GameState* currentGameState;
-
     CommandProcessor* commandProcessor;
 public:
     GameEngine();
@@ -84,6 +81,9 @@ public:
     void prepareForReplay();
 
     bool isUsingConsole();
+
+// Keep track of the current state
+GameState* currentGameState;
 };
 
 class GameState {

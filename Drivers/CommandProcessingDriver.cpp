@@ -51,7 +51,7 @@ void testCommandProcessor(int argc, char** argv) {
             gameEngine->changeStateByTransition(GameEngine::AddPlayer);
         } else if (c->getTransitionName() == "gamestart") {
             cout << "Skipping main game loop for demo. Simulating a win transition.\r\n" << endl;
-            gameEngine->changeStateByTransition(GameEngine::Win);
+            gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::Win);
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
             gameEngine->changeStateByTransition(GameEngine::StartGame);
