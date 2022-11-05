@@ -23,6 +23,7 @@ GameEngine::GameEngine() {
     this->win = new class Win(this);
 
     this->commandProcessor = new CommandProcessor();
+    this->commandParam = "";
 }
 
 /**
@@ -196,19 +197,23 @@ void GameEngine::startupPhase() {
             cout << "This command is not valid for this state." << endl;
             continue;
         }
-        if (c->command == "loadmap") {
+        if (c->getTransitionName() == "loadmap") {
+            this->commandParam = c->getParam();
             changeStateByTransition(LoadMap);
-        } else if (c->command == "validatemap") {
+        } else if (c->getTransitionName() == "validatemap") {
             changeStateByTransition(ValidateMap);
-        } else if (c->command == "addplayer") {
+        } else if (c->getTransitionName() == "addplayer") {
+            this->commandParam = c->getParam();
             changeStateByTransition(AddPlayer);
-        } else if (c->command == "gamestart") {
+        } else if (c->getTransitionName() == "gamestart") {
             //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
             // will return here
             mainGameLoop();
-        } else if (c->command == "replay") {
+        } else if (c->getTransitionName() == "replay") {
+            prepareForReplay();
             changeStateByTransition(StartGame);
-        } else if (c->command == "quit") {
+        } else if (c->getTransitionName() == "quit") {
+            cout << "Thanks for playing!" << endl;
             exit(0);
         }
     }
@@ -221,6 +226,37 @@ void GameEngine::startupPhase() {
  */
 void GameEngine::mainGameLoop() {
 
+}
+
+/**
+ * Prepares the game engine to replay the game.
+ */
+void GameEngine::prepareForReplay() {
+    //Delete and reinitialize objects from part 2 like map, players, etc
+
+
+    // If it's being read from a file
+    if (!this->isUsingConsole()) {
+        FileCommandProcessorAdapter* processorAdapter = dynamic_cast<FileCommandProcessorAdapter*>(this->commandProcessor);
+        if (processorAdapter != nullptr) {
+            FileLineReader* fileLineReader = processorAdapter->fileLineReader;
+            if (fileLineReader != nullptr) {
+                //Save the position of replay to skip it on its next file read
+                fileLineReader->replayPositions.push_back(fileLineReader->filelinePosition - 1);
+
+                //Reset back to the beginning
+                fileLineReader->filelinePosition = 1;
+            }
+        }
+    }
+}
+
+/**
+ * Returns true if the game is using the console for input or false for reading from a file.
+ * @return
+ */
+bool GameEngine::isUsingConsole() {
+    return dynamic_cast<FileCommandProcessorAdapter*>(this->commandProcessor) == nullptr;
 }
 
 /**
@@ -367,7 +403,6 @@ MapLoaded::~MapLoaded() {
  */
 void MapLoaded::enterState() {
     cout << "Entering " << *this << endl;
-
 
 }
 

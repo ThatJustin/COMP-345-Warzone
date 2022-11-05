@@ -54,6 +54,9 @@ public:
 
     GameState* getCurrentGameState();
 
+    //Keep track of the current param for loadmap/addplayer
+    string commandParam;
+
     //All valid transitions
     static const int StartGame = 0,
             LoadMap = 1,
@@ -77,6 +80,10 @@ public:
     void startupPhase();
 
     void mainGameLoop();
+
+    void prepareForReplay();
+
+    bool isUsingConsole();
 };
 
 class GameState {

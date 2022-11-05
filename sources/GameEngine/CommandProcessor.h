@@ -1,12 +1,15 @@
 #pragma once
 
-
 #include <string>
 #include <vector>
 
 class Command {
 public:
+    Command();
+
     explicit Command(const std::string& inputCommand);
+
+    Command(const Command& command);
 
     ~Command();
 
@@ -17,9 +20,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& stream, const Command& command);
 
-    Command& operator=(const Command& command);
+    Command& operator=(const Command& com);
 
+    std::string getParam() const;
 
+    std::string getTransitionName() const;
 };
 
 class CommandProcessor {
@@ -27,11 +32,11 @@ class CommandProcessor {
 public:
     CommandProcessor();
 
-    CommandProcessor(bool isUsingConsole, std::string  inputFileName);
+    CommandProcessor(const CommandProcessor& commandProcessor);
 
-    explicit CommandProcessor(const std::vector<Command*>& commands);
+    CommandProcessor(bool isUsingConsole, std::string inputFileName);
 
-    ~CommandProcessor();
+    virtual ~CommandProcessor();
 
     std::vector<Command*> commands;
     bool isUsingConsole;
@@ -44,11 +49,52 @@ public:
     CommandProcessor& operator=(const CommandProcessor& commandProcessor);
 
 private:
-    std::string readCommand();
+    virtual std::string readCommand();
 
     void saveCommand(Command* command);
 
     bool validate(Command* pCommand, const std::string& currentState);
 };
 
+class FileLineReader {
+
+public:
+    FileLineReader();
+
+    FileLineReader(const FileLineReader& fileLineReader);
+
+    ~FileLineReader();
+
+    friend std::ostream& operator<<(std::ostream& stream, const FileLineReader& fileLineReader);
+
+    FileLineReader& operator=(const FileLineReader& fileLineReader);
+
+    std::string readLineFromFile(const std::string& fileName);
+
+    int filelinePosition;
+
+    //Stores the positions of the replay commands
+    std::vector<int> replayPositions;
+};
+
+class FileCommandProcessorAdapter : public CommandProcessor {
+public:
+    FileCommandProcessorAdapter();
+
+    explicit FileCommandProcessorAdapter(const std::string& inputFileName);
+
+    FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
+
+    ~FileCommandProcessorAdapter() override;
+
+    friend std::ostream&
+    operator<<(std::ostream& stream, const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
+
+    FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
+
+    FileLineReader* fileLineReader;
+private:
+    std::string readCommand() override;
+
+};
 
