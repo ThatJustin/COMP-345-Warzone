@@ -32,7 +32,8 @@ void testCommandProcessor(int argc, char** argv) {
     }
     GameEngine* gameEngine = new GameEngine();
     gameEngine->setCommandProcessor(commandProcessor);
-    gameEngine->changeStateByTransition(GameEngine::StartGame);
+    gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::StartGame);
+    cout <<"Entering StartGame state." << endl;
 
     while (true) {
         string curStateName = gameEngine->getCurrentGameState()->name;
@@ -43,18 +44,23 @@ void testCommandProcessor(int argc, char** argv) {
         }
         if (c->getTransitionName() == "loadmap") {
             gameEngine->commandParam = c->getParam();
-            gameEngine->changeStateByTransition(GameEngine::LoadMap);
+            gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::LoadMap);
+            cout <<"Entering Loadmap state." << endl;
         } else if (c->getTransitionName() == "validatemap") {
-            gameEngine->changeStateByTransition(GameEngine::ValidateMap);
+            gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::ValidateMap);
+            cout <<"Entering ValidateMap state." << endl;
         } else if (c->getTransitionName() == "addplayer") {
             gameEngine->commandParam = c->getParam();
-            gameEngine->changeStateByTransition(GameEngine::AddPlayer);
+            gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::AddPlayer);
+            cout <<"Entering AddPlayer state." << endl;
         } else if (c->getTransitionName() == "gamestart") {
             cout << "Skipping main game loop for demo. Simulating a win transition.\r\n" << endl;
             gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::Win);
+            cout <<"Entering Win state." << endl;
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
-            gameEngine->changeStateByTransition(GameEngine::StartGame);
+            gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::Play);
+            cout <<"Entering replay state." << endl;
         } else if (c->getTransitionName() == "quit") {
             cout << "Thanks for playing!" << endl;
             exit(0);
