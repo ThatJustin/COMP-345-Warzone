@@ -1,12 +1,15 @@
 #pragma once
 
-
 #include <string>
 #include <vector>
 
 class Command {
 public:
+    Command();
+
     explicit Command(const std::string& inputCommand);
+
+    Command(const Command& command);
 
     ~Command();
 
@@ -17,12 +20,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& stream, const Command& command);
 
-    Command& operator=(const Command& command);
+    Command& operator=(const Command& com);
 
+    std::string getParam() const;
 
-    std::string getParam();
-
-    std::string getTransitionName();
+    std::string getTransitionName() const;
 };
 
 class CommandProcessor {
@@ -30,9 +32,9 @@ class CommandProcessor {
 public:
     CommandProcessor();
 
-    CommandProcessor(bool isUsingConsole, std::string inputFileName);
+    CommandProcessor(const CommandProcessor& commandProcessor);
 
-    explicit CommandProcessor(const std::vector<Command*>& commands);
+    CommandProcessor(bool isUsingConsole, std::string inputFileName);
 
     virtual ~CommandProcessor();
 
@@ -59,7 +61,13 @@ class FileLineReader {
 public:
     FileLineReader();
 
+    FileLineReader(const FileLineReader& fileLineReader);
+
     ~FileLineReader();
+
+    friend std::ostream& operator<<(std::ostream& stream, const FileLineReader& fileLineReader);
+
+    FileLineReader& operator=(const FileLineReader& fileLineReader);
 
     std::string readLineFromFile(const std::string& fileName);
 
@@ -71,9 +79,18 @@ public:
 
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
+    FileCommandProcessorAdapter();
+
     explicit FileCommandProcessorAdapter(const std::string& inputFileName);
 
+    FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
+
     ~FileCommandProcessorAdapter() override;
+
+    friend std::ostream&
+    operator<<(std::ostream& stream, const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
+
+    FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
 
     FileLineReader* fileLineReader;
 private:
