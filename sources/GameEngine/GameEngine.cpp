@@ -1,8 +1,8 @@
 #include "GameEngine.h"
 #include <iostream>
-#include <string>
-#include <algorithm>
 #include "CommandProcessor.h"
+#include "sources/Map/Map.h"
+#include "sources/Player/Player.h"
 
 /**
  * Constructor of GameEngine
@@ -24,6 +24,9 @@ GameEngine::GameEngine() {
 
     this->commandProcessor = new CommandProcessor();
     this->commandParam = "";
+    this->commandTransitionName = "";
+    this->gameMap = nullptr;
+    this->gamePlayers = std::vector<Player*>();
 }
 
 /**
@@ -70,6 +73,10 @@ GameEngine::~GameEngine() {
         delete commandProcessor;
         commandProcessor = nullptr;
     }
+    if (gameMap != nullptr) {
+        delete gameMap;
+        gameMap = nullptr;
+    }
 }
 
 /**
@@ -82,9 +89,9 @@ void GameEngine::changeStateByTransition(int transition) {
         this->currentGameState = getStateFromTransition(transition);
         this->getCurrentGameState()->enterState();
     } else {
-        // isValidTransition will be used for when we need to validate that the transition is okay in the future
+        // isValidToTransitionAway will be used for when we need to validate that the transition is okay in the future
         // for now it's always true
-        if (this->getCurrentGameState()->isValidTransition()) {
+        if (this->getCurrentGameState()->isValidToTransitionAway()) {
             this->currentGameState = getStateFromTransition(transition);
             this->getCurrentGameState()->enterState();
         }
@@ -260,6 +267,32 @@ bool GameEngine::isUsingConsole() {
 }
 
 /**
+ * Returns the command processor object.
+ * @return
+ */
+CommandProcessor* GameEngine::getCommandProcessor() const {
+    return commandProcessor;
+}
+
+void GameEngine::addPlayer(Player* pPlayer) {
+    this->gamePlayers.push_back(pPlayer);
+}
+
+vector<Player*> GameEngine::getGamePlayers() {
+    return this->gamePlayers;
+}
+
+bool GameEngine::isPlayerAdded(Player* pPlayer) {
+    for (auto& p: this->getGamePlayers()) {
+        if (p->getPlayerName() == pPlayer->getPlayerName()) {
+            cout << "Player already exists!" << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Default constructor
  */
 GameState::GameState() {
@@ -281,7 +314,7 @@ GameState::GameState(GameEngine* gameEngine) {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool GameState::isValidTransition() {
+bool GameState::isValidToTransitionAway() {
     return true;
 }
 
@@ -345,7 +378,7 @@ void Start::enterState() {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool Start::isValidTransition() {
+bool Start::isValidToTransitionAway() {
     return true;
 }
 
@@ -402,16 +435,33 @@ MapLoaded::~MapLoaded() {
  * Handles what happens when entering a specific state.
  */
 void MapLoaded::enterState() {
-    cout << "Entering " << *this << endl;
+    cout << "Entering " << *this;
+    auto* mapLoader = new MapLoader();
+    Map* map = mapLoader->loadMap("./Map Files/" + this->gameEngine->commandParam);
 
+    if (map != nullptr) {
+        //Map is good
+        if (this->gameEngine->gameMap != nullptr) {
+            delete this->gameEngine->gameMap;
+            this->gameEngine->gameMap = nullptr;
+            cout << "The previously loaded map has been successfully replaced." << endl;
+        }
+        this->gameEngine->gameMap = map;
+        cout << "Map " << this->gameEngine->commandParam << " successfully loaded." << endl;
+    }
+    cout << endl;
 }
 
 /**
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool MapLoaded::isValidTransition() {
-    return true;
+bool MapLoaded::isValidToTransitionAway() {
+    //If they re-enter the loadmap command transition, it's a valid transition
+    if (this->gameEngine->commandTransitionName == "loadmap") {
+        return true;
+    }
+    return gameEngine->gameMap != nullptr;
 }
 
 /**
@@ -474,14 +524,19 @@ MapValidated::~MapValidated() {
  */
 void MapValidated::enterState() {
     cout << "Entering " << *this << endl;
-
+    Map* map = gameEngine->gameMap;
+    if (map->validate()) {
+        cout << "Map is valid." << endl;
+    } else {
+        //Invalid Map
+    }
 }
 
 /**
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool MapValidated::isValidTransition() {
+bool MapValidated::isValidToTransitionAway() {
     return true;
 }
 
@@ -544,17 +599,47 @@ PlayersAdded::~PlayersAdded() {
  * Handles what happens when entering a specific state.
  */
 void PlayersAdded::enterState() {
-    cout << "Entering " << *this << endl;
-
-
+    cout << endl;
+    vector<Player*> players = this->gameEngine->getGamePlayers();
+    cout << "Entering " << *this;
+    cout << "Current players added: [";
+    for (auto& p: players) {
+        if (p != players.back()) {
+            cout << p->getPlayerName() << ",";
+        } else {
+            cout << p->getPlayerName();
+        }
+    }
+    cout << "]" << endl << endl;
+    Player* player = new Player(this->gameEngine->commandParam);
+    if (gameEngine->getGamePlayers().size() == 6) {
+        cout << "There is already the maximum amount of players 6. Please go to the next state." << endl;
+        return;
+    }
+    if (players.empty()) {
+        this->gameEngine->addPlayer(player);
+        cout << "Player " << this->gameEngine->commandParam << " successfully added." << endl;
+    } else {
+        if (!this->gameEngine->isPlayerAdded(player)) {
+            this->gameEngine->addPlayer(player);
+            cout << "Player " << this->gameEngine->commandParam << " successfully added." << endl;
+        }
+    }
 }
 
 /**
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool PlayersAdded::isValidTransition() {
-    return true;
+bool PlayersAdded::isValidToTransitionAway() {
+    if (gameEngine->gamePlayers.size() < 2 && this->gameEngine->commandTransitionName != "addplayer") {
+        cout << "A minimum of 2 players are required to play this game." << endl;
+        return false;
+    }
+    if (this->gameEngine->commandTransitionName == "addplayer") {
+        return true;
+    }
+    return gameEngine->gamePlayers.size() >= 2 && gameEngine->gamePlayers.size() <= 6;
 }
 
 /**
@@ -625,7 +710,7 @@ void AssignReinforcement::enterState() {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool AssignReinforcement::isValidTransition() {
+bool AssignReinforcement::isValidToTransitionAway() {
     return true;
 }
 
@@ -698,7 +783,7 @@ void IssueOrders::enterState() {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool IssueOrders::isValidTransition() {
+bool IssueOrders::isValidToTransitionAway() {
     return true;
 }
 
@@ -766,7 +851,7 @@ void ExecuteOrders::enterState() {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool ExecuteOrders::isValidTransition() {
+bool ExecuteOrders::isValidToTransitionAway() {
     return true;
 }
 
@@ -837,7 +922,7 @@ void Win::enterState() {
  * Returns true if the state is allowed to make this transition.
  * @return
  */
-bool Win::isValidTransition() {
+bool Win::isValidToTransitionAway() {
     return true;
 }
 

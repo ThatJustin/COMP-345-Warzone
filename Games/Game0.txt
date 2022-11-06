@@ -1,6 +1,5 @@
 loadmap brazil.map
 validatemap
-addplayer John
+addplayer 1
 gamestart
-replay
 quit
