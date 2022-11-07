@@ -227,7 +227,7 @@ Deploy::Deploy() {
  * @param numberOfArmyUnits
  * @param targetTerritory
  */
-Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory) { //need to add player as a parameter
+Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player) { //need to add player as a parameter
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_targetTerritory = targetTerritory;
 }
@@ -366,7 +366,7 @@ Advance::Advance() {
  * @param sourceTerritory
  * @param targetTerritory
  */
-Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory) {
+Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
@@ -536,7 +536,7 @@ Bomb::Bomb() {
  * Parameterized constructor.
  * @param targetTerritory
  */
-Bomb::Bomb(Territory* targetTerritory) {
+Bomb::Bomb(Territory* targetTerritory, Player* player) {
     this->m_targetTerritory = targetTerritory;
 }
 
@@ -654,7 +654,7 @@ Blockade::Blockade() {
  * Parameterized constructor.
  * @param targetTerritory
  */
-Blockade::Blockade(Territory* targetTerritory) {
+Blockade::Blockade(Territory* targetTerritory, Player* player) {
     this->m_targetTerritory = targetTerritory;
 }
 
@@ -775,7 +775,7 @@ Airlift::Airlift() {
  * @param sourceTerritory
  * @param targetTerritory
  */
-Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory) {
+Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
@@ -938,7 +938,7 @@ Negotiate::Negotiate() {
  * Parameterized constructor.
  * @param targetPlayer
  */
-Negotiate::Negotiate(Player* targetPlayer) {
+Negotiate::Negotiate(Player* targetPlayer, Player* player) {
     this->m_targetPlayer = targetPlayer;
 }
 

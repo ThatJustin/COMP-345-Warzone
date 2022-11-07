@@ -165,6 +165,32 @@ vector<Territory*> Player::toDefend() {
     return defendTerritories;
 }
 
+//Territories from which the army come from
+Territory* Player::sourceTerritory(Map* map){
+
+    Territory* source = NULL;
+
+    for (Territory* territory : map->getTerritories()) {
+        source = territory;
+        break;
+    }
+
+    return source;
+}
+
+//Territories to send army to
+Territory* Player::targetTerritory(Map* map){
+
+    Territory* target = NULL;
+
+    for (Territory* territory : map->getTerritories()) {
+        target = territory;
+        break;
+    }
+
+    return target;
+}
+
 /**
  * Issues an order during the payer issue order phase.
  * OrderIssuingPhase:
@@ -180,7 +206,7 @@ vector<Territory*> Player::toDefend() {
  * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck) { //need to add commandprocessor as a parameter here
+bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand) { //need to add commandprocessor as a parameter here
 
     //while there is still army to the player, deploy them to conquer other territories
     while (getArmy() > 0){
@@ -216,19 +242,115 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck) { //need to
         int deployArmy = getArmy();
 
         //it will issue a deploy order and no other order
-        Orders* orders = new Deploy(deployArmy, toDefendTerritory);
+        Orders* orders = new Deploy(deployArmy, toDefendTerritory,this);
         orders->execute();
         delete orders;
     }
 
     //Once it has deployed all its available army units, it can proceed with other kinds of orders.
-    while (getArmy() == 0){
-        //The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories
-        //in order to defend it (using toDefend() to make the decision)
-        //and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
-        Orders* orders = new Advance();//missing attribute from part 4 to know what to modify
-    }
+    bool check = true;
+    while (check){
 
+        int amountofcards;
+
+        //The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
+        for(Cards* cards: handCards->getCards()){
+
+            cout<<"Player has: " <<endl;
+            cout<<to_string(++amountofcards)<< " and " << cards->getType()<<endl;
+        }
+
+        if(!hand->getCards().empty()) {
+            //issue all remainding cards
+            Cards *cards = handCards->getCards().at(amountofcards);
+            Orders *orders = NULL;
+
+            //issue airlift type of order cards
+            if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::AIRLIFT)) {
+
+                Territory* source = sourceTerritory(map);
+
+                Territory* target = targetTerritory(map);
+
+                //army, source, target, player
+                orders = new Airlift(army,source,target, this); //need player parameter
+            } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::BOMB)) {
+
+                Territory* target = targetTerritory(map);
+
+                orders = new Bomb(target, this);
+
+            } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::BLOCKADE)) {
+
+                Territory* target = targetTerritory(map);
+
+                orders = new Blockade(target, this);
+
+            } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::NEGOTIATE)) {
+
+                Player* targetPlayer = NULL;
+
+                for (Player* player :players) {
+                    targetPlayer = player;
+                    break;
+                }
+                orders = new Negotiate(targetPlayer, this);
+            }
+
+            //remove the cards from the hands and place it back into the deck
+            handCards->remove(cards);
+            deck->addCard(cards);
+        }
+        else{
+            //The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories
+            //in order to defend it (using toDefend() to make the decision)
+            //and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
+            Territory* targetArea = NULL;
+
+            for(Territory* territory: territories){
+
+                cout<< territory->getTerritoryName() << " and you have " << territory->getNumberOfArmies()<< " soldier, in that territory" <<endl;
+            }
+
+            //the source territory
+            Territory* sourceArea = sourceTerritory(map);
+
+            //decide between defend or attack, return a list of targets
+            vector <Territory*> targets;
+
+            //call todefend if the territory has no army defending it
+            if(targetArea->getNumberOfArmies() == 0){
+
+                targets = toDefend();
+            }
+
+            //call toattack if the all its territory has army
+            else{
+
+                targets = toAttack();
+            }
+
+            //show the territories at which the player can move
+            cout << "You can advance in the territories: "<< endl;
+            for(Territory* territory: targets){
+
+                cout<<territory->getTerritoryName() << " and "<< territory->getNumberOfArmies() <<endl;
+
+                targetArea = territory;
+                break;
+            }
+
+            Orders* order = new Advance(army, sourceArea, targetArea, this);
+            ordersList->add(order);
+
+            //break out of the loop once the player turn is over
+            //if(player.turnover()){//need to check when the player turn is over
+
+                cout<<"Player turn over"<<endl;
+                check = false;
+            //}
+        }
+    }
 
     return true;
 }

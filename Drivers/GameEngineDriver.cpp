@@ -18,6 +18,4 @@ void testMainGameLoop(){
     //executeOrdersPhase();
 
     //issueOrdersPhase();
-
-    cout<<"The winner is: addwinnername variable" << endl;
 }

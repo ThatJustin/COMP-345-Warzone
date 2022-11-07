@@ -52,7 +52,7 @@ public:
 
     Deploy(const Deploy& deploy);
 
-    Deploy(int numberOfArmyUnits, Territory* targetTerritory);
+    Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player);
 
     ~Deploy() override;
 
@@ -89,7 +89,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+    Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player);
 
     ~Advance() override;
 
@@ -131,7 +131,7 @@ public:
 
     Bomb(const Bomb& bomb);
 
-    explicit Bomb(Territory* targetTerritory);
+    explicit Bomb(Territory* targetTerritory, Player* player);
 
     ~Bomb() override;
 
@@ -163,7 +163,7 @@ public:
 
     Blockade(const Blockade& blockade);
 
-    explicit Blockade(Territory* targetTerritory);
+    explicit Blockade(Territory* targetTerritory, Player* player);
 
     ~Blockade() override;
 
@@ -195,7 +195,7 @@ public:
 
     Airlift(const Airlift& airlift);
 
-    Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
+    Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory, Player* player);
 
     ~Airlift() override;
 
@@ -237,7 +237,7 @@ public:
 
     Negotiate(const Negotiate& negotiate);
 
-    explicit Negotiate(Player* targetPlayer);
+    explicit Negotiate(Player* targetPlayer, Player* player);
 
     ~Negotiate() override;
 

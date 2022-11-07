@@ -253,6 +253,8 @@ public:
     Map* map = NULL;
 
     Deck* deck = NULL;
+
+    Hand* hand = NULL;
 };
 
 class ExecuteOrders : public GameState {

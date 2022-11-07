@@ -643,10 +643,9 @@ void AssignReinforcement::enterState() {
             player->setArmy(controlbonus);//need to change controlbonus to get continent value
             end:;//continue from this
         }
-        //if minimum reinforcement per turn is 3
+        //minimum reinforcement per turn is 3
         player->setArmy(+3);
     }
-
 }
 
 /**
@@ -728,7 +727,7 @@ void IssueOrders::enterState() {
     for (Player* player : players) {
 
         //issue the order
-        player->issueOrder(map, players, deck);
+        player->issueOrder(map, players, deck, hand);
 
         //phase end when all player have no more order to issue for their turn
         //if(player->getOrdersList() == 0){
