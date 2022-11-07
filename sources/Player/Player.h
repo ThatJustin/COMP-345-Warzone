@@ -63,6 +63,8 @@ public:
     //Assignment operator overload
     Player& operator=(const Player& player);
 
+    void setReinforcementPool(int reinforcementPoolUnits);
+
 private:
     //Collection of territories
     vector<Territory*> territories;
@@ -75,4 +77,7 @@ private:
 
     //Player name
     string name;
+
+    //initial army units
+    int reinforcementPoolUnits = 50;
 };

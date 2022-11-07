@@ -33,7 +33,7 @@ public:
     ~Cards(); //cards deletor
     CardsType getType(const std::string& name) ; //card type with the enum element name
     CardsType& getType(); //return the type of the card
-    void play(Player* player, Deck* deck); //play method for the card class
+    void play(Player* player, Deck* deck, Orders* orders); //play method for the card class
     Cards& operator=(const Cards& cards); //assignment operator
 };
 

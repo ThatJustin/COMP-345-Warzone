@@ -11,9 +11,10 @@ using namespace std;
 int main(int argc, char** argv) {
     //Testing the functionality for Assignment 2.
 
-    cout << "Testing CommandProcessor" << endl;
-    testCommandProcessor(argc, argv);
+//    cout << "Testing CommandProcessor" << endl;
+//    testCommandProcessor(argc, argv);
 
-
+    cout << "Testing GameEngineDriver StartupPhase" << endl;
+    testStartupPhase(argc, argv);
     return 0;
 }

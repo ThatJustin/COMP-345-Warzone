@@ -149,7 +149,7 @@ public:
     std::vector<Continent*> getContinents();
 
     // Accessor for the pointer to a specific territory given its respective territory id as a parameter
-    Territory* getTerritory(int map_territory_id);
+    Territory* getTerritoryByTerritoryID(int map_territory_id);
 
     // DFS method used for traversing the map/graph in order to know if it is connected or not
     void depthFirstSearch(int starting_territory_id, std::vector<Territory*>& visited_territories);
@@ -161,6 +161,8 @@ public:
     // Method used for validating the maps after they are loaded from the specific map files
     bool validate();
 
+
+    std::vector<Territory*> getShuffledTerritories();
 
 private:
     // Collection/list of territory pointers that point to all territories found on the map

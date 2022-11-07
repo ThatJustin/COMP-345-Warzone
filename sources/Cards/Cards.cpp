@@ -12,7 +12,6 @@ using namespace std;
  * cards default constructor
  */
 Cards::Cards() { //constructor definition outside the class
-
 };
 
 /**
@@ -63,6 +62,14 @@ CardsType Cards::getType(const string& name) {
  */
 Deck::Deck() { //constructor definition
     this->cards = vector<Cards*>();
+
+    //Create 3 of each cards in the deck
+    for (int i = 0; i < 3; i++) {
+        this->cards.push_back(new Cards(BOMB));
+        this->cards.push_back(new Cards(AIRLIFT));
+        this->cards.push_back(new Cards(BLOCKADE));
+        this->cards.push_back(new Cards(DIPLOMACY));
+    }
 };
 
 /**
@@ -101,7 +108,7 @@ void Deck::addCard(Cards* card) {
         cout << "Adding card to deck..." << getNameByCardType(card->getType()) << endl;
         this->cards.push_back(card);
     } else {
-        cout << "Tried to addOrder null card to deck." << endl;
+        cout << "Tried to add null card to deck." << endl;
     }
 }
 
@@ -133,7 +140,7 @@ void Deck::draw(Player* player) {
         uniform_int_distribution<int> dis(0, cards.size() - 1); //set potential number
 
         int randCardIdx = dis(randomEngine); //pull a number from the amount of cards
-        player->getHandCards()->addCard(cards[randCardIdx]); //addOrder random card to hand
+        player->getHandCards()->addCard(cards[randCardIdx]); //add random card to hand
         cards.erase(cards.begin() + randCardIdx); //remove card from deck
     } else {
         cout << "Tried to pull a card from an empty deck" << endl;
@@ -168,7 +175,7 @@ Hand::Hand(const Hand& hand) {
  * @param card
  */
 void Hand::addCard(Cards* card) {
-    cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
+    // cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
     this->cards.push_back(card);
 }
 
@@ -194,19 +201,17 @@ std::vector<Cards*> Hand::getCards() {
 /**
  * Each card has a play() method that enables a player to use it during game play by creating special orders.
  * Once a card has been played, it is removed from the hand and put back into the deck
- * @param ol
- * @param hand
- * @param deck
+ * @param player the player playing the card
+ * @param deck the deck holding cards
+ * @param orders Rhe order the card will do
  */
-void Cards::play(Player* player, Deck* deck) {
+void Cards::play(Player* player, Deck* deck, Orders* orders) {
     cout << "Playing card " << getNameByCardType(getType()) << endl;
     cout << endl;
 
-    Orders* orders = createOrderByCardType(this->getType()); //create an order with the card type
+    player->getOrdersList()->add(orders); //add card type to the list
 
-    player->getOrdersList()->addOrder(orders); //addOrder card type to the list
-
-    deck->addCard(createCardByCardType(this->getType())); //addOrder card base on their type
+    deck->addCard(createCardByCardType(this->getType())); //add card base on their type
 
     player->getHandCards()->remove(this); //remove the cards by type from hand
 }
