@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
 using namespace std;
 class Player;
 
@@ -28,6 +29,7 @@ class CommandProcessor;
 
 class Map;
 
+class Deck;
 
 class GameEngine {
 private:
@@ -97,6 +99,17 @@ public:
 
     //The players playing max 2-6
     std::vector<Player*> gamePlayers;
+
+    Deck* deck;
+
+    Player* neutral;
+
+    Deck* getDeck() const;
+
+    Player* getNeutralPlayer() const;
+
+    int turnNumber = 0;
+
     string commandTransitionName;
 
     void addPlayer(Player* pPlayer);
@@ -104,6 +117,8 @@ public:
     vector<Player*> getGamePlayers();
 
     bool isPlayerAdded(Player* pPlayer);
+
+    void gameStart();
 };
 
 class GameState {

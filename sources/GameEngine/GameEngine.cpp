@@ -1,8 +1,11 @@
 #include "GameEngine.h"
 #include <iostream>
+#include <random>
+#include <algorithm>
 #include "CommandProcessor.h"
 #include "sources/Map/Map.h"
 #include "sources/Player/Player.h"
+#include "sources/Cards/Cards.h"
 
 /**
  * Constructor of GameEngine
@@ -27,16 +30,20 @@ GameEngine::GameEngine() {
     this->commandTransitionName = "";
     this->gameMap = nullptr;
     this->gamePlayers = std::vector<Player*>();
+    this->deck = new Deck();
+    this->neutral = new Player("Neutral");
+    this->turnNumber == 0;
 }
 
 /**
  * Destructor of GameEngine
  */
 GameEngine::~GameEngine() {
-    if (currentGameState != nullptr) {
-        delete currentGameState;
-        currentGameState = nullptr;
+    if (win != nullptr) {
+        delete win;
+        win = nullptr;
     }
+
     if (start != nullptr) {
         delete start;
         start = nullptr;
@@ -65,10 +72,6 @@ GameEngine::~GameEngine() {
         delete executeOrders;
         executeOrders = nullptr;
     }
-    if (win != nullptr) {
-        delete win;
-        win = nullptr;
-    }
     if (commandProcessor != nullptr) {
         delete commandProcessor;
         commandProcessor = nullptr;
@@ -76,6 +79,20 @@ GameEngine::~GameEngine() {
     if (gameMap != nullptr) {
         delete gameMap;
         gameMap = nullptr;
+    }
+    if (deck != nullptr) {
+        delete deck;
+        deck = nullptr;
+    }
+    if (neutral != nullptr) {
+        delete neutral;
+        neutral = nullptr;
+    }
+    if (!gamePlayers.empty()) {
+        for (auto p: gamePlayers) {
+            delete p;
+        }
+        gamePlayers.clear();
     }
 }
 
@@ -213,9 +230,7 @@ void GameEngine::startupPhase() {
             this->commandParam = c->getParam();
             changeStateByTransition(AddPlayer);
         } else if (c->getTransitionName() == "gamestart") {
-            //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
-            // will return here
-            mainGameLoop();
+            gameStart();
         } else if (c->getTransitionName() == "replay") {
             prepareForReplay();
             changeStateByTransition(StartGame);
@@ -232,6 +247,7 @@ void GameEngine::startupPhase() {
  * The valid transitions are IssueOrder, IssueOrdersEnd, Execorder, Endexecorders, Win
  */
 void GameEngine::mainGameLoop() {
+    // When this function is called, you are already in the AssignReinforcement state
 
 }
 
@@ -240,7 +256,21 @@ void GameEngine::mainGameLoop() {
  */
 void GameEngine::prepareForReplay() {
     //Delete and reinitialize objects from part 2 like map, players, etc
+    delete gameMap;
+    for (auto p: gamePlayers) {
+        delete p;
+    }
+    gamePlayers.clear();
+    delete deck;
+    delete neutral;
 
+    this->commandParam = "";
+    this->commandTransitionName = "";
+    this->gameMap = nullptr;
+    this->gamePlayers = std::vector<Player*>();
+    this->deck = new Deck();
+    this->neutral = new Player("Neutral");
+    this->turnNumber == 0;
 
     // If it's being read from a file
     if (!this->isUsingConsole()) {
@@ -290,6 +320,81 @@ bool GameEngine::isPlayerAdded(Player* pPlayer) {
         }
     }
     return false;
+}
+
+/**
+fairly distribute all the territories to the players
+determine randomly the order of play of the players in the game
+give 50 initial army units to the players, which are placed in their respective reinforcement pool
+let each player draw 2 initial cards from the deck using the deck’s draw() method
+switch the game to the play phase
+ */
+void GameEngine::gameStart() {
+    std::random_device rd;
+    default_random_engine randomEngine(rd());
+
+    int playerCount = this->getGamePlayers().size();
+    int totalTerritoryCount = this->gameMap->getTerritories().size();
+
+    vector<Territory*> shuffledTerritories = gameMap->getShuffledTerritories();
+
+    div_t divisionResult;
+    divisionResult = div(totalTerritoryCount, playerCount);
+
+    vector<Player*> shuffledPlayers = getGamePlayers();
+
+    //b) determine randomly the order of play of the players in the game
+    shuffle(shuffledPlayers.begin(), shuffledPlayers.end(), randomEngine);
+
+
+    int individualTerritoryCount = divisionResult.quot;
+    int individualTerritoryStartIndex = 0;
+    for (auto player: this->getGamePlayers()) {
+
+        // Assign the territories to the player
+        for (int i = individualTerritoryStartIndex; i < individualTerritoryCount; i++) {
+            Territory* territory = shuffledTerritories.at(i);
+            territory->setTerritoryOwner(player);
+            player->addTerritory(territory);
+        }
+
+        //c) give 50 initial army units to the players, which are placed in their respective reinforcement pool
+        player->setReinforcementPool(50);
+
+        //d) let each player draw 2 initial cards from the deck using the deck’s draw() method
+        for (int i = 0; i < 2; i++) {
+            deck->draw(player);
+        }
+        individualTerritoryStartIndex += divisionResult.quot;
+        individualTerritoryCount += divisionResult.quot;
+    }
+    // Assign the leftover territories to the neutral player
+    if (divisionResult.rem != 0) {
+        for (int i = individualTerritoryStartIndex; i < individualTerritoryStartIndex + divisionResult.rem; i++) {
+            Territory* territory = shuffledTerritories.at(i);
+            territory->setTerritoryOwner(neutral);
+            neutral->addTerritory(territory);
+        }
+    }
+    changeStateByTransition(GameEngine::GameStart);
+    //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
+    mainGameLoop();
+}
+
+/**
+ * Gets the deck used for the game.
+ * @return
+ */
+Deck* GameEngine::getDeck() const {
+    return deck;
+}
+
+/**
+ * Gets the neutral player.
+ * @return
+ */
+Player* GameEngine::getNeutralPlayer() const {
+    return neutral;
 }
 
 /**
@@ -702,6 +807,8 @@ AssignReinforcement::~AssignReinforcement() {
  */
 void AssignReinforcement::enterState() {
     cout << "Entering " << *this << endl;
+    // Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
+    this->gameEngine->turnNumber++;
 
 
 }

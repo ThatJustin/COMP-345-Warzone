@@ -64,7 +64,8 @@ void testCommandProcessor(int argc, char** argv) {
             cout << "Entering replay state." << endl;
         } else if (c->getTransitionName() == "quit") {
             cout << "Thanks for playing!" << endl;
-            exit(0);
+            break;
         }
     }
+    delete gameEngine;
 }

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <random>
 
 using std::cout;
 using std::endl;
@@ -407,7 +408,7 @@ vector<Continent*> Map::getContinents() {
  * @param map_territory_id The id of the territory to find/get
  * @return The pointer to the territory found/gotten with the specified id if it exists inside the vector of territory pointers, otherwise it returns a null territory pointer
  */
-Territory* Map::getTerritory(int map_territory_id) {
+Territory* Map::getTerritoryByTerritoryID(int map_territory_id) {
     for (auto& territory: this->getTerritories()) {
         if (territory->getMapTerritoryId() == map_territory_id) {
             return territory;
@@ -424,20 +425,21 @@ Territory* Map::getTerritory(int map_territory_id) {
 void Map::depthFirstSearch(int starting_territory_id, vector<Territory*>& visited_territories) {
 
     // If the territory pointer points to a territory that has already been visited with that specific territory id, then return the recursive call
-    if (find(visited_territories.begin(), visited_territories.end(), this->getTerritory(starting_territory_id)) !=
+    if (find(visited_territories.begin(), visited_territories.end(),
+             this->getTerritoryByTerritoryID(starting_territory_id)) !=
         visited_territories.end()) {
         return;
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id,
     // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
-    if (this->getTerritory(starting_territory_id) != nullptr) {
-        visited_territories.push_back(this->getTerritory(starting_territory_id));
+    if (this->getTerritoryByTerritoryID(starting_territory_id) != nullptr) {
+        visited_territories.push_back(this->getTerritoryByTerritoryID(starting_territory_id));
 
         // Here, I loop through all the adjacent territories of the territory being pointed to by the territory pointer
         // with that specific territory id and checking if those adjacent territories have been visited or not.
         // If they have not, then I call the DFS method recursively on them
-        for (auto& adjacent_territory: this->getTerritory(starting_territory_id)->getAdjacentTerritories()) {
+        for (auto& adjacent_territory: this->getTerritoryByTerritoryID(starting_territory_id)->getAdjacentTerritories()) {
             if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) ==
                 visited_territories.end()) {
                 this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
@@ -546,6 +548,14 @@ bool Map::validate() {
         }
     }
     return true;
+}
+
+vector<Territory*> Map::getShuffledTerritories() {
+    vector<Territory*> ter = this->getTerritories();
+    std::random_device rd; //define random number generator
+    default_random_engine randomEngine(rd()); //generate random number
+    shuffle(ter.begin(), ter.end(), randomEngine);
+    return ter;
 }
 
 /**

@@ -1,5 +1,8 @@
-loadmap brazil.map
+loadmap aden.map
 validatemap
-addplayer 1
+addplayer A
+addplayer B
+addplayer C
+addplayer D
 gamestart
 quit

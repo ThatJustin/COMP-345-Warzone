@@ -4,7 +4,10 @@
 #include <filesystem>
 #include "sources/GameEngine/CommandProcessor.h"
 #include "sources/GameEngine/GameEngine.h"
+#include "sources/Map/Map.h"
+#include "sources/Player/Player.h"
 #include <algorithm>
+#include <random>
 
 void testGameStates() {
     GameEngine* gameEngine = new GameEngine;
@@ -58,13 +61,20 @@ void testStartupPhase(int argc, char** argv) {
             gameEngine->commandParam = c->getParam();
             gameEngine->changeStateByTransition(GameEngine::AddPlayer);
         } else if (c->getTransitionName() == "gamestart") {
+            gameEngine->gameStart();
+            cout << "Displaying the outcome of gameStart being called." << endl;
+            for (auto p: gameEngine->getGamePlayers()) {
+                cout << *p << endl;
+            }
+            cout << "Simulating a win transition for demo purpose." << endl;
             gameEngine->changeStateByTransition(GameEngine::Win);
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
             gameEngine->changeStateByTransition(GameEngine::Play);
         } else if (c->getTransitionName() == "quit") {
             cout << "Thanks for playing!" << endl;
-            exit(0);
+            break;
         }
     }
+    delete gameEngine;
 }
