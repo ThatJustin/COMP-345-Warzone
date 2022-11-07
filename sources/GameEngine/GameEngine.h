@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <iostream>
 
 using namespace std;
+class Player;
 
 class GameState;
 
@@ -23,6 +26,10 @@ class ExecuteOrders;
 class Win;
 
 class CommandProcessor;
+
+class Map;
+
+class Deck;
 
 class GameEngine {
 private:
@@ -54,6 +61,8 @@ public:
     //Keep track of the current param for loadmap/addplayer
     string commandParam;
 
+    CommandProcessor* getCommandProcessor() const;
+
     //All valid transitions
     static const int StartGame = 0,
             LoadMap = 1,
@@ -83,7 +92,33 @@ public:
     bool isUsingConsole();
 
 // Keep track of the current state
-GameState* currentGameState;
+    GameState* currentGameState;
+
+    //The map the game engine is using.
+    Map* gameMap;
+
+    //The players playing max 2-6
+    std::vector<Player*> gamePlayers;
+
+    Deck* deck;
+
+    Player* neutral;
+
+    Deck* getDeck() const;
+
+    Player* getNeutralPlayer() const;
+
+    int turnNumber = 0;
+
+    string commandTransitionName;
+
+    void addPlayer(Player* pPlayer);
+
+    vector<Player*> getGamePlayers();
+
+    bool isPlayerAdded(Player* pPlayer);
+
+    void gameStart();
 };
 
 class GameState {
@@ -104,7 +139,7 @@ public:
 
     virtual GameState* copy() = 0;
 
-    virtual bool isValidTransition();
+    virtual bool isValidToTransitionAway();
 
     virtual ~GameState();
 
@@ -122,7 +157,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -143,7 +178,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -164,7 +199,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -185,7 +220,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -206,7 +241,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -227,7 +262,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -248,7 +283,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 
@@ -269,7 +304,7 @@ public:
 
     void enterState() override;
 
-    bool isValidTransition() override;
+    bool isValidToTransitionAway() override;
 
     GameState* copy() override;
 

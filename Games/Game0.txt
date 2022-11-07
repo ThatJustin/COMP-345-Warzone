@@ -1,6 +1,8 @@
-loadmap brazil.map
+loadmap aden.map
 validatemap
-addplayer John
+addplayer A
+addplayer B
+addplayer C
+addplayer D
 gamestart
-replay
 quit

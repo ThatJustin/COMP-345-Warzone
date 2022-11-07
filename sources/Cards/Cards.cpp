@@ -12,7 +12,6 @@ using namespace std;
  * cards default constructor
  */
 Cards::Cards() { //constructor definition outside the class
-
 };
 
 /**
@@ -63,6 +62,14 @@ CardsType Cards::getType(const string& name) {
  */
 Deck::Deck() { //constructor definition
     this->cards = vector<Cards*>();
+
+    //Create 3 of each cards in the deck
+    for (int i = 0; i < 3; i++) {
+        this->cards.push_back(new Cards(BOMB));
+        this->cards.push_back(new Cards(AIRLIFT));
+        this->cards.push_back(new Cards(BLOCKADE));
+        this->cards.push_back(new Cards(DIPLOMACY));
+    }
 };
 
 /**
@@ -168,7 +175,7 @@ Hand::Hand(const Hand& hand) {
  * @param card
  */
 void Hand::addCard(Cards* card) {
-    cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
+   // cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
     this->cards.push_back(card);
 }
 
