@@ -291,7 +291,7 @@ public:
 };
 
 //free functions
-Orders* createOrderByCardType(int cardType);
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
 string getNameByOrderType(OrderType cardType);
 

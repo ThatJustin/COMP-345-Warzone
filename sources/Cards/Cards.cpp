@@ -175,7 +175,7 @@ Hand::Hand(const Hand& hand) {
  * @param card
  */
 void Hand::addCard(Cards* card) {
-   // cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
+    // cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
     this->cards.push_back(card);
 }
 
@@ -201,15 +201,13 @@ std::vector<Cards*> Hand::getCards() {
 /**
  * Each card has a play() method that enables a player to use it during game play by creating special orders.
  * Once a card has been played, it is removed from the hand and put back into the deck
- * @param ol
- * @param hand
- * @param deck
+ * @param player the player playing the card
+ * @param deck the deck holding cards
+ * @param orders Rhe order the card will do
  */
-void Cards::play(Player* player, Deck* deck) {
+void Cards::play(Player* player, Deck* deck, Orders* orders) {
     cout << "Playing card " << getNameByCardType(getType()) << endl;
     cout << endl;
-
-    Orders* orders = createOrderByCardType(this->getType()); //create an order with the card type
 
     player->getOrdersList()->add(orders); //add card type to the list
 

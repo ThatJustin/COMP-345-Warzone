@@ -92,16 +92,16 @@ string getNameByOrderType(OrderType cardType) {
  * @param cardType
  * @return
  */
-Orders* createOrderByCardType(Player* player, int cardType) {
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory) {
     switch (cardType) {
         case BOMB:
-            return new Bomb();
+            return new Bomb(player, targetTerritory);
         case BLOCKADE:
-            return new Blockade();
+            return new Blockade(player, targetTerritory);
         case AIRLIFT:
-            return new Airlift();
+            return new Airlift(player, numberOfArmyUnits, sourceTerritory, targetTerritory);
         case DIPLOMACY:
-            return new Negotiate();
+            return new Negotiate(player, targetPlayer);
         default:
             return nullptr;
     }
