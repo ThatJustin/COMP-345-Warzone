@@ -15,7 +15,7 @@ public:
     Continent();
 
     // Parameterized Constructor
-    Continent(int map_continent_id, const std::string& continent_name);
+    Continent(int map_continent_id, const std::string& continent_name, int continent_control_bonus_value);
 
     // Copy Constructor
     Continent(const Continent& continent);
@@ -32,6 +32,9 @@ public:
     // Accessor for the continent name
     std::string getContinentName();
 
+    // Accessor for the continent control bonus value
+    int getContinentControlBonusValue();
+
     // Accessor for the vector of territory pointers that point to territories found on the continent
     std::vector<Territory*> getTerritories();
 
@@ -44,6 +47,9 @@ private:
 
     // A string representing the continent name
     std::string continent_name;
+
+    // An integer representing the continent control bonus value
+    int continent_control_bonus_value;
 
     // Collection/list of territory pointers that point to territories found on the continent
     std::vector<Territory*> territories;

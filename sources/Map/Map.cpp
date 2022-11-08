@@ -18,6 +18,7 @@ using std::find_if;
 Continent::Continent() {
     this->map_continent_id = 0;
     this->continent_name = "";
+    this->continent_control_bonus_value = 0;
     this->territories = vector<Territory*>();
 }
 
@@ -26,9 +27,10 @@ Continent::Continent() {
  * @param map_continent_id The id of the continent
  * @param continent_name The name of the continent
  */
-Continent::Continent(int map_continent_id, const string& continent_name) {
+Continent::Continent(int map_continent_id, const string& continent_name, int continent_control_bonus_value) {
     this->map_continent_id = map_continent_id;
     this->continent_name = continent_name;
+    this->continent_control_bonus_value = continent_control_bonus_value;
     this->territories = vector<Territory*>();
 }
 
@@ -39,6 +41,7 @@ Continent::Continent(int map_continent_id, const string& continent_name) {
 Continent::Continent(const Continent& continent) {
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
+    this->continent_control_bonus_value = continent.continent_control_bonus_value;
     this->territories = continent.territories;
 }
 
@@ -62,6 +65,7 @@ Continent& Continent::operator=(const Continent& continent) {
     }
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
+    this->continent_control_bonus_value = continent.continent_control_bonus_value;
     this->territories = continent.territories;
     return *this;
 }
@@ -74,6 +78,7 @@ Continent& Continent::operator=(const Continent& continent) {
  */
 ostream& operator<<(ostream& outs, const Continent& continent) {
     outs << "Continent Name: " << continent.continent_name << endl <<
+         "Control Bonus Value: " << continent.continent_control_bonus_value << endl <<
          "Number of Territories: " << continent.territories.size() << endl <<
          "They are:" << endl;
     for (auto territory: continent.territories) {
@@ -88,6 +93,14 @@ ostream& operator<<(ostream& outs, const Continent& continent) {
  */
 string Continent::getContinentName() {
     return this->continent_name;
+}
+
+/**
+ * Accessor for the continent control bonus value
+ * @return The control bonus value of the continent
+ */
+int Continent::getContinentControlBonusValue() {
+    return this->continent_control_bonus_value;
 }
 
 /**
@@ -661,8 +674,8 @@ Map* MapLoader::loadMap(const string& map_file_path) {
                 }
 
                 // I take a substring of the map file line which corresponds to the continent name then
-                // adding a new continent to the vector of continents with that continent name
-                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('='))));
+                // adding a new continent to the vector of continents with that continent name and its respective control bonus value
+                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('=')), stoi(map_file_line.substr(map_file_line.find('=') + 1))));
                 map_continent_id++;
             }
         }
