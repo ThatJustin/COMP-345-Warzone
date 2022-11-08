@@ -49,3 +49,4 @@
 /cmake-build-debug
 /MainDriver
 MainDriver.pdb
+*.DS_Store
