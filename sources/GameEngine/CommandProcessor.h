@@ -4,7 +4,7 @@
 #include <vector>
 #include "sources/GameEngine/LoggingObserver.h"
 
-class Command : ILoggable, Subject{
+class Command : public ILoggable, public Subject{
 public:
     Command();
 
@@ -14,7 +14,9 @@ public:
 
     ~Command();
 
-    void notify(Command comm);
+    void stringToLog();
+
+    void notify(ILoggable *ilog);
 
     std::string command;
     std::string effect;
@@ -30,7 +32,7 @@ public:
     std::string getTransitionName() const;
 };
 
-class CommandProcessor : ILoggable, Subject{
+class CommandProcessor : public ILoggable, public Subject{
 
 public:
     CommandProcessor();
@@ -41,7 +43,9 @@ public:
 
     virtual ~CommandProcessor();
 
-    void notify(Command comm);
+    void stringToLog();
+
+    void notify(ILoggable *ilog);
 
     std::vector<Command*> commands;
     bool isUsingConsole;

@@ -64,6 +64,9 @@ void Orders::toStreamInsertion(ostream& os) const {
 
 }
 
+void Orders::stringToLog(){
+
+}
 /**
  * return the name based on the type of order
  * @param cardType

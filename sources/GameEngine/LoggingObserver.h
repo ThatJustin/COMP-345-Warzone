@@ -6,11 +6,14 @@
 #define COMP_345_WARZONE_LOGGINGOBSERVER_H
 
 #include "CommandProcessor.h"
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <string.h>
 #include <list>
 using namespace std;
 class ILoggable{
+public:
     virtual void stringToLog()=0;
 };
 
@@ -29,7 +32,7 @@ public:
     ~Subject();
     virtual void attach(Observer *obs) = 0;
     virtual void detach(Observer *obs) = 0;
-    virtual void notify()=0;
+    virtual void notify(ILoggable *ilog)=0;
 private:
     list<*Observer> *observers;
 };
@@ -39,13 +42,11 @@ public:
     LogObserver();
     ~LogObserver();
 
-    string getFilename();
-    void setFilename(string filename);
+    string getGameLog();
+    void setGameLog(string gamelog);
 
     void update(ILoggable *ilog);
 private:
-    string FILENAME;
-
-
+    string GameLog;
 };
 #endif //COMP_345_WARZONE_LOGGINGOBSERVER_H

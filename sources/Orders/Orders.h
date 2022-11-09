@@ -21,7 +21,7 @@ enum class OrderType {
     DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
 };
 
-class Orders : ILoggable, Subject{
+class Orders : public ILoggable, public Subject{
 
 public:
     Orders();
@@ -47,6 +47,10 @@ public:
     Orders& operator=(const Orders& order);
 
     Player* player;
+
+    void stringToLog();
+
+    void notify(ILoggable *ilog);
 };
 
 class Deploy : public Orders {
@@ -279,6 +283,10 @@ public:
     OrdersList& operator=(const OrdersList& orderslist);
 
     friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
+
+    void stringToLog();
+
+    void notify(ILoggable *ilog);
 
     void move(int from, int to);
 

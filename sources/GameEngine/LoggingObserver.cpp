@@ -16,22 +16,23 @@ Observer::Observer() {}
 Observer::~Observer(){}
 
 LogObserver::LogObserver(){
-    this->FILENAME="NULL";
+    this->GameLog="NULL";
 }
 
 LogObserver::~LogObserver(){
 
 }
 
-void LogObserver::setFilename(string filename){
-    this->FILENAME=filename;
+void LogObserver::setGameLog(string gamelog){
+    this->GameLog=gamelog;
 }
 
-string LogObserver::getFilename(){
-    return FILENAME;
+string LogObserver::getGameLog(){
+    return GameLog;
 }
+
 void LogObserver::update(ILoggable *ilog){
-
+    ilog->stringToLog();
 }
 
 Subject::Subject(){
@@ -55,7 +56,7 @@ void Subject::detach(Observer *obs){
     observers->remove(obs);
 }
 
-void Subject::notify(){
+void Subject::notify(ILoggable *ilog){
     list<Observer *>::iterator i = observers->begin();
     for (; i != observers->end(); ++i){
         (*i)->update();

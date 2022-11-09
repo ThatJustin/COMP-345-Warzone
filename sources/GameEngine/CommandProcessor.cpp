@@ -28,9 +28,6 @@ Command::Command(const string& inputCommand) {
 Command::~Command() {}
 
 
-void Command::notify(Command comm){
-    cout<<"Effect: "<<comm.effect;
-}
 
 /**
  * Saves the effect command and notifies the observer.
@@ -125,8 +122,13 @@ CommandProcessor::~CommandProcessor() {
     }
 }
 
-void CommandProcessor::notify(Command comm) {
-    cout<<"Command: "<<comm.command;
+
+void CommandProcessor::stringToLog(){
+
+}
+
+void CommandProcessor::notify(ILoggable *ilog){
+
 }
 
 /**
@@ -297,7 +299,7 @@ string FileCommandProcessorAdapter::readCommand() {
  */
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(
         const FileCommandProcessorAdapter& fileCommandProcessorAdapter) : CommandProcessor(
-        fileCommandProcessorAdapter) {
+                fileCommandProcessorAdapter) {
     this->inputFileName = fileCommandProcessorAdapter.inputFileName;
     this->fileLineReader = new FileLineReader(*fileCommandProcessorAdapter.fileLineReader);
     this->isUsingConsole = fileCommandProcessorAdapter.isUsingConsole;

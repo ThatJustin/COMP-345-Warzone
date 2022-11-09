@@ -32,7 +32,7 @@ class Map;
 
 class Deck;
 
-class GameEngine : ILoggable, Subject{
+class GameEngine : public ILoggable, public Subject{
 private:
 
     //each state
@@ -57,6 +57,9 @@ public:
 
     GameEngine& operator=(const GameEngine& gameEngine);
 
+    void stringToLog();
+
+    void notify(ILoggable *ilog);
     GameState* getCurrentGameState();
 
     //Keep track of the current param for loadmap/addplayer
