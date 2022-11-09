@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include "sources/GameEngine/LoggingObserver.h"
 
 class Territory;
 
@@ -20,7 +21,7 @@ enum class OrderType {
     DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
 };
 
-class Orders {
+class Orders : ILoggable, Subject{
 
 public:
     Orders();
@@ -265,7 +266,7 @@ private:
     Player* m_targetPlayer;
 };
 
-class OrdersList {
+class OrdersList : ILoggable, Subject{
 private:
     std::vector<Orders*> list;
 public:

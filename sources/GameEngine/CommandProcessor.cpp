@@ -27,6 +27,11 @@ Command::Command(const string& inputCommand) {
  */
 Command::~Command() {}
 
+
+void Command::notify(Command comm){
+    cout<<"Effect: "<<comm.effect;
+}
+
 /**
  * Saves the effect command and notifies the observer.
  * @param commandEffect
@@ -120,6 +125,9 @@ CommandProcessor::~CommandProcessor() {
     }
 }
 
+void CommandProcessor::notify(Command comm) {
+    cout<<"Command: "<<comm.command;
+}
 
 /**
  * Reads input as the command and returns it.

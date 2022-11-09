@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "sources/GameEngine/LoggingObserver.h"
 
 using namespace std;
 class Player;
@@ -31,7 +32,7 @@ class Map;
 
 class Deck;
 
-class GameEngine {
+class GameEngine : ILoggable, Subject{
 private:
 
     //each state

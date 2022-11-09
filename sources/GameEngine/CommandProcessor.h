@@ -2,8 +2,9 @@
 
 #include <string>
 #include <vector>
+#include "sources/GameEngine/LoggingObserver.h"
 
-class Command {
+class Command : ILoggable, Subject{
 public:
     Command();
 
@@ -12,6 +13,8 @@ public:
     Command(const Command& command);
 
     ~Command();
+
+    void notify(Command comm);
 
     std::string command;
     std::string effect;
@@ -27,7 +30,7 @@ public:
     std::string getTransitionName() const;
 };
 
-class CommandProcessor {
+class CommandProcessor : ILoggable, Subject{
 
 public:
     CommandProcessor();
@@ -37,6 +40,8 @@ public:
     CommandProcessor(bool isUsingConsole, std::string inputFileName);
 
     virtual ~CommandProcessor();
+
+    void notify(Command comm);
 
     std::vector<Command*> commands;
     bool isUsingConsole;
