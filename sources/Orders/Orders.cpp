@@ -253,8 +253,11 @@ void OrdersList::detach(Observer* obs){
 }
 
 string OrdersList::stringToLog() {
-    //TODO code it
-    return "";
+    Orders *order;
+    string type = "Order issued: ";
+    string o = getNameByOrderType(order->getOrderType());
+    string toReturn = type.append(o);
+    return toReturn;
 }
 
 /**

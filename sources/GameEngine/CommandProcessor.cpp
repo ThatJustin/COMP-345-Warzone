@@ -95,8 +95,11 @@ Command::Command(const Command& command) {
 }
 
 string Command::stringToLog() {
-    //TODO implement
-    return "";
+    Command *comm;
+    string type = "Command's Effect: ";
+    string c = comm->effect;
+    string toReturn = type.append(c);
+    return toReturn;
 }
 
 /**
@@ -135,8 +138,11 @@ CommandProcessor::~CommandProcessor() {
 
 
 string CommandProcessor::stringToLog(){
-    //TODO implement
-    return "";
+    Command *comm;
+    string type = "Command: ";
+    string c = comm->command;
+    string toReturn = type.append(c);
+    return toReturn;
 }
 
 /**

@@ -112,6 +112,7 @@ void GameEngine::changeStateByTransition(int transition) {
         // for now it's always true
         if (this->getCurrentGameState()->isValidToTransitionAway()) {
             this->currentGameState = getStateFromTransition(transition);
+            notify(this);
             this->getCurrentGameState()->enterState();
         }
     }
@@ -410,8 +411,9 @@ void GameEngine::detach(Observer* obs){
 }
 
 string GameEngine::stringToLog() {
-    //TODO code it
-    return "";
+    GameEngine state;
+    string type = "Game Engine new state: ";
+    return " ";
 }
 
 /**
