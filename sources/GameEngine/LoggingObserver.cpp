@@ -3,6 +3,8 @@
 //
 
 #include "LoggingObserver.h"
+
+#include <utility>
 /**
  *
  * Observer class
@@ -13,53 +15,50 @@
  * Observer constructor
  */
 Observer::Observer() {}
-Observer::~Observer(){}
 
-LogObserver::LogObserver(){
-    this->GameLog="NULL";
+Observer::~Observer() {}
+
+LogObserver::LogObserver() {
+    this->GameLog = "NULL";
 }
 
-LogObserver::~LogObserver(){
+LogObserver::~LogObserver() {
 
 }
 
-void LogObserver::setGameLog(string gamelog){
-    this->GameLog=gamelog;
+void LogObserver::setGameLog(string gamelog) {
+    this->GameLog = std::move(gamelog);
 }
 
-string LogObserver::getGameLog(){
+string LogObserver::getGameLog() {
     return GameLog;
 }
 
-void LogObserver::update(ILoggable *ilog){
+void LogObserver::update(ILoggable* ilog) {
     ilog->stringToLog();
 }
 
-Subject::Subject(){
+Subject::Subject() {
     observers = new list<Observer*>;
 }
 
-Subject::~Subject(){
-    for(int i=0;i<observers.size();i++){
-        delete observers[i];
-    }
-
+Subject::~Subject() {
     delete observers;
 }
 
 
-void Subject::attach(Observer *obs){
+void Subject::attach(Observer* obs) {
     observers->push_back(obs);
 }
 
-void Subject::detach(Observer *obs){
+void Subject::detach(Observer* obs) {
     observers->remove(obs);
 }
 
-void Subject::notify(ILoggable *ilog){
-    list<Observer *>::iterator i = observers->begin();
-    for (; i != observers->end(); ++i){
-        (*i)->update();
+void Subject::notify(ILoggable* ilog) {
+    auto i = observers->begin();
+    for (; i != observers->end(); ++i) {
+        (*i)->update(ilog);
     }
 }
 

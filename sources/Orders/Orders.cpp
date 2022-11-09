@@ -64,9 +64,21 @@ void Orders::toStreamInsertion(ostream& os) const {
 
 }
 
-void Orders::stringToLog(){
-
+void Orders::attach(Observer* obs){
+    Subject::attach(obs);
+    observer = obs;
 }
+
+void Orders::detach(Observer* obs){
+    Subject::detach(obs);
+    observer = nullptr;
+}
+
+string Orders::stringToLog() {
+    //TODO code it
+    return "";
+}
+
 /**
  * return the name based on the type of order
  * @param cardType
@@ -127,6 +139,7 @@ OrdersList::~OrdersList() {
         order = nullptr;
     }
     list.clear();
+    detach(observer);
 }
 
 /**
@@ -177,6 +190,8 @@ void OrdersList::remove(int index) {
  */
 void OrdersList::addOrder(Orders* o) {
     list.push_back(o);
+    o->attach(observer);
+    notify(this);
 }
 
 /**
@@ -225,6 +240,21 @@ void OrdersList::displayList() {
         }
         size++;
     }
+}
+
+void OrdersList::attach(Observer* obs){
+    Subject::attach(obs);
+    observer = obs;
+}
+
+void OrdersList::detach(Observer* obs){
+    Subject::detach(obs);
+    observer = nullptr;
+}
+
+string OrdersList::stringToLog() {
+    //TODO code it
+    return "";
 }
 
 /**

@@ -2,9 +2,12 @@
 
 #include <string>
 #include <vector>
-#include "sources/GameEngine/LoggingObserver.h"
+#include "LoggingObserver.h"
 
-class Command : public ILoggable, public Subject{
+class ILoggable;
+class Subject;
+
+class Command  : public ILoggable, public Subject {
 public:
     Command();
 
@@ -14,9 +17,7 @@ public:
 
     ~Command();
 
-    void stringToLog();
-
-    void notify(ILoggable *ilog);
+    string stringToLog() override;
 
     std::string command;
     std::string effect;
@@ -32,20 +33,20 @@ public:
     std::string getTransitionName() const;
 };
 
-class CommandProcessor : public ILoggable, public Subject{
+class CommandProcessor : public ILoggable, public Subject {
 
 public:
     CommandProcessor();
 
     CommandProcessor(const CommandProcessor& commandProcessor);
 
-    CommandProcessor(bool isUsingConsole, std::string inputFileName);
+    CommandProcessor(bool isUsingConsole, string inputFileName, Observer* obs);
 
     virtual ~CommandProcessor();
-
-    void stringToLog();
-
-    void notify(ILoggable *ilog);
+    Observer* observer;
+    void attach(Observer* o) override;
+    void detach(Observer* o) override;
+    string stringToLog() override;
 
     std::vector<Command*> commands;
     bool isUsingConsole;
@@ -90,7 +91,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
 public:
     FileCommandProcessorAdapter();
 
-    explicit FileCommandProcessorAdapter(const std::string& inputFileName);
+    explicit FileCommandProcessorAdapter(const std::string& inputFileName, Observer* obs);
 
     FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
 

@@ -6,6 +6,7 @@
 #include "sources/GameEngine/LoggingObserver.h"
 
 using namespace std;
+
 class Player;
 
 class GameState;
@@ -32,7 +33,7 @@ class Map;
 
 class Deck;
 
-class GameEngine : public ILoggable, public Subject{
+class GameEngine : public ILoggable, public Subject {
 private:
 
     //each state
@@ -47,7 +48,7 @@ private:
 
     CommandProcessor* commandProcessor;
 public:
-    GameEngine();
+    explicit GameEngine(LogObserver* obs);
 
     GameEngine(const GameEngine& gameEngine);
 
@@ -57,9 +58,12 @@ public:
 
     GameEngine& operator=(const GameEngine& gameEngine);
 
-    void stringToLog();
+    string stringToLog() override;
 
-    void notify(ILoggable *ilog);
+    void attach(Observer* obs) override;
+
+    void detach(Observer* obs) override;
+
     GameState* getCurrentGameState();
 
     //Keep track of the current param for loadmap/addplayer
@@ -123,6 +127,8 @@ public:
     bool isPlayerAdded(Player* pPlayer);
 
     void gameStart();
+
+    Observer* observer;
 };
 
 class GameState {

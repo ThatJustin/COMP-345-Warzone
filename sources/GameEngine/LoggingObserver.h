@@ -2,51 +2,57 @@
 // Created by Alex De Luca on 2022-11-03.
 //
 
-#ifndef COMP_345_WARZONE_LOGGINGOBSERVER_H
-#define COMP_345_WARZONE_LOGGINGOBSERVER_H
+#pragma once
 
-#include "CommandProcessor.h"
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <string.h>
 #include <list>
+
 using namespace std;
-class ILoggable{
+
+class ILoggable {
 public:
-    virtual void stringToLog()=0;
+    virtual string stringToLog() = 0;
 };
 
-
-class Observer{
+class Observer {
 public:
-    ~Observer();
-    virtual void update(ILoggable* ilog) = 0;
-protected:
     Observer();
+
+    ~Observer();
+
+    virtual void update(ILoggable* iLoggable) = 0;
 };
 
-class Subject{
+class Subject {
 public:
     Subject();
+
     ~Subject();
-    virtual void attach(Observer *obs) = 0;
-    virtual void detach(Observer *obs) = 0;
-    virtual void notify(ILoggable *ilog)=0;
-private:
-    list<*Observer> *observers;
+
+    virtual void attach(Observer* obs);
+
+    virtual void detach(Observer* obs);
+
+    virtual void notify(ILoggable* ilog);
+
+protected:
+    list<Observer*>* observers;
 };
 
-class LogObserver : public Observer{
+class LogObserver : public Observer {
 public:
     LogObserver();
+
     ~LogObserver();
 
     string getGameLog();
+
     void setGameLog(string gamelog);
 
-    void update(ILoggable *ilog);
+    void update(ILoggable* ilog) override;
+
 private:
     string GameLog;
 };
-#endif //COMP_345_WARZONE_LOGGINGOBSERVER_H

@@ -10,7 +10,8 @@
 /**
  * Constructor of GameEngine
  */
-GameEngine::GameEngine() {
+GameEngine::GameEngine(LogObserver* obs) {
+    attach(obs);
     //Keep track of the current game state
     this->currentGameState = nullptr;
 
@@ -39,6 +40,7 @@ GameEngine::GameEngine() {
  * Destructor of GameEngine
  */
 GameEngine::~GameEngine() {
+    detach(observer);
     if (win != nullptr) {
         delete win;
         win = nullptr;
@@ -395,6 +397,21 @@ Deck* GameEngine::getDeck() const {
  */
 Player* GameEngine::getNeutralPlayer() const {
     return neutral;
+}
+
+void GameEngine::attach(Observer* obs){
+    Subject::attach(obs);
+    observer = obs;
+}
+
+void GameEngine::detach(Observer* obs){
+    Subject::detach(obs);
+    observer = nullptr;
+}
+
+string GameEngine::stringToLog() {
+    //TODO code it
+    return "";
 }
 
 /**

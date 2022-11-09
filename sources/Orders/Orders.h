@@ -22,7 +22,8 @@ enum class OrderType {
 };
 
 class Orders : public ILoggable, public Subject{
-
+private:
+    Observer* observer;
 public:
     Orders();
 
@@ -48,9 +49,10 @@ public:
 
     Player* player;
 
-    void stringToLog();
+    string stringToLog() override;
 
-    void notify(ILoggable *ilog);
+    void attach(Observer* obs) override;
+    void detach(Observer* obs) override;
 };
 
 class Deploy : public Orders {
@@ -273,6 +275,7 @@ private:
 class OrdersList : ILoggable, Subject{
 private:
     std::vector<Orders*> list;
+    Observer* observer;
 public:
     OrdersList();
 
@@ -284,9 +287,10 @@ public:
 
     friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
 
-    void stringToLog();
+    string stringToLog() override;
 
-    void notify(ILoggable *ilog);
+    void attach(Observer* obs) override;
+    void detach(Observer* obs) override;
 
     void move(int from, int to);
 

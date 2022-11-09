@@ -35,7 +35,8 @@ Command::~Command() {}
  */
 void Command::saveEffect(const std::string& commandEffect) {
     this->effect = commandEffect;
-    //Might need to notify observer in part 5
+
+    notify(this);
 }
 
 /**
@@ -93,6 +94,11 @@ Command::Command(const Command& command) {
     this->effect = command.effect;
 }
 
+string Command::stringToLog() {
+    //TODO implement
+    return "";
+}
+
 /**
  * Default constructor.
  */
@@ -107,10 +113,11 @@ CommandProcessor::CommandProcessor() {
  * @param isUsingConsole
  * @param inputFileName
  */
-CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName) {
+CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName, Observer* obs) {
     this->isUsingConsole = isUsingConsole;
     this->inputFileName = std::move(inputFileName);
     this->commands = vector<Command*>();
+    attach(obs);
 }
 
 /**
@@ -118,17 +125,18 @@ CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName) {
  */
 CommandProcessor::~CommandProcessor() {
     for (auto cmd: this->commands) {
+        cmd->detach(observer);
         delete cmd;
+        cmd = nullptr;
     }
+    this->commands.clear();
+    detach(observer);
 }
 
 
-void CommandProcessor::stringToLog(){
-
-}
-
-void CommandProcessor::notify(ILoggable *ilog){
-
+string CommandProcessor::stringToLog(){
+    //TODO implement
+    return "";
 }
 
 /**
@@ -151,6 +159,7 @@ string CommandProcessor::readCommand() {
  */
 void CommandProcessor::saveCommand(Command* command) {
     this->commands.push_back(command);
+    notify(this);
 }
 
 /**
@@ -161,6 +170,7 @@ void CommandProcessor::saveCommand(Command* command) {
 Command* CommandProcessor::getCommand(const string& currentState) {
     string inputCommand = readCommand();
     Command* command = new Command(inputCommand);
+    command->attach(observer);
     bool isValidTransition = validate(command, currentState);
     saveCommand(command);
     return isValidTransition == 0 ? nullptr : command;
@@ -259,6 +269,16 @@ CommandProcessor::CommandProcessor(const CommandProcessor& commandProcessor) {
     this->isUsingConsole = commandProcessor.isUsingConsole;
 }
 
+void CommandProcessor::attach(Observer* obs) {
+    Subject::attach(obs);
+    this->observer = obs;
+}
+
+void CommandProcessor::detach(Observer* obs) {
+    Subject::detach(obs);
+    this->observer = nullptr;
+}
+
 /**
  * Default constructor.
  */
@@ -272,8 +292,8 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter() {
  * Parameterized Constructor.
  * @param inputFileName
  */
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName)
-        : CommandProcessor(false, inputFileName) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName, Observer* obs)
+        : CommandProcessor(false, inputFileName, obs) {
     this->fileLineReader = new FileLineReader();
 }
 
