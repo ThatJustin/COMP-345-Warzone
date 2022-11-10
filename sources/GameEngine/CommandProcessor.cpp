@@ -35,7 +35,6 @@ Command::~Command() {}
  */
 void Command::saveEffect(const std::string& commandEffect) {
     this->effect = commandEffect;
-
     notify(this);
 }
 

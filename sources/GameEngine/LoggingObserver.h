@@ -47,9 +47,9 @@ public:
 
     ~LogObserver();
 
-    string getGameLog();
+    /*string getGameLog();
 
-    void setGameLog(string gamelog);
+    void setGameLog(string gamelog);*/
 
     void update(ILoggable* ilog) override;
 

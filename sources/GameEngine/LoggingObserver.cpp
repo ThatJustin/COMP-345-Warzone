@@ -26,18 +26,19 @@ LogObserver::~LogObserver() {
 
 }
 
-void LogObserver::setGameLog(string gamelog) {
+/*void LogObserver::setGameLog(string gamelog) {
     this->GameLog = std::move(gamelog);
 }
 
 string LogObserver::getGameLog() {
     return GameLog;
-}
+}*/
 
 void LogObserver::update(ILoggable* ilog) {
     ofstream myFile;
     myFile.open("gamelog.txt");
-    ilog->stringToLog();
+    myFile<<ilog->stringToLog();
+    myFile.close();
 }
 
 Subject::Subject() {
