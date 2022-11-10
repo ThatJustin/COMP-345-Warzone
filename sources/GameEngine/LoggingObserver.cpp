@@ -35,6 +35,8 @@ string LogObserver::getGameLog() {
 }
 
 void LogObserver::update(ILoggable* ilog) {
+    ofstream myFile;
+    myFile.open("gamelog.txt");
     ilog->stringToLog();
 }
 

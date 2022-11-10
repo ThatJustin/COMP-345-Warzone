@@ -411,9 +411,11 @@ void GameEngine::detach(Observer* obs){
 }
 
 string GameEngine::stringToLog() {
-    GameEngine state;
+    GameState *state;
     string type = "Game Engine new state: ";
-    return " ";
+    string g = state->name;
+    string toReturn = type.append(g);
+    return toReturn;
 }
 
 /**
@@ -524,6 +526,7 @@ ostream& operator<<(ostream& stream, const Start& start) {
     stream << "State: " << start.name << endl;
     return stream;
 }
+
 
 /**
  * Assignment operator for the class.
