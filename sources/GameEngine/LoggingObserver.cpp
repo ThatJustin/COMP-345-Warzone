@@ -34,10 +34,11 @@ string LogObserver::getGameLog() {
 }*/
 
 void LogObserver::update(ILoggable* ilog) {
-    ofstream myFile;
-    myFile.open("gamelog.txt");
-    myFile<<ilog->stringToLog();
-    myFile.close();
+    ofstream myFile("gamelog.txt");
+    if (myFile.is_open()){
+        myFile<<ilog->stringToLog();
+        myFile.close();
+    }
 }
 
 Subject::Subject() {
