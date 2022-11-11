@@ -19,7 +19,6 @@ Observer::Observer() {}
 Observer::~Observer() {}
 
 LogObserver::LogObserver() {
-    this->GameLog = "NULL";
 }
 
 LogObserver::~LogObserver() {

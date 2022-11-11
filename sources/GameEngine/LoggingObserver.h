@@ -53,5 +53,4 @@ public:
 
     void update(ILoggable* ilog) override;
 
-    string gameLog;
 };
