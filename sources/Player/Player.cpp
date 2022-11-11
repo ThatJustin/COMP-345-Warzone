@@ -242,7 +242,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         int deployArmy = getArmy();
 
         //it will issue a deploy order and no other order
-        Orders* orders = new Deploy(deployArmy, toDefendTerritory,this);
+        Orders* orders = new Deploy(this, deployArmy, toDefendTerritory);
         orders->execute();
         delete orders;
     }
@@ -273,18 +273,18 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
                 Territory* target = targetTerritory(map);
 
                 //army, source, target, player
-                orders = new Airlift(army,source,target, this); //need player parameter
+                orders = new Airlift(this, army,source,target); //need player parameter
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::BOMB)) {
 
                 Territory* target = targetTerritory(map);
 
-                orders = new Bomb(target, this);
+                orders = new Bomb(this, target);
 
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::BLOCKADE)) {
 
                 Territory* target = targetTerritory(map);
 
-                orders = new Blockade(target, this);
+                orders = new Blockade(this, target);
 
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::NEGOTIATE)) {
 
@@ -340,7 +340,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
                 break;
             }
 
-            Orders* order = new Advance(army, sourceArea, targetArea, this);
+            Orders* order = new Advance(this, army, sourceArea, targetArea);
             ordersList->add(order);
 
             //break out of the loop once the player turn is over
