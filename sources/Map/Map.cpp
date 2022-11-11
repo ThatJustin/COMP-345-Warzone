@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <random>
 
 using std::cout;
 using std::endl;
@@ -17,6 +18,7 @@ using std::find_if;
 Continent::Continent() {
     this->map_continent_id = 0;
     this->continent_name = "";
+    this->continent_control_bonus_value = 0;
     this->territories = vector<Territory*>();
 }
 
@@ -25,9 +27,10 @@ Continent::Continent() {
  * @param map_continent_id The id of the continent
  * @param continent_name The name of the continent
  */
-Continent::Continent(int map_continent_id, const string& continent_name) {
+Continent::Continent(int map_continent_id, const string& continent_name, int continent_control_bonus_value) {
     this->map_continent_id = map_continent_id;
     this->continent_name = continent_name;
+    this->continent_control_bonus_value = continent_control_bonus_value;
     this->territories = vector<Territory*>();
 }
 
@@ -38,6 +41,7 @@ Continent::Continent(int map_continent_id, const string& continent_name) {
 Continent::Continent(const Continent& continent) {
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
+    this->continent_control_bonus_value = continent.continent_control_bonus_value;
     this->territories = continent.territories;
 }
 
@@ -61,6 +65,7 @@ Continent& Continent::operator=(const Continent& continent) {
     }
     this->map_continent_id = continent.map_continent_id;
     this->continent_name = continent.continent_name;
+    this->continent_control_bonus_value = continent.continent_control_bonus_value;
     this->territories = continent.territories;
     return *this;
 }
@@ -73,6 +78,7 @@ Continent& Continent::operator=(const Continent& continent) {
  */
 ostream& operator<<(ostream& outs, const Continent& continent) {
     outs << "Continent Name: " << continent.continent_name << endl <<
+         "Control Bonus Value: " << continent.continent_control_bonus_value << endl <<
          "Number of Territories: " << continent.territories.size() << endl <<
          "They are:" << endl;
     for (auto territory: continent.territories) {
@@ -87,6 +93,14 @@ ostream& operator<<(ostream& outs, const Continent& continent) {
  */
 string Continent::getContinentName() {
     return this->continent_name;
+}
+
+/**
+ * Accessor for the continent control bonus value
+ * @return The control bonus value of the continent
+ */
+int Continent::getContinentControlBonusValue() {
+    return this->continent_control_bonus_value;
 }
 
 /**
@@ -407,7 +421,7 @@ vector<Continent*> Map::getContinents() {
  * @param map_territory_id The id of the territory to find/get
  * @return The pointer to the territory found/gotten with the specified id if it exists inside the vector of territory pointers, otherwise it returns a null territory pointer
  */
-Territory* Map::getTerritory(int map_territory_id) {
+Territory* Map::getTerritoryByTerritoryID(int map_territory_id) {
     for (auto& territory: this->getTerritories()) {
         if (territory->getMapTerritoryId() == map_territory_id) {
             return territory;
@@ -424,20 +438,21 @@ Territory* Map::getTerritory(int map_territory_id) {
 void Map::depthFirstSearch(int starting_territory_id, vector<Territory*>& visited_territories) {
 
     // If the territory pointer points to a territory that has already been visited with that specific territory id, then return the recursive call
-    if (find(visited_territories.begin(), visited_territories.end(), this->getTerritory(starting_territory_id)) !=
+    if (find(visited_territories.begin(), visited_territories.end(),
+             this->getTerritoryByTerritoryID(starting_territory_id)) !=
         visited_territories.end()) {
         return;
     }
 
     // If the territory pointer, that points to a territory that has not been visited with that specific territory id,
     // is not a null territory pointer, then add it to the vector of visited territory pointers that point to visited territories
-    if (this->getTerritory(starting_territory_id) != nullptr) {
-        visited_territories.push_back(this->getTerritory(starting_territory_id));
+    if (this->getTerritoryByTerritoryID(starting_territory_id) != nullptr) {
+        visited_territories.push_back(this->getTerritoryByTerritoryID(starting_territory_id));
 
         // Here, I loop through all the adjacent territories of the territory being pointed to by the territory pointer
         // with that specific territory id and checking if those adjacent territories have been visited or not.
         // If they have not, then I call the DFS method recursively on them
-        for (auto& adjacent_territory: this->getTerritory(starting_territory_id)->getAdjacentTerritories()) {
+        for (auto& adjacent_territory: this->getTerritoryByTerritoryID(starting_territory_id)->getAdjacentTerritories()) {
             if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) ==
                 visited_territories.end()) {
                 this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
@@ -548,6 +563,14 @@ bool Map::validate() {
     return true;
 }
 
+vector<Territory*> Map::getShuffledTerritories() {
+    vector<Territory*> ter = this->getTerritories();
+    std::random_device rd; //define random number generator
+    default_random_engine randomEngine(rd()); //generate random number
+    shuffle(ter.begin(), ter.end(), randomEngine);
+    return ter;
+}
+
 /**
  * Default constructor for the MapLoader class
  */
@@ -651,8 +674,8 @@ Map* MapLoader::loadMap(const string& map_file_path) {
                 }
 
                 // I take a substring of the map file line which corresponds to the continent name then
-                // adding a new continent to the vector of continents with that continent name
-                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('='))));
+                // adding a new continent to the vector of continents with that continent name and its respective control bonus value
+                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('=')), stoi(map_file_line.substr(map_file_line.find('=') + 1))));
                 map_continent_id++;
             }
         }

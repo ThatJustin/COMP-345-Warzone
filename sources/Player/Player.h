@@ -74,6 +74,8 @@ public:
     //Assignment operator overload
     Player& operator=(const Player& player);
 
+    void setReinforcementPool(int reinforcementPoolUnits);
+
     //get the amount of army per player
     int getArmy();
 
@@ -99,6 +101,10 @@ private:
     //Player name
     string name;
 
+    //initial army units
+    int reinforcementPoolUnits = 50;
+
+    //might remove later
     //amount of soldier for the player
     int army;
 };

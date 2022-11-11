@@ -1,0 +1,8 @@
+loadmap aden.map
+validatemap
+addplayer A
+addplayer B
+addplayer C
+addplayer D
+gamestart
+quit

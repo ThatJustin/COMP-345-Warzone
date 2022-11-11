@@ -43,9 +43,9 @@ void testCards() {
     std::cout << *player->getHandCards() << std::endl;
 
     //Play the cards
-    for (auto handCards: player->getHandCards()->getCards()) {
-        handCards->play(player, deck);
-    }
+//    for (auto handCards: player->getHandCards()->getCards()) {
+////        handCards->play(player, deck);
+//    }
 
     cout << "\r\nAfter Card Play " << endl;;
 

@@ -12,7 +12,6 @@ using namespace std;
  * cards default constructor
  */
 Cards::Cards() { //constructor definition outside the class
-
 };
 
 /**
@@ -63,6 +62,14 @@ CardsType Cards::getType(const string& name) {
  */
 Deck::Deck() { //constructor definition
     this->cards = vector<Cards*>();
+
+    //Create 3 of each cards in the deck
+    for (int i = 0; i < 3; i++) {
+        this->cards.push_back(new Cards(BOMB));
+        this->cards.push_back(new Cards(AIRLIFT));
+        this->cards.push_back(new Cards(BLOCKADE));
+        this->cards.push_back(new Cards(DIPLOMACY));
+    }
 };
 
 /**
@@ -168,7 +175,7 @@ Hand::Hand(const Hand& hand) {
  * @param card
  */
 void Hand::addCard(Cards* card) {
-    cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
+    // cout << "Adding card to Hand " << getNameByCardType(card->getType()) << endl;
     this->cards.push_back(card);
 }
 
@@ -194,15 +201,13 @@ std::vector<Cards*> Hand::getCards() {
 /**
  * Each card has a play() method that enables a player to use it during game play by creating special orders.
  * Once a card has been played, it is removed from the hand and put back into the deck
- * @param ol
- * @param hand
- * @param deck
+ * @param player the player playing the card
+ * @param deck the deck holding cards
+ * @param orders Rhe order the card will do
  */
-void Cards::play(Player* player, Deck* deck) {
+void Cards::play(Player* player, Deck* deck, Orders* orders) {
     cout << "Playing card " << getNameByCardType(getType()) << endl;
     cout << endl;
-
-    Orders* orders = createOrderByCardType(this->getType()); //create an order with the card type
 
     player->getOrdersList()->add(orders); //add card type to the list
 

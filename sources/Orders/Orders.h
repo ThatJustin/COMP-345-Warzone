@@ -26,6 +26,8 @@ class Orders {
 public:
     Orders();
 
+    explicit Orders(Player* orderPlayer);
+
     virtual ~Orders();
 
     virtual bool validate() = 0;
@@ -44,6 +46,7 @@ public:
 
     Orders& operator=(const Orders& order);
 
+    Player* player;
 };
 
 class Deploy : public Orders {
@@ -52,7 +55,8 @@ public:
 
     Deploy(const Deploy& deploy);
 
-    Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player);
+    //Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player);
+    Deploy(Player* player, int numberOfArmyUnits, Territory* targetTerritory);
 
     ~Deploy() override;
 
@@ -89,7 +93,8 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player);
+    //Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
     ~Advance() override;
 
@@ -131,7 +136,8 @@ public:
 
     Bomb(const Bomb& bomb);
 
-    explicit Bomb(Territory* targetTerritory, Player* player);
+    //explicit Bomb(Territory* targetTerritory, Player* player);
+    explicit Bomb(Player* player, Territory* targetTerritory);
 
     ~Bomb() override;
 
@@ -163,7 +169,8 @@ public:
 
     Blockade(const Blockade& blockade);
 
-    explicit Blockade(Territory* targetTerritory, Player* player);
+    //explicit Blockade(Territory* targetTerritory, Player* player);
+    explicit Blockade(Player* player, Territory* targetTerritory);
 
     ~Blockade() override;
 
@@ -195,7 +202,8 @@ public:
 
     Airlift(const Airlift& airlift);
 
-    Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory, Player* player);
+    //Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory, Player* player);
+    Airlift(Player* player, int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
 
     ~Airlift() override;
 
@@ -237,7 +245,8 @@ public:
 
     Negotiate(const Negotiate& negotiate);
 
-    explicit Negotiate(Player* targetPlayer, Player* player);
+    //explicit Negotiate(Player* targetPlayer, Player* player);
+    explicit Negotiate(Player* player, Player* targetPlayer);
 
     ~Negotiate() override;
 
@@ -289,7 +298,7 @@ public:
 };
 
 //free functions
-Orders* createOrderByCardType(int cardType);
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
 string getNameByOrderType(OrderType cardType);
 

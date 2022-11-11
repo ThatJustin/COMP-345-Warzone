@@ -397,7 +397,6 @@ ostream& operator<<(ostream& stream, const Player& player) {
         }
         size++;
     }
-    stream << endl;
     stream << "HandCards: ";
     size = 1;
     //Show all the hand cards of this player
@@ -420,7 +419,7 @@ ostream& operator<<(ostream& stream, const Player& player) {
         }
         size++;
     }
-    return stream;
+    return stream << endl;
 }
 
 /**
@@ -437,6 +436,13 @@ Player& Player::operator=(const Player& player) {
     this->handCards = new Hand(*player.handCards);
     this->territories = player.territories;
     return *this;
+}
+/**
+ * Sets the initial army units for the player.
+ * @param reinforcementPoolUnits
+ */
+void Player::setReinforcementPool(int reinforcementPoolUnits_) {
+    this->reinforcementPoolUnits = reinforcementPoolUnits_;
 }
 
 /**

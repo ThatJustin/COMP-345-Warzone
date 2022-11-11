@@ -15,13 +15,23 @@ using namespace std;
  * default constructor
  */
 Orders::Orders() {
+    this->player = nullptr;
+}
+
+/**
+ * Parameterized constructor
+ */
+Orders::Orders(Player* orderPlayer) {
+    this->player = orderPlayer;
 }
 
 /**
  * destructor
  */
 Orders::~Orders() {
-
+    if (player != nullptr) {
+        delete player;
+    }
 }
 
 /**
@@ -82,16 +92,16 @@ string getNameByOrderType(OrderType cardType) {
  * @param cardType
  * @return
  */
-Orders* createOrderByCardType(int cardType) {
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory) {
     switch (cardType) {
         case BOMB:
-            return new Bomb();
+            return new Bomb(player, targetTerritory);
         case BLOCKADE:
-            return new Blockade();
+            return new Blockade(player, targetTerritory);
         case AIRLIFT:
-            return new Airlift();
+            return new Airlift(player, numberOfArmyUnits, sourceTerritory, targetTerritory);
         case DIPLOMACY:
-            return new Negotiate();
+            return new Negotiate(player, targetPlayer);
         default:
             return nullptr;
     }
@@ -217,7 +227,8 @@ void OrdersList::displayList() {
 /**
  * Constructor.
  */
-Deploy::Deploy() {
+Deploy::Deploy() : Orders() {
+    this->player = nullptr;
     this->m_numberOfArmyUnits = 0;
     this->m_targetTerritory = nullptr;
 }
@@ -227,7 +238,9 @@ Deploy::Deploy() {
  * @param numberOfArmyUnits
  * @param targetTerritory
  */
-Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player) { //need to add player as a parameter
+ //current version
+//Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player) { //need to add player as a parameter
+Deploy::Deploy(Player* player, int numberOfArmyUnits, Territory* targetTerritory) : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_targetTerritory = targetTerritory;
 }
@@ -239,6 +252,7 @@ Deploy::Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player
 Deploy::Deploy(const Deploy& deploy) {
     this->m_targetTerritory = deploy.m_targetTerritory;
     this->m_numberOfArmyUnits = deploy.m_numberOfArmyUnits;
+    this->player = deploy.player;
 }
 
 /**
@@ -334,6 +348,9 @@ Deploy& Deploy::operator=(const Deploy& deploy) {
         return *this;
     }
     Orders::operator=(deploy);
+    this->m_targetTerritory = deploy.m_targetTerritory;
+    this->m_numberOfArmyUnits = deploy.m_numberOfArmyUnits;
+    this->player = deploy.player;
     return *this;
 }
 
@@ -355,6 +372,7 @@ void Deploy::toStreamInsertion(ostream& os) const {
  * Constructor.
  */
 Advance::Advance() {
+    this->player = nullptr;
     this->m_numberOfArmyUnits = 0;
     this->m_sourceTerritory = nullptr;
     this->m_targetTerritory = nullptr;
@@ -366,7 +384,10 @@ Advance::Advance() {
  * @param sourceTerritory
  * @param targetTerritory
  */
-Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
+ //current version
+ //Advance::Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
+Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory)
+        : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
@@ -380,6 +401,7 @@ Advance::Advance(const Advance& advance) {
     this->m_targetTerritory = advance.m_targetTerritory;
     this->m_sourceTerritory = advance.m_sourceTerritory;
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
+    this->player = advance.player;
 }
 
 /**
@@ -503,6 +525,10 @@ Advance& Advance::operator=(const Advance& advance) {
         return *this;
     }
     Orders::operator=(advance);
+    this->m_targetTerritory = advance.m_targetTerritory;
+    this->m_sourceTerritory = advance.m_sourceTerritory;
+    this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
+    this->player = advance.player;
     return *this;
 }
 
@@ -529,6 +555,7 @@ void Advance::toStreamInsertion(ostream& os) const {
  * Constructor.
  */
 Bomb::Bomb() {
+    this->player = nullptr;
     this->m_targetTerritory = nullptr;
 }
 
@@ -536,7 +563,9 @@ Bomb::Bomb() {
  * Parameterized constructor.
  * @param targetTerritory
  */
-Bomb::Bomb(Territory* targetTerritory, Player* player) {
+ //current version
+ //Bomb::Bomb(Territory* targetTerritory, Player* player) {
+Bomb::Bomb(Player* player, Territory* targetTerritory) : Orders(player) {
     this->m_targetTerritory = targetTerritory;
 }
 
@@ -545,6 +574,7 @@ Bomb::Bomb(Territory* targetTerritory, Player* player) {
  * @param bomb
  */
 Bomb::Bomb(const Bomb& bomb) {
+    this->player = bomb.player;
     this->m_targetTerritory = bomb.m_targetTerritory;
 }
 
@@ -627,6 +657,8 @@ Bomb& Bomb::operator=(const Bomb& bomb) {
         return *this;
     }
     Orders::operator=(bomb);
+    this->player = bomb.player;
+    this->m_targetTerritory = bomb.m_targetTerritory;
     return *this;
 }
 
@@ -647,6 +679,7 @@ void Bomb::toStreamInsertion(ostream& os) const {
  * Constructor.
  */
 Blockade::Blockade() {
+    this->player = nullptr;
     this->m_targetTerritory = nullptr;
 }
 
@@ -654,7 +687,9 @@ Blockade::Blockade() {
  * Parameterized constructor.
  * @param targetTerritory
  */
-Blockade::Blockade(Territory* targetTerritory, Player* player) {
+ //current version
+ //Blockade::Blockade(Territory* targetTerritory, Player* player) {
+Blockade::Blockade(Player* player, Territory* targetTerritory) : Orders(player) {
     this->m_targetTerritory = targetTerritory;
 }
 
@@ -664,6 +699,7 @@ Blockade::Blockade(Territory* targetTerritory, Player* player) {
  */
 Blockade::Blockade(const Blockade& blockade) {
     this->m_targetTerritory = blockade.m_targetTerritory;
+    this->player = blockade.player;
 }
 
 /**
@@ -744,6 +780,8 @@ Blockade& Blockade::operator=(const Blockade& blockade) {
         return *this;
     }
     Orders::operator=(blockade);
+    this->player = blockade.player;
+    this->m_targetTerritory = blockade.m_targetTerritory;
     return *this;
 }
 
@@ -764,6 +802,7 @@ void Blockade::toStreamInsertion(ostream& os) const {
  * Constructor.
  */
 Airlift::Airlift() {
+    this->player = nullptr;
     this->m_numberOfArmyUnits = 0;
     this->m_sourceTerritory = nullptr;
     this->m_targetTerritory = nullptr;
@@ -775,7 +814,10 @@ Airlift::Airlift() {
  * @param sourceTerritory
  * @param targetTerritory
  */
-Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
+ //current version
+ //Airlift::Airlift(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player) {
+Airlift::Airlift(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory)
+        : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
@@ -789,6 +831,7 @@ Airlift::Airlift(const Airlift& airlift) {
     this->m_targetTerritory = airlift.m_targetTerritory;
     this->m_sourceTerritory = airlift.m_sourceTerritory;
     this->m_numberOfArmyUnits = airlift.m_numberOfArmyUnits;
+    this->player = airlift.player;
 }
 
 /**
@@ -905,6 +948,11 @@ Airlift& Airlift::operator=(const Airlift& airlift) {
         return *this;
     }
     Orders::operator=(airlift);
+    this->player = airlift.player;
+    this->m_targetTerritory = airlift.m_targetTerritory;
+    this->m_sourceTerritory = airlift.m_sourceTerritory;
+    this->m_numberOfArmyUnits = airlift.m_numberOfArmyUnits;
+    this->player = airlift.player;
     return *this;
 }
 
@@ -932,22 +980,26 @@ void Airlift::toStreamInsertion(ostream& os) const {
  */
 Negotiate::Negotiate() {
     this->m_targetPlayer = nullptr;
+    this->player = nullptr;
 }
 
 /**
  * Parameterized constructor.
  * @param targetPlayer
  */
-Negotiate::Negotiate(Player* targetPlayer, Player* player) {
+ //current version
+ //Negotiate::Negotiate(Player* targetPlayer, Player* player) {
+Negotiate::Negotiate(Player* player, Player* targetPlayer) : Orders(player) {
     this->m_targetPlayer = targetPlayer;
 }
 
 /**
  *  * Copy constructor.
- * @param airlift
+ * @param negotiate
  */
-Negotiate::Negotiate(const Negotiate& airlift) {
-    this->m_targetPlayer = airlift.m_targetPlayer;
+Negotiate::Negotiate(const Negotiate& negotiate) {
+    this->m_targetPlayer = negotiate.m_targetPlayer;
+    this->player = negotiate.player;
 }
 
 /**
@@ -1029,6 +1081,7 @@ Negotiate& Negotiate::operator=(const Negotiate& negotiate) {
         return *this;
     }
     Orders::operator=(negotiate);
+    this->m_targetPlayer = negotiate.m_targetPlayer;
     return *this;
 }
 

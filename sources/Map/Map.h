@@ -15,7 +15,7 @@ public:
     Continent();
 
     // Parameterized Constructor
-    Continent(int map_continent_id, const std::string& continent_name);
+    Continent(int map_continent_id, const std::string& continent_name, int continent_control_bonus_value);
 
     // Copy Constructor
     Continent(const Continent& continent);
@@ -32,6 +32,9 @@ public:
     // Accessor for the continent name
     std::string getContinentName();
 
+    // Accessor for the continent control bonus value
+    int getContinentControlBonusValue();
+
     // Accessor for the vector of territory pointers that point to territories found on the continent
     std::vector<Territory*> getTerritories();
 
@@ -44,6 +47,9 @@ private:
 
     // A string representing the continent name
     std::string continent_name;
+
+    // An integer representing the continent control bonus value
+    int continent_control_bonus_value;
 
     // Collection/list of territory pointers that point to territories found on the continent
     std::vector<Territory*> territories;
@@ -149,7 +155,7 @@ public:
     std::vector<Continent*> getContinents();
 
     // Accessor for the pointer to a specific territory given its respective territory id as a parameter
-    Territory* getTerritory(int map_territory_id);
+    Territory* getTerritoryByTerritoryID(int map_territory_id);
 
     // DFS method used for traversing the map/graph in order to know if it is connected or not
     void depthFirstSearch(int starting_territory_id, std::vector<Territory*>& visited_territories);
@@ -161,6 +167,8 @@ public:
     // Method used for validating the maps after they are loaded from the specific map files
     bool validate();
 
+
+    std::vector<Territory*> getShuffledTerritories();
 
 private:
     // Collection/list of territory pointers that point to all territories found on the map
