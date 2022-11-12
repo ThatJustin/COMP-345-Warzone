@@ -6,6 +6,7 @@
 #include "sources/Map/Map.h"
 #include "sources/Player/Player.h"
 #include "sources/Cards/Cards.h"
+#include "sources/Orders/Orders.h"
 
 /**
  * Constructor of GameEngine
@@ -308,6 +309,7 @@ CommandProcessor* GameEngine::getCommandProcessor() const {
 }
 
 void GameEngine::addPlayer(Player* pPlayer) {
+    pPlayer->getOrdersList()->attach(observer);
     this->gamePlayers.push_back(pPlayer);
 }
 
@@ -402,12 +404,12 @@ Player* GameEngine::getNeutralPlayer() const {
 
 void GameEngine::attach(Observer* obs){
     Subject::attach(obs);
-    observer = obs;
+    obs = obs;
 }
 
 void GameEngine::detach(Observer* obs){
     Subject::detach(obs);
-    observer = nullptr;
+    obs = nullptr;
 }
 
 string GameEngine::stringToLog() {

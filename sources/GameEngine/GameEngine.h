@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "sources/GameEngine/LoggingObserver.h"
+#include "sources/LogObserver/LoggingObserver.h"
 
 using namespace std;
 
@@ -35,18 +35,27 @@ class Deck;
 
 class GameEngine : public ILoggable, public Subject {
 private:
-
     //each state
     Start* start;
+
     MapLoaded* loadMap;
+
     MapValidated* mapValidated;
+
     PlayersAdded* playersAdded;
+
     AssignReinforcement* assignReinforcement;
+
     IssueOrders* issueOrders;
+
     ExecuteOrders* executeOrders;
+
     Win* win;
 
     CommandProcessor* commandProcessor;
+
+    Observer* observer;
+
 public:
     explicit GameEngine(LogObserver* obs);
 
@@ -58,7 +67,7 @@ public:
 
     GameEngine& operator=(const GameEngine& gameEngine);
 
-    string stringToLog() override;
+    std::string stringToLog() override;
 
     void attach(Observer* obs) override;
 
@@ -127,8 +136,6 @@ public:
     bool isPlayerAdded(Player* pPlayer);
 
     void gameStart();
-
-    Observer* observer;
 };
 
 class GameState {
@@ -158,6 +165,7 @@ public:
 
 class Start : public GameState {
 private:
+
 public:
     explicit Start(GameEngine* gameEngine);
 
@@ -178,6 +186,7 @@ public:
 
 class MapLoaded : public GameState {
 private:
+
 public:
 
     explicit MapLoaded(GameEngine* gameEngine);
@@ -199,6 +208,7 @@ public:
 
 class MapValidated : public GameState {
 private:
+
 public:
 
     explicit MapValidated(GameEngine* gameEngine);
@@ -220,6 +230,7 @@ public:
 
 class PlayersAdded : public GameState {
 private:
+
 public:
 
     explicit PlayersAdded(GameEngine* gameEngine);
@@ -241,6 +252,7 @@ public:
 
 class AssignReinforcement : public GameState {
 private:
+
 public:
 
     explicit AssignReinforcement(GameEngine* gameEngine);
@@ -262,6 +274,7 @@ public:
 
 class IssueOrders : public GameState {
 private:
+
 public:
 
     explicit IssueOrders(GameEngine* gameEngine);
@@ -283,6 +296,7 @@ public:
 
 class ExecuteOrders : public GameState {
 private:
+
 public:
 
     explicit ExecuteOrders(GameEngine* gameEngine);
@@ -304,6 +318,7 @@ public:
 
 class Win : public GameState {
 private:
+
 public:
 
     explicit Win(GameEngine* gameEngine);

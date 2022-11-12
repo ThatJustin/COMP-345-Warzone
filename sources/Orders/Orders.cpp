@@ -30,8 +30,9 @@ Orders::Orders(Player* orderPlayer) {
  */
 Orders::~Orders() {
     if (player != nullptr) {
-        delete player;
+        player = nullptr;
     }
+    detach(observer);
 }
 
 /**
@@ -55,7 +56,7 @@ Orders& Orders::operator=(const Orders& order) {
  * @return 
  */
 ostream& operator<<(ostream& stream, const Orders& orders) {
-    //Depending on the orders subclass, will stream different text based on it
+    //Depending on the orders' subclass, will stream different text based on it
     orders.toStreamInsertion(stream);
     return stream;
 }
@@ -207,26 +208,26 @@ vector<Orders*> OrdersList::getOrdersList() {
 
 /**
  * Assignment operator for the class.
- * @param orderslist
+ * @param orders_list
  * @return
  */
-OrdersList& OrdersList::operator=(const OrdersList& orderslist) {
-    if (this == &orderslist) {
+OrdersList& OrdersList::operator=(const OrdersList& orders_list) {
+    if (this == &orders_list) {
         return *this;
     }
-    this->list = orderslist.list;
+    this->list = orders_list.list;
     return *this;
 }
 
 /**
  * Stream data for the class.
  * @param stream
- * @param ordersList
+ * @param orders_list
  * @return
  */
-ostream& operator<<(ostream& stream, const OrdersList& ordersList) {
+ostream& operator<<(ostream& stream, const OrdersList& orders_list) {
     stream << "Order list contains these orders: " << endl;
-    for (auto order: ordersList.list) {
+    for (auto order: orders_list.list) {
         cout << *order;
     }
     return stream;
@@ -314,6 +315,7 @@ bool Deploy::validate() {
  */
 void Deploy::execute() {
     cout << "Executing Deploy Order" << endl;
+    notify(this);
 }
 
 /**
@@ -464,6 +466,7 @@ bool Advance::validate() {
  */
 void Advance::execute() {
     cout << "Executing Advance Order" << endl;
+    notify(this);
 }
 
 /**
@@ -633,6 +636,7 @@ bool Bomb::validate() {
  */
 void Bomb::execute() {
     cout << "Executing Bomb Order" << endl;
+    notify(this);
 }
 
 /**
@@ -755,6 +759,7 @@ bool Blockade::validate() {
  */
 void Blockade::execute() {
     cout << "Executing Blockade Order" << endl;
+    notify(this);
 }
 
 /**
@@ -888,6 +893,7 @@ bool Airlift::validate() {
  */
 void Airlift::execute() {
     cout << "Executing Airlift Order" << endl;
+    notify(this);
 }
 
 /**
@@ -1051,6 +1057,7 @@ bool Negotiate::validate() {
  */
 void Negotiate::execute() {
     cout << "Executing Negotiate Order" << endl;
+    notify(this);
 }
 
 /**

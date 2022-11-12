@@ -2,10 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "LoggingObserver.h"
-
-class ILoggable;
-class Subject;
+#include "sources/LogObserver/LoggingObserver.h"
 
 class Command  : public ILoggable, public Subject {
 public:
@@ -17,9 +14,10 @@ public:
 
     ~Command();
 
-    string stringToLog() override;
+    std::string stringToLog() override;
 
     std::string command;
+
     std::string effect;
 
     void saveEffect(const std::string& commandEffect);
@@ -34,22 +32,25 @@ public:
 };
 
 class CommandProcessor : public ILoggable, public Subject {
-
 public:
     CommandProcessor();
 
     CommandProcessor(const CommandProcessor& commandProcessor);
 
-    CommandProcessor(bool isUsingConsole, string inputFileName, Observer* obs);
+    CommandProcessor(bool isUsingConsole, std::string inputFileName, Observer* obs);
 
     virtual ~CommandProcessor();
-    Observer* observer;
+
     void attach(Observer* o) override;
+
     void detach(Observer* o) override;
-    string stringToLog() override;
+
+    std::string stringToLog() override;
 
     std::vector<Command*> commands;
+
     bool isUsingConsole;
+
     std::string inputFileName;
 
     Command* getCommand(const std::string& currentState);
@@ -64,10 +65,11 @@ private:
     void saveCommand(Command* command);
 
     bool validate(Command* pCommand, const std::string& currentState);
+
+    Observer* observer;
 };
 
 class FileLineReader {
-
 public:
     FileLineReader();
 
@@ -103,8 +105,7 @@ public:
     FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
 
     FileLineReader* fileLineReader;
+
 private:
     std::string readCommand() override;
-
 };
-

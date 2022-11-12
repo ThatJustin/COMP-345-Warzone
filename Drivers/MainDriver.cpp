@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     //testStartupPhase(argc, argv);
 
 
-    cout<<"Testing LoggingObserverDriver"<<endl;
+    cout<<"Testing LoggingObserverDriver:\n"<<endl;
     testLoggingObserver();
     return 0;
 }

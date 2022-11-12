@@ -2,12 +2,11 @@
 // Created by Alex De Luca on 2022-09-14.
 //
 
-#ifndef COMP_345_ORDERS_H
-#define COMP_345_ORDERS_H
+#pragma once
 
 #include <vector>
 #include <iostream>
-#include "sources/GameEngine/LoggingObserver.h"
+#include "sources/LogObserver/LoggingObserver.h"
 
 class Territory;
 
@@ -24,6 +23,7 @@ enum class OrderType {
 class Orders : public ILoggable, public Subject{
 private:
     Observer* observer;
+
 public:
     Orders();
 
@@ -49,9 +49,10 @@ public:
 
     Player* player;
 
-    string stringToLog() override;
+    std::string stringToLog() override;
 
     void attach(Observer* obs) override;
+
     void detach(Observer* obs) override;
 };
 
@@ -272,10 +273,11 @@ private:
     Player* m_targetPlayer;
 };
 
-class OrdersList : ILoggable, Subject{
+class OrdersList : public ILoggable, public Subject{
 private:
     std::vector<Orders*> list;
     Observer* observer;
+
 public:
     OrdersList();
 
@@ -283,13 +285,14 @@ public:
 
     ~OrdersList();
 
-    OrdersList& operator=(const OrdersList& orderslist);
+    OrdersList& operator=(const OrdersList& orders_list);
 
-    friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
+    friend ostream& operator<<(ostream& stream, const OrdersList& orders_list);
 
-    string stringToLog() override;
+    std::string stringToLog() override;
 
     void attach(Observer* obs) override;
+
     void detach(Observer* obs) override;
 
     void move(int from, int to);
@@ -307,5 +310,3 @@ public:
 Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
 
 string getNameByOrderType(OrderType cardType);
-
-#endif //COMP_345_ORDERS_H

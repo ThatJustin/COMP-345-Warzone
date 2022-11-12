@@ -5,15 +5,11 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <list>
-
-using namespace std;
 
 class ILoggable {
 public:
-    virtual string stringToLog() = 0;
+    virtual std::string stringToLog() = 0;
 };
 
 class Observer {
@@ -22,7 +18,7 @@ public:
 
     ~Observer();
 
-    virtual void update(ILoggable* iLoggable) = 0;
+    virtual void update(ILoggable* i_loggable) = 0;
 };
 
 class Subject {
@@ -35,10 +31,10 @@ public:
 
     virtual void detach(Observer* obs);
 
-    virtual void notify(ILoggable* ilog);
+    virtual void notify(ILoggable* i_loggable);
 
 protected:
-    list<Observer*>* observers;
+    std::list<Observer*>* observers;
 };
 
 class LogObserver : public Observer {
@@ -47,10 +43,5 @@ public:
 
     ~LogObserver();
 
-    /*string getGameLog();
-
-    void setGameLog(string gamelog);*/
-
-    void update(ILoggable* ilog) override;
-
+    void update(ILoggable* i_loggable) override;
 };
