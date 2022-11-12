@@ -103,6 +103,8 @@ int Continent::getContinentControlBonusValue() {
     return this->continent_control_bonus_value;
 }
 
+
+
 /**
  * Accessor for the territories found on the continent
  * @return A vector of territory pointers that point to the territories found on the continent
@@ -238,6 +240,14 @@ int Territory::getMapTerritoryId() {
     return this->map_territory_id;
 }
 
+bool Territory::isAdjacent(Territory* t) {
+    for (auto adjacent_territory: this->adjacent_territories) {
+        if (t->getTerritoryName() == adjacent_territory->getTerritoryName()) {
+            return true;
+        }
+    }
+    return false;
+}
 /**
  * Mutator for the territory id
  * @param territory_id The id of the territory to set
@@ -309,6 +319,10 @@ void Territory::setTerritoryOwner(Player* territory_owner) {
  */
 string Territory::getPlayerName() {
     return this->player->getPlayerName();
+}
+
+Player* Territory::getPlayer() {
+    return this->player;
 }
 
 /**

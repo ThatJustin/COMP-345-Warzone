@@ -65,6 +65,11 @@ public:
 
     void setReinforcementPool(int reinforcementPoolUnits);
 
+    int getReinforcementPool() const;
+
+    void setNegotiationWith(Player *player);
+
+    bool checkIsNegotiation(Player* player);
 private:
     //Collection of territories
     vector<Territory*> territories;
@@ -78,6 +83,9 @@ private:
     //Player name
     string name;
 
+    Player* isNegotiationWith;
+
     //initial army units
     int reinforcementPoolUnits = 50;
+
 };

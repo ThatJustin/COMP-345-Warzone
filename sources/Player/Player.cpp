@@ -12,6 +12,7 @@ Player::Player() {
     this->name = "";
     this->handCards = new Hand;
     this->ordersList = new OrdersList;
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -23,6 +24,7 @@ Player::Player(const string& name) {
     this->name = name;
     this->handCards = new Hand;
     this->ordersList = new OrdersList;
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -34,6 +36,7 @@ Player::Player(const Player& player) {
     this->handCards = new Hand(*player.handCards);
     this->name = player.name;
     this->ordersList = new OrdersList(*player.ordersList);
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -231,3 +234,15 @@ void Player::setReinforcementPool(int reinforcementPoolUnits_) {
     this->reinforcementPoolUnits = reinforcementPoolUnits_;
 }
 
+int Player::getReinforcementPool() const{
+    return this->reinforcementPoolUnits;
+}
+
+void Player::setNegotiationWith(Player* player){
+    this->isNegotiationWith = player;
+}
+
+bool Player::checkIsNegotiation(Player* player){
+    cout << (this->isNegotiationWith == player) << endl;
+    return this->isNegotiationWith == player;
+}

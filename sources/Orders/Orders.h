@@ -14,6 +14,8 @@ class Cards;
 
 class Player;
 
+class Deck;
+
 using namespace std;
 
 enum class OrderType {
@@ -91,7 +93,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+    Advance(Player *player, int numberOfArmyUnits, Territory *sourceTerritory, Territory *targetTerritory, Deck *deck);
 
     ~Advance() override;
 
@@ -125,6 +127,7 @@ private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
     Territory* m_targetTerritory;
+    Deck* m_deck;
 };
 
 class Bomb : public Orders {
