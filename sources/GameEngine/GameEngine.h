@@ -263,10 +263,7 @@ public:
     std::vector<Player*> players;
 
     //Map
-    Map* map = NULL;
-
-    int controlbonus;//need to privatise
-
+    Map* map = nullptr;
 };
 
 class IssueOrders : public GameState {
@@ -292,11 +289,11 @@ public:
     //for maingameloop
     std::vector<Player*> players;
 
-    Map* map = NULL;
+    Map* map = nullptr;
 
-    Deck* deck = NULL;
+    Deck* deck = nullptr;
 
-    Hand* hand = NULL;
+    Hand* hand = nullptr;
 };
 
 class ExecuteOrders : public GameState {

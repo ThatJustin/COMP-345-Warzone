@@ -252,17 +252,20 @@ void GameEngine::startupPhase() {
  * The valid transitions are IssueOrder, IssueOrdersEnd, Execorder, Endexecorders, Win
  */
 void GameEngine::mainGameLoop() {
-    // When this function is called, you are already in the AssignReinforcement state
+    //When this function is called, you are already in the AssignReinforcement state
     //reinforcement phase
-    assignReinforcement;
+    //assignReinforcement;
+    changeStateByTransition(Endexecorders);
 
     //issue order phase
-    issueOrders;
+    //issueOrders;
+    changeStateByTransition(IssueOrder);
 
     //execute order phase
-    executeOrders;
+    //executeOrders;
+    changeStateByTransition(IssueOrdersEnd);
 
-    //check for ever player
+    //check for every player
     for(Player* player: players){
         //check if a player has territory
         bool checkTerritory = false;
@@ -273,7 +276,7 @@ void GameEngine::mainGameLoop() {
                 break;
             }
         }
-        //check id player doesnt have any territory
+        //check if player doesnt have any territory
         if(!(checkTerritory)){
             //remove player from the list of players
             players.erase(std::remove(players.begin(), players.end(), player), players.end());
@@ -283,7 +286,8 @@ void GameEngine::mainGameLoop() {
     //check if there is only one player left
     if(players.size() == 1){
         cout<< "The winner is: " << players.at(0)->getPlayerName()<< endl;
-        currentGameState = win;
+        //currentGameState = win;
+        changeStateByTransition(Win);
     }
 }
 
@@ -849,7 +853,8 @@ AssignReinforcement::~AssignReinforcement() {
  */
 void AssignReinforcement::enterState() {
     cout << "Entering " << *this << endl;
-    // Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
+
+    //Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
     this->gameEngine->turnNumber++;
 
     //go through each player
@@ -858,7 +863,7 @@ void AssignReinforcement::enterState() {
         if (player->getTerritories().size() != 0) {
 
             //round down the amount of ary based on the amount of territory owned by the player
-            player->setArmy(std::round((player->getTerritories().size()) / 3));
+            player->setReinforcementPool(std::round((player->getTerritories().size()) / 3));
         }
 
         //if player own all territory given a number of army units corresponding to the continent control bonus value
@@ -869,12 +874,18 @@ void AssignReinforcement::enterState() {
                     goto end;//continue the external loop
                 }
             }
-            player->setArmy(controlbonus);//need to change controlbonus to get continent value
+            player->setReinforcementPool(continent->getContinentControlBonusValue());
             end:;//continue from this
         }
+        //if(newturn){
         //minimum reinforcement per turn is 3
-        player->setArmy(+3);
+        player->setReinforcementPool(+3);
+        //}
+        cout<<player->getPlayerName()<< " has "<< player->getArmy() << " in his army"<<endl;
     }
+
+    //go to the issueorder phase once reinforcement has been assign
+    this->gameEngine->changeStateByTransition(GameEngine::IssueOrder);
 }
 
 /**
@@ -945,7 +956,7 @@ IssueOrders::~IssueOrders() {
  * Handles what happens when entering a specific state.
  * Phase that Player issue order:
  * 1.Players issue orders and place them in their order list through a call to the Player::issueOrder() method._/
- * 2.This method is called in round-robin fashion across all players by the game engine.-
+ * 2.This method is called in round-robin fashion across all players by the game engine._/
  * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
  * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
  */
@@ -963,6 +974,9 @@ void IssueOrders::enterState() {
         //endturn();
         //}
     }
+
+    //once all issueorder are done, go to the execute order
+    this->gameEngine->changeStateByTransition(GameEngine::IssueOrdersEnd);
 }
 
 /**
@@ -1035,6 +1049,17 @@ ExecuteOrders::~ExecuteOrders() {
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
 
+    /*Alternate form for executeorders
+     *  for (Player* player : players) {
+        for (int i = 0; i < player->getOrdersList()->getOrdersList().size(); i++) {
+            player->getOrdersList()->getOrdersList().at(i)->execute();
+        }
+        while(!player->getOrdersList()->getOrdersList().empty()) {
+            player->getOrdersList()->getOrdersList().pop_back();
+        }
+    }
+     */
+
     //once no more order, execute the top order on the list in a round robin fashion
     bool orderplayed = true;
     //while there are still order to be executed
@@ -1050,8 +1075,16 @@ void ExecuteOrders::enterState() {
             }
         }
     }
+
+    //check if there is only one player left
+    //if(players.size() == 1){
+    //    cout<< "The winner is: " << players.at(0)->getPlayerName()<< endl;
+        //currentGameState = win;
+    //    changeStateByTransition(Win);
+    //}
+
     //execute all order, then go back to the reinforcement phase
-    this->gameEngine->changeStateByTransition(8);
+    this->gameEngine->changeStateByTransition(GameEngine::Endexecorders);
 }
 
 /**

@@ -80,7 +80,7 @@ public:
     int getArmy();
 
     //set the amount of army per player
-    void setArmy(int army);
+    //void setArmy(int reinforcementPoolUnits);
 
     //remove the order
     Orders* removeOrder();
@@ -106,5 +106,5 @@ private:
 
     //might remove later
     //amount of soldier for the player
-    int army;
+    //int army;
 };

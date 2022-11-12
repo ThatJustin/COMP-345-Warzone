@@ -119,19 +119,6 @@ vector<Territory*> Player::toAttack() {
         }
     }
 
-    /*
-    // For now return an arbitrary list of territories to attack
-    vector<Territory*> attackTerritories;
-    auto* territory1 = new Territory(5, "Voflein", this);
-    auto* territory2 = new Territory(6, "Ocrax", this);
-    auto* territory3 = new Territory(7, "Tewhuicia Caskein", this);
-    auto* territory4 = new Territory(8, "Eshana", this);
-    attackTerritories.push_back(territory1);
-    attackTerritories.push_back(territory2);
-    attackTerritories.push_back(territory3);
-    attackTerritories.push_back(territory4);
-     */
-
     return attackTerritories;
 }
 
@@ -149,19 +136,7 @@ vector<Territory*> Player::toDefend() {
         //add the territory to the list of territory to be defended
         defendTerritories.push_back(getTerritories().at(i));
     }
-    /*
-    // For now return an arbitrary list of territories to defend
-    vector<Territory*> defendTerritories;
-    auto* territory1 = new Territory(1, "Plule", this);
-    auto* territory2 = new Territory(2, "Woflington", this);
-    auto* territory3 = new Territory(3, "Chuih Cha", this);
-    auto* territory4 = new Territory(4, "Soscele", this);
-    defendTerritories.push_back(territory1);
-    defendTerritories.push_back(territory2);
-    defendTerritories.push_back(territory3);
-    defendTerritories.push_back(territory4);
 
-     */
     return defendTerritories;
 }
 
@@ -206,7 +181,9 @@ Territory* Player::targetTerritory(Map* map){
  * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand) { //need to add commandprocessor as a parameter here
+bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand) {
+
+    bool endturn = true;
 
     //while there is still army to the player, deploy them to conquer other territories
     while (getArmy() > 0){
@@ -221,7 +198,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         }
 
         //create territory to be attack by the player
-        Territory* toDefendTerritory = NULL;
+        Territory* toDefendTerritory = nullptr;
 
         //loop through all the territory in the game
         for(Territory* territory: territories){
@@ -233,7 +210,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         }
 
         //check if the territory is invalid
-        if(toDefendTerritory == NULL){
+        if(toDefendTerritory == nullptr){
 
             cout<< "Invalid Territory: "<<endl;
         }
@@ -243,8 +220,11 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
 
         //it will issue a deploy order and no other order
         Orders* orders = new Deploy(this, deployArmy, toDefendTerritory);
-        orders->execute();
-        delete orders;
+
+        //put deploy at the top of the orderlist
+        //orders->execute();
+        ordersList->add(orders);
+        //delete orders;
     }
 
     //Once it has deployed all its available army units, it can proceed with other kinds of orders.
@@ -263,7 +243,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         if(!hand->getCards().empty()) {
             //issue all remainding cards
             Cards *cards = handCards->getCards().at(amountofcards);
-            Orders *orders = NULL;
+            Orders *orders = nullptr;
 
             //issue airlift type of order cards
             if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::AIRLIFT)) {
@@ -273,7 +253,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
                 Territory* target = targetTerritory(map);
 
                 //army, source, target, player
-                orders = new Airlift(this, army,source,target); //need player parameter
+                orders = new Airlift(this, reinforcementPoolUnits,source,target);
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::BOMB)) {
 
                 Territory* target = targetTerritory(map);
@@ -288,24 +268,30 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
 
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::NEGOTIATE)) {
 
-                Player* targetPlayer = NULL;
+                Player* targetPlayer = nullptr;
 
                 for (Player* player :players) {
                     targetPlayer = player;
                     break;
                 }
-                orders = new Negotiate(targetPlayer, this);
+                orders = new Negotiate(this, targetPlayer);
             }
 
             //remove the cards from the hands and place it back into the deck
             handCards->remove(cards);
             deck->addCard(cards);
+
+            ordersList->add(orders);
         }
         else{
+            //Joey recommendation:
+            //What you can do is to have the player to create one order for each of the two cases: one advance order that is intended
+            //as a move between two of their own territories (using toDefend()), and one advance order intended as an attack (using toAttack()).
+
             //The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories
             //in order to defend it (using toDefend() to make the decision)
             //and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
-            Territory* targetArea = NULL;
+            Territory* targetArea = nullptr;
 
             for(Territory* territory: territories){
 
@@ -340,15 +326,19 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
                 break;
             }
 
-            Orders* order = new Advance(this, army, sourceArea, targetArea);
+            Orders* order = new Advance(this, reinforcementPoolUnits, sourceArea, targetArea);
+
             ordersList->add(order);
 
+            endturn = false;
+
             //break out of the loop once the player turn is over
-            //if(player.turnover()){//need to check when the player turn is over
+            if(endturn == false){//need to check when the player turn is over
 
                 cout<<"Player turn over"<<endl;
                 check = false;
-            //}
+                endturn = true;
+            }
         }
     }
 
@@ -451,16 +441,7 @@ void Player::setReinforcementPool(int reinforcementPoolUnits_) {
  */
 int Player::getArmy() {
 
-    return army;
-}
-
-/**
- * for part 4
- * @param army
- */
-void Player::setArmy(int reinforcement) {
-
-    army = reinforcement;
+    return reinforcementPoolUnits;
 }
 
 /**
@@ -470,7 +451,7 @@ void Player::setArmy(int reinforcement) {
 Orders* Player::removeOrder() {
     //if there is no order in the list return null
     if (ordersList->getOrdersList().size() == 0) {
-        return NULL;
+        return nullptr;
     }
     //put the order in the orderlist
     auto orderlist = ordersList->getOrdersList();
