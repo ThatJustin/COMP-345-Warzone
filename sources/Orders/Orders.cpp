@@ -8,6 +8,7 @@
 #include "../Cards/Cards.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
+#include <random>
 
 using namespace std;
 
@@ -92,12 +93,13 @@ string getNameByOrderType(OrderType cardType) {
  * @param cardType
  * @return
  */
-Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory) {
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits,
+                              Territory* sourceTerritory, Territory* targetTerritory, Player* neutral) {
     switch (cardType) {
         case BOMB:
             return new Bomb(player, targetTerritory);
         case BLOCKADE:
-            return new Blockade(player, targetTerritory);
+            return new Blockade(player, neutral, targetTerritory);
         case AIRLIFT:
             return new Airlift(player, numberOfArmyUnits, sourceTerritory, targetTerritory);
         case DIPLOMACY:
@@ -267,14 +269,32 @@ Deploy::~Deploy() {
  * @return true if valid, false otherwise
  */
 bool Deploy::validate() {
-    return true;
+    if (m_targetTerritory->getPlayerName() == player->getPlayerName() &&
+        !player->checkIsNegotiation(m_targetTerritory->getPlayer())) {
+        cout << "Deploy Order is valid" << endl;
+        return true;
+    }
+    return false;
 }
 
 /**
  * Executes the deploy order.
  */
 void Deploy::execute() {
-    cout << "Executing Deploy Order" << endl;
+    cout << "Executing Deploy Order." << endl;
+    if (validate()) {
+        if (player->getReinforcementPool() - m_numberOfArmyUnits > 0) {
+            int number_of_armies_target_territory = m_targetTerritory->getNumberOfArmies();
+            //Add the units to the territory
+            m_targetTerritory->setNumberOfArmies(number_of_armies_target_territory + m_numberOfArmyUnits);
+            // remove them from the players pool
+            player->setReinforcementPool(player->getReinforcementPool() - m_numberOfArmyUnits);
+        } else {
+            cout << "Not Enough Armies to Deploy." << endl;
+        }
+    } else {
+        cout << "Failed to execute Deploy order." << endl;
+    }
 }
 
 /**
@@ -374,6 +394,7 @@ Advance::Advance() {
     this->m_numberOfArmyUnits = 0;
     this->m_sourceTerritory = nullptr;
     this->m_targetTerritory = nullptr;
+    this->m_deck = nullptr;
 }
 
 /**
@@ -382,11 +403,13 @@ Advance::Advance() {
  * @param sourceTerritory
  * @param targetTerritory
  */
-Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory)
+Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory,
+                 Deck* deck)
         : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
+    this->m_deck = deck;
 }
 
 /**
@@ -398,6 +421,7 @@ Advance::Advance(const Advance& advance) {
     this->m_sourceTerritory = advance.m_sourceTerritory;
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
     this->player = advance.player;
+    this->m_deck = advance.m_deck;
 }
 
 /**
@@ -417,14 +441,69 @@ Advance::~Advance() {
  * @return true if valid, false otherwise
  */
 bool Advance::validate() {
-    return true;
+    if (m_sourceTerritory->getPlayerName() == player->getPlayerName()
+        && m_targetTerritory->isAdjacent(m_sourceTerritory) && m_sourceTerritory->isAdjacent(m_targetTerritory) &&
+        !player->checkIsNegotiation(m_targetTerritory->getPlayer())) {
+        return true;
+    }
+    cout << "Advance Order is not valid." << endl;
+    return false;
 }
 
 /**
  * Executes the advance order.
  */
 void Advance::execute() {
-    cout << "Executing Advance Order" << endl;
+    if (validate()) {
+        cout << "Executing Advance Order" << endl;
+        if (m_targetTerritory->getPlayerName() == m_sourceTerritory->getPlayerName()) {
+            int target_army_count = m_targetTerritory->getNumberOfArmies();
+            int source_army_count = m_sourceTerritory->getNumberOfArmies();
+            cout << "Moving Army : source_army_count -  " << source_army_count << "   target_army_count - "
+                 << target_army_count << endl;
+            m_targetTerritory->setNumberOfArmies(target_army_count + m_numberOfArmyUnits);
+            m_sourceTerritory->setNumberOfArmies(source_army_count - m_numberOfArmyUnits);
+            cout << "Army Moved Results : source_army_count -  " << m_sourceTerritory->getNumberOfArmies()
+                 << "   target_army_count - " << m_targetTerritory->getNumberOfArmies() << endl;
+        } else {
+            int source_army_count = m_numberOfArmyUnits;
+            int target_army_count = m_targetTerritory->getNumberOfArmies();
+            cout << "Advance Start" << endl;
+            cout << "Attacking Army Count: " << source_army_count << endl;
+            cout << "Defending Army Count: " << target_army_count << endl;
+
+            std::random_device rd1;
+            std::mt19937 gen1(rd1());
+            std::bernoulli_distribution killAttack(0.6);
+
+            std::random_device rd2;
+            std::mt19937 gen2(rd2());
+            std::bernoulli_distribution killDefend(0.7);
+
+            for (int i = 0; i < std::max(source_army_count, target_army_count); ++i) {
+                if (source_army_count != 0 && target_army_count != 0) {
+                    if (killAttack(gen1)) {
+//                        cout << "killing defender ";
+                        target_army_count = target_army_count - 1;
+                    }
+                    if (killDefend(gen2)) {
+//                        cout << "killing attacker ";
+                        source_army_count = source_army_count - 1;
+                    }
+                }
+            }
+            cout << "Attacking Remaining Army " << source_army_count << endl;
+            cout << "Defending Remaining Army " << target_army_count << endl;
+            cout << "Advance End" << endl;
+
+            if (target_army_count == 0) {
+                cout << "Successfully conquered the target." << endl;
+                m_targetTerritory->setTerritoryOwner(player);
+                m_targetTerritory->setNumberOfArmies(source_army_count);
+                m_deck->draw(player);
+            }
+        }
+    }
 }
 
 /**
@@ -586,7 +665,19 @@ Bomb::~Bomb() {
  * @return true if valid, false otherwise
  */
 bool Bomb::validate() {
-    return true;
+    bool flag = false;
+    for (auto territory: player->getTerritories()) {
+        if (m_targetTerritory->isAdjacent(territory)) {
+            flag = true;
+        }
+    }
+    if (m_targetTerritory->getPlayerName() != player->getPlayerName() && flag &&
+        !player->checkIsNegotiation(m_targetTerritory->getPlayer())) {
+        cout << "Bomb Order is valid." << endl;
+        return true;
+    }
+    cout << "Bomb Order is not valid." << endl;
+    return false;
 }
 
 /**
@@ -594,6 +685,10 @@ bool Bomb::validate() {
  */
 void Bomb::execute() {
     cout << "Executing Bomb Order" << endl;
+    if (validate()) {
+        int army = m_targetTerritory->getNumberOfArmies();
+        m_targetTerritory->setNumberOfArmies(round(army / 2));
+    }
 }
 
 /**
@@ -675,14 +770,16 @@ void Bomb::toStreamInsertion(ostream& os) const {
 Blockade::Blockade() {
     this->player = nullptr;
     this->m_targetTerritory = nullptr;
+    this->neutral = nullptr;
 }
 
 /**
  * Parameterized constructor.
  * @param targetTerritory
  */
-Blockade::Blockade(Player* player, Territory* targetTerritory) : Orders(player) {
+Blockade::Blockade(Player* player, Player* neutral, Territory* targetTerritory) : Orders(player) {
     this->m_targetTerritory = targetTerritory;
+    this->neutral = neutral;
 }
 
 /**
@@ -692,6 +789,7 @@ Blockade::Blockade(Player* player, Territory* targetTerritory) : Orders(player) 
 Blockade::Blockade(const Blockade& blockade) {
     this->m_targetTerritory = blockade.m_targetTerritory;
     this->player = blockade.player;
+    this->neutral = blockade.neutral;
 }
 
 /**
@@ -708,7 +806,13 @@ Blockade::~Blockade() {
  * @return true if valid, false otherwise
  */
 bool Blockade::validate() {
-    return true;
+    if (m_targetTerritory->getPlayerName() == player->getPlayerName() ||
+        m_targetTerritory->getPlayerName() == neutral->getPlayerName()) {
+        cout << "Blockade Order is valid." << endl;
+        return true;
+    }
+    cout << "Blockade Order is not valid." << endl;
+    return false;
 }
 
 /**
@@ -716,6 +820,11 @@ bool Blockade::validate() {
  */
 void Blockade::execute() {
     cout << "Executing Blockade Order" << endl;
+    if (validate()) {
+        int army = m_targetTerritory->getNumberOfArmies();
+        m_targetTerritory->setNumberOfArmies(army * 2);
+        m_targetTerritory->setTerritoryOwner(neutral);
+    }
 }
 
 /**
@@ -841,7 +950,13 @@ Airlift::~Airlift() {
  * @return true if valid, false otherwise
  */
 bool Airlift::validate() {
-    return true;
+    if (m_sourceTerritory->getPlayerName() == player->getPlayerName() &&
+        m_targetTerritory->getPlayerName() == player->getPlayerName()) {
+        cout << "Airlift Order is valid." << endl;
+        return true;
+    }
+    cout << "Airlift Order is not valid." << endl;
+    return false;
 }
 
 /**
@@ -849,6 +964,12 @@ bool Airlift::validate() {
  */
 void Airlift::execute() {
     cout << "Executing Airlift Order" << endl;
+    if (validate()) {
+        int source_army_count = m_targetTerritory->getNumberOfArmies();
+        int target_army_count = m_sourceTerritory->getNumberOfArmies();
+        m_targetTerritory->setNumberOfArmies(target_army_count + m_numberOfArmyUnits);
+        m_sourceTerritory->setNumberOfArmies(source_army_count - m_numberOfArmyUnits);
+    }
 }
 
 /**
@@ -1004,7 +1125,11 @@ Negotiate::~Negotiate() {
  * @return true if valid, false otherwise
  */
 bool Negotiate::validate() {
-    return true;
+    if (m_targetPlayer->getPlayerName() != player->getPlayerName()) {
+        return true;
+    }
+    cout << "Failed to execute order, cannot negotiate with yourself." << endl;
+    return false;
 }
 
 /**
@@ -1012,6 +1137,11 @@ bool Negotiate::validate() {
  */
 void Negotiate::execute() {
     cout << "Executing Negotiate Order" << endl;
+    if (validate()) {
+        player->setNegotiationWith(m_targetPlayer);
+        m_targetPlayer->setNegotiationWith(player);
+        cout << "Order is valid." << endl;
+    }
 }
 
 /**

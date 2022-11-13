@@ -14,6 +14,8 @@ class Cards;
 
 class Player;
 
+class Deck;
+
 using namespace std;
 
 enum class OrderType {
@@ -91,7 +93,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck);
 
     ~Advance() override;
 
@@ -125,6 +127,7 @@ private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
     Territory* m_targetTerritory;
+    Deck* m_deck;
 };
 
 class Bomb : public Orders {
@@ -165,7 +168,7 @@ public:
 
     Blockade(const Blockade& blockade);
 
-    explicit Blockade(Player* player, Territory* targetTerritory);
+    explicit Blockade(Player* player, Player* neutral, Territory* targetTerritory);
 
     ~Blockade() override;
 
@@ -189,6 +192,7 @@ public:
 
 private:
     Territory* m_targetTerritory;
+    Player* neutral;
 };
 
 class Airlift : public Orders {
@@ -291,7 +295,8 @@ public:
 };
 
 //free functions
-Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits,
+                              Territory* sourceTerritory, Territory* targetTerritory, Player* neutral);
 
 string getNameByOrderType(OrderType cardType);
 
