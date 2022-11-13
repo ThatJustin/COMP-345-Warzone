@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 //    testOrderExecution();
 
     cout<<"Testing LoggingObserverDriver:\n"<<endl;
-    testLoggingObserver();
+    testLoggingObserver(argc, argv);
 
     return 0;
 }

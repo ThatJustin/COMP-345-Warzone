@@ -5,6 +5,8 @@
 #include "LoggingObserver.h"
 
 #include <fstream>
+#include <ctime>
+#include <chrono>
 
 using std::cout;
 using std::endl;
@@ -42,7 +44,7 @@ void Subject::detach(Observer* obs) {
 }
 
 void Subject::notify(ILoggable* i_loggable) {
-    for (auto& observer : *observers) {
+    for (auto& observer: *observers) {
         observer->update(i_loggable);
     }
 }
@@ -55,9 +57,13 @@ LogObserver::~LogObserver() {
 }
 
 void LogObserver::update(ILoggable* i_loggable) {
-    ofstream game_log_file("./Logs/gamelog.txt", ofstream::app);
-    if (game_log_file.is_open()){
-        game_log_file << i_loggable->stringToLog() << endl;
+    ofstream game_log_file("./Logs/gamelog.txt", ofstream::app | ofstream::out);
+    if (game_log_file.is_open()) {
+        auto current_time = std::chrono::system_clock::now();
+        auto time_inn_t = std::chrono::system_clock::to_time_t(current_time);
+        string time = std::ctime(&time_inn_t);
+        time.pop_back();
+        game_log_file << "[" << time << "] " << i_loggable->stringToLog() << endl;
         game_log_file.close();
     } else {
         cout << "Unable to open the game log text file. Please try again." << endl;

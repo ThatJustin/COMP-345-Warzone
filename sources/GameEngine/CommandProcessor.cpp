@@ -28,7 +28,6 @@ Command::Command(const string& inputCommand) {
 Command::~Command() {}
 
 
-
 /**
  * Saves the effect command and notifies the observer.
  * @param commandEffect
@@ -94,11 +93,7 @@ Command::Command(const Command& command) {
 }
 
 string Command::stringToLog() {
-    Command *comm;
-    string type = "Command's Effect: ";
-    string c = comm->effect;
-    string toReturn = type.append(c);
-    return toReturn;
+    return "[Command Effect] " + this->effect;
 }
 
 /**
@@ -136,12 +131,8 @@ CommandProcessor::~CommandProcessor() {
 }
 
 
-string CommandProcessor::stringToLog(){
-    Command *comm;
-    string type = "Command: ";
-    string c = comm->command;
-    string toReturn = type.append(c);
-    return toReturn;
+string CommandProcessor::stringToLog() {
+    return "[CommandProcessor] Command [" + this->commands.back()->command + "] has been saved to command collection. ";
 }
 
 /**
@@ -176,9 +167,8 @@ Command* CommandProcessor::getCommand(const string& currentState) {
     string inputCommand = readCommand();
     Command* command = new Command(inputCommand);
     command->attach(observer);
-    bool isValidTransition = validate(command, currentState);
     saveCommand(command);
-    return isValidTransition == 0 ? nullptr : command;
+    return validate(command, currentState) == 0 ? nullptr : command;
 }
 
 /**
@@ -226,7 +216,7 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     } else if (com == "addplayer") {
         if (pCommand->getParam().empty()) {
-            pCommand->saveEffect("[INVALID COMMAND] Missing player name for addplayer");
+            pCommand->saveEffect("[Invalid Command] Missing player name for addplayer");
             return false;
         }
         if (currentState == "mapvalidated" || currentState == "playersadded") {
@@ -242,10 +232,10 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     }
     if (success) {
-        pCommand->saveEffect("[VALID COMMAND] " + com + " used in valid state " + currentState + ".");
+        pCommand->saveEffect("[Valid Command] " + com + " used in valid state " + currentState + ".");
         return true;
     }
-    pCommand->saveEffect("[INVALID COMMAND] Tried to use command " + com + " while in state " + currentState + ".");
+    pCommand->saveEffect("[Invalid Command] Tried to use command " + com + " while in state " + currentState + ".");
     return false;
 }
 
@@ -324,7 +314,7 @@ string FileCommandProcessorAdapter::readCommand() {
  */
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(
         const FileCommandProcessorAdapter& fileCommandProcessorAdapter) : CommandProcessor(
-                fileCommandProcessorAdapter) {
+        fileCommandProcessorAdapter) {
     this->inputFileName = fileCommandProcessorAdapter.inputFileName;
     this->fileLineReader = new FileLineReader(*fileCommandProcessorAdapter.fileLineReader);
     this->isUsingConsole = fileCommandProcessorAdapter.isUsingConsole;

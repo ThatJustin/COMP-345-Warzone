@@ -34,6 +34,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
+    this->observer = obs;
     this->turnNumber == 0;
 }
 
@@ -107,6 +108,7 @@ void GameEngine::changeStateByTransition(int transition) {
     //First time running the game
     if (currentGameState == nullptr) {
         this->currentGameState = getStateFromTransition(transition);
+        notify(this);
         this->getCurrentGameState()->enterState();
     } else {
         // isValidToTransitionAway will be used for when we need to validate that the transition is okay in the future
@@ -402,22 +404,18 @@ Player* GameEngine::getNeutralPlayer() const {
     return neutral;
 }
 
-void GameEngine::attach(Observer* obs){
+void GameEngine::attach(Observer* obs) {
     Subject::attach(obs);
     obs = obs;
 }
 
-void GameEngine::detach(Observer* obs){
+void GameEngine::detach(Observer* obs) {
     Subject::detach(obs);
     obs = nullptr;
 }
 
 string GameEngine::stringToLog() {
-    GameState *state;
-    string type = "Game Engine new state: ";
-    string g = state->name;
-    string toReturn = type.append(g);
-    return toReturn;
+    return "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
 }
 
 /**

@@ -77,11 +77,9 @@ void Orders::detach(Observer* obs) {
 }
 
 string Orders::stringToLog() {
-    Orders* order;
-    string type = "Order executed: ";
-    string o = getNameByOrderType(order->getOrderType());
-    string toReturn = type.append(o);
-    return toReturn;
+    string orderResult_ = this->orderResult;
+
+    return "[Order] Order " + getNameByOrderType(getOrderType()) + " executed by player " + this->player->getPlayerName() + ".";
 }
 
 /**
@@ -259,11 +257,9 @@ void OrdersList::detach(Observer* obs) {
 }
 
 string OrdersList::stringToLog() {
-    Orders* order;
-    string type = "Order issued: ";
-    string o = getNameByOrderType(order->getOrderType());
-    string toReturn = type.append(o);
-    return toReturn;
+    Orders* orders = this->getOrdersList().back();
+    return "[OrderList] Order " + getNameByOrderType(orders->getOrderType()) + " added by player " +
+           orders->player->getPlayerName() + ".";
 }
 
 /**
@@ -329,10 +325,12 @@ void Deploy::execute() {
             m_targetTerritory->setNumberOfArmies(number_of_armies_target_territory + m_numberOfArmyUnits);
             // remove them from the players pool
             player->setReinforcementPool(player->getReinforcementPool() - m_numberOfArmyUnits);
-            notify(this);
+            orderResult = "Successfully deployed!";
         } else {
             cout << "Not Enough Armies to Deploy." << endl;
+            orderResult = "Not Enough Armies to Deploy.";
         }
+        notify(this);
     } else {
         cout << "Failed to execute Deploy order." << endl;
     }
@@ -506,6 +504,7 @@ void Advance::execute() {
             m_sourceTerritory->setNumberOfArmies(source_army_count - m_numberOfArmyUnits);
             cout << "Army Moved Results : source_army_count -  " << m_sourceTerritory->getNumberOfArmies()
                  << "   target_army_count - " << m_targetTerritory->getNumberOfArmies() << endl;
+            orderResult = "Advanced successful.";
         } else {
             int source_army_count = m_numberOfArmyUnits;
             int target_army_count = m_targetTerritory->getNumberOfArmies();
@@ -536,12 +535,13 @@ void Advance::execute() {
             cout << "Attacking Remaining Army " << source_army_count << endl;
             cout << "Defending Remaining Army " << target_army_count << endl;
             cout << "Advance End" << endl;
-
+            orderResult = "Advanced end, the fight has ended!";
             if (target_army_count == 0) {
                 cout << "Successfully conquered the target." << endl;
                 m_targetTerritory->setTerritoryOwner(player);
                 m_targetTerritory->setNumberOfArmies(source_army_count);
                 m_deck->draw(player);
+                orderResult = "Advanced successful, territory is conquered.";
             }
         }
         notify(this);
@@ -729,6 +729,7 @@ void Bomb::execute() {
     if (validate()) {
         int army = m_targetTerritory->getNumberOfArmies();
         m_targetTerritory->setNumberOfArmies(round(army / 2));
+        orderResult = "Bomb successfully executed.";
         notify(this);
     }
 }
@@ -866,6 +867,7 @@ void Blockade::execute() {
         int army = m_targetTerritory->getNumberOfArmies();
         m_targetTerritory->setNumberOfArmies(army * 2);
         m_targetTerritory->setTerritoryOwner(neutral);
+        orderResult = "Blockade successfully executed.";
         notify(this);
     }
 }
@@ -1012,6 +1014,7 @@ void Airlift::execute() {
         int target_army_count = m_sourceTerritory->getNumberOfArmies();
         m_targetTerritory->setNumberOfArmies(target_army_count + m_numberOfArmyUnits);
         m_sourceTerritory->setNumberOfArmies(source_army_count - m_numberOfArmyUnits);
+        orderResult = "Airlift successfully executed.";
         notify(this);
     }
 }
@@ -1184,7 +1187,8 @@ void Negotiate::execute() {
     if (validate()) {
         player->setNegotiationWith(m_targetPlayer);
         m_targetPlayer->setNegotiationWith(player);
-        cout << "Order is valid." << endl;
+        cout << "Negotiate is successful." << endl;
+        orderResult = "Negotiate successfully executed.";
         notify(this);
     }
 }

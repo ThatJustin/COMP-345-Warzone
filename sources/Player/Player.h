@@ -70,6 +70,7 @@ public:
     void setNegotiationWith(Player *player);
 
     bool checkIsNegotiation(Player* player);
+
 private:
     //Collection of territories
     vector<Territory*> territories;

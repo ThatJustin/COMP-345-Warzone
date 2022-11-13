@@ -1,3 +1,3 @@
 #pragma once
 
-void testLoggingObserver();
+void testLoggingObserver(int argc, char** argv);

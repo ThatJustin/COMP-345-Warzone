@@ -56,6 +56,8 @@ public:
     void attach(Observer* obs) override;
 
     void detach(Observer* obs) override;
+
+    string orderResult;
 };
 
 class Deploy : public Orders {
