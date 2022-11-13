@@ -2,7 +2,7 @@
 #include "sources/Player/Player.h"
 #include "sources/Map/Map.h"
 #include "sources/Cards/Cards.h"
-#include "sources/Orders/Orders.h"
+
 using namespace std;
 
 void testOrdersLists() {
@@ -61,21 +61,25 @@ void testOrdersLists() {
     delete ol;
 }
 
-void testOrderExecution(){
+void testOrderExecution() {
     Deck* deck = new Deck();
-    cout << deck->cardSize() << endl;
-    Player* p1 = new Player("p1");
-    Player* p2 = new Player("p2");
-    Player* p3 = new Player("p3");
-    Player* p4 = new Player("p4");
+    cout << "Setting up test data..." << endl << endl;
+    Player* p1 = new Player("Player1");
+    Player* p2 = new Player("Player2");
+    Player* p3 = new Player("Player3");
+    Player* p4 = new Player("Player4");
 
-    Territory* t1 = new Territory(0,"t1",p1);
-    Territory* t1_1 = new Territory(0,"t1",p1);
-    Territory* t2 = new Territory(0,"t2",p2);
-    Territory* t3 = new Territory(0,"t3",p3);
-    Territory* t3_2 = new Territory(0,"t3",p3);
-    Territory* t3_3 = new Territory(0,"t3",p3);
-    Territory* t4 = new Territory(0,"t3",p4);
+    //Mimicking Neutral PLayer from GameEngine
+    Player* neutral = new Player("Neutral");
+
+    Territory* t1 = new Territory(0, "t1", p1);
+    Territory* t1_1 = new Territory(0, "t1", p1);
+    Territory* t1_2 = new Territory(0, "t1_2", p1);
+    Territory* t2 = new Territory(0, "t2", p2);
+    Territory* t3 = new Territory(0, "t3", p3);
+    Territory* t3_2 = new Territory(0, "t3", p3);
+    Territory* t3_3 = new Territory(0, "t3", p3);
+    Territory* t4 = new Territory(0, "t3", p4);
     p1->addTerritory(t1);
 
     t1->addAdjacentTerritory(t1_1);
@@ -93,66 +97,108 @@ void testOrderExecution(){
     /**DEPLOY */
 
     //deploy invalid due to player not owning the target
-    Deploy* deploy_invalid = new Deploy(p1,10,t4);
+    cout << "Testing invalid Deploy order." << endl;
+    Deploy* deploy_invalid = new Deploy(p1, 10, t4);
     deploy_invalid->execute();
-
-    Deploy* deploy= new Deploy(p1,10,t1_1);
+    cout << endl;
+    cout << "Testing valid Deploy order." << endl;
+    Deploy* deploy = new Deploy(p1, 10, t1_1);
     deploy->execute();
-
+    cout << endl;
 
     /** BOMB */
 
-//    Bomb* bomb_invalid = new Bomb(p1,t3_2);
-//    bomb_invalid->execute();
-//
-//    Bomb* bomb = new Bomb(p1,t3);
-//    bomb->execute();
-
+    cout << "Testing invalid Bomb order." << endl;
+    Bomb* bomb_invalid = new Bomb(p1, t3_2);
+    bomb_invalid->execute();
+    cout << endl;
+    cout << "Testing valid Bomb order." << endl;
+    Bomb* bomb = new Bomb(p1, t3);
+    bomb->execute();
+    cout << endl;
     /** Advance */
 
-//    invalid advance: territories not adjacent
-//    Advance* invalid_advance_1 = new Advance(p1,12,t1,t1_1,deck);
-//    invalid_advance_1->execute();
+    cout << "Testing invalid advance order (invalid advance: territories not adjacent)" << endl;
+    Advance* invalid_advance_1 = new Advance(p1, 12, t1, t2, deck);
+    invalid_advance_1->execute();
+    cout << endl;
 
-//    valid advance: move army between territories
-//    Advance* advance_move = new Advance(p1,12,t1,t1_1,deck);
-//    advance_move->execute();
-//
-//    cout << who owns t3?  << endl;
-//    cout << t3->getPlayerName() << endl;
-//    Advance* advance = new Advance(p1,30,t1,t3,deck);
-//    advance->execute();
-//    cout << who owns t3?  << endl;
-//    cout << t3->getPlayerName() << endl;
-//    cout << how many cards are on the deck?  << endl;
-//    cout << deck->cardSize() << endl;
+    cout << "Testing valid advance order (valid advance: move army between territories)" << endl;
+    t1->setNumberOfArmies(20);
+    t1_1->setNumberOfArmies(33);
+    Advance* advance_move = new Advance(p1, 12, t1, t1_1, deck);
+    advance_move->execute();
+    cout << endl;
+
+    cout << "Testing successfully conquering a territory" << endl;
+    cout << "How many cards are in the deck? " << deck->cardSize() << endl;
+    cout << "Who owns t3? " << t3->getPlayerName() << endl;
+    Advance* advance = new Advance(p1, 30, t1, t3, deck);
+    advance->execute();
+    cout << "Who owns t3? " << t3->getPlayerName() << endl;
+    cout << "How many cards are in the deck after conquering a territory? " << deck->cardSize() << endl;
+    cout << endl;
+
+    cout << "Testing invalid Advance order (they are negotiating)" << endl;
+    p1->setNegotiationWith(t4->getTerritoryOwner());
+    t4->getTerritoryOwner()->setNegotiationWith(p1);
+    Advance* advance_negotiate = new Advance(p1, 30, t1, t4, deck);
+    advance_negotiate->execute();
+    cout << endl;
 
     /** negotiate */
 
-//    Negotiate* negotiate = new Negotiate(p1,p4);
-//    negotiate->execute();
-//
-//    Advance* advance_negotiate = new Advance(p1,30,t1,t4,deck);
-//    advance_negotiate->execute();
+    cout << "Testing valid Negotiate order." << endl;
+    //Order is valid.
+    Negotiate* negotiate = new Negotiate(p1, p4);
+    negotiate->execute();
+    cout << endl;
+
+    cout << "Testing invalid Negotiate order." << endl;
+    //Failed to execute order, cannot negotiate with yourself.
+    Negotiate* negotiate_invalid = new Negotiate(p1, p1);
+    negotiate_invalid->execute();
+    cout << endl;
 
     /**blockade */
 
-//    Blockade* blockade_invalid = new Blockade(p1,t4);
-//    blockade_invalid->execute();
-//
-//    Blockade* blockade = new Blockade(p1,t1_1);
-//    blockade->execute();
-//
-//    cout <<  who owns t1_1?  << endl;
-//    cout <<  t1_1->getPlayerName() << endl;
+    cout << "Testing invalid Blockade order." << endl;
+    Blockade* blockade_invalid = new Blockade(p1, neutral, t4);
+    blockade_invalid->execute();
+    cout << endl;
+
+    cout << "Testing valid Blockade order." << endl;
+    Blockade* blockade = new Blockade(p1, neutral, t1_1);
+    blockade->execute();
+    cout << "Who owns the territory now? " << t1_1->getPlayerName() << endl;
+    cout << endl;
 
     /** Airlift */
 
-//    Airlift* airlift_invalid = new Airlift(p1,10,t1,t4);
-//    airlift_invalid->execute();
-//
-//    Airlift* airlift = new Airlift(p1,10,t1,t1_1);
-//    airlift->execute();
+    cout << "Testing invalid Airlift order." << endl;
+    Airlift* airlift_invalid = new Airlift(p1, 10, t1, t4);
+    airlift_invalid->execute();
+    cout << endl;
 
+    cout << "Testing valid Airlift order." << endl;
+    Airlift* airlift = new Airlift(p1, 10, t1, t1_2);
+    airlift->execute();
+    cout << endl;
+
+    delete deck;
+    delete p1;
+    delete p2;
+    delete p3;
+    delete p4;
+    delete neutral;
+
+    delete t1;
+    delete t1_1;
+    delete t1_2;
+    delete t2;
+    delete t3;
+    delete t3_2;
+    delete t3_3;
+    delete t4;
 
 }

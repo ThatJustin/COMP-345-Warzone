@@ -243,6 +243,6 @@ void Player::setNegotiationWith(Player* player){
 }
 
 bool Player::checkIsNegotiation(Player* player){
-    cout << (this->isNegotiationWith == player) << endl;
+//    cout << (this->isNegotiationWith == player) << endl;
     return this->isNegotiationWith == player;
 }

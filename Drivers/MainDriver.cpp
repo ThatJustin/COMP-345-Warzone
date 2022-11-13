@@ -16,8 +16,9 @@ int main(int argc, char** argv) {
 
 //    cout << "Testing GameEngineDriver StartupPhase" << endl;
 //    testStartupPhase(argc, argv);
-    cout << "Testing OrderDrive" << endl;
-    testOrderExecution();
+
+//    cout << "Testing OrderDrive" << endl;
+//    testOrderExecution();
 
     return 0;
 }

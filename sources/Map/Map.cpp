@@ -270,6 +270,9 @@ int Territory::getNumberOfArmies() {
  * @param army_number The number of armies to set on the territory
  */
 void Territory::setNumberOfArmies(int army_number) {
+    if (army_number < 0) {
+        army_number = 0;
+    }
     this->number_of_armies = army_number;
 }
 

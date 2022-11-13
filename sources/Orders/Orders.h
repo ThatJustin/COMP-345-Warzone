@@ -93,7 +93,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player *player, int numberOfArmyUnits, Territory *sourceTerritory, Territory *targetTerritory, Deck *deck);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck);
 
     ~Advance() override;
 
@@ -168,7 +168,7 @@ public:
 
     Blockade(const Blockade& blockade);
 
-    explicit Blockade(Player* player, Territory* targetTerritory);
+    explicit Blockade(Player* player, Player* neutral, Territory* targetTerritory);
 
     ~Blockade() override;
 
@@ -192,6 +192,7 @@ public:
 
 private:
     Territory* m_targetTerritory;
+    Player* neutral;
 };
 
 class Airlift : public Orders {
@@ -294,7 +295,8 @@ public:
 };
 
 //free functions
-Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits,
+                              Territory* sourceTerritory, Territory* targetTerritory, Player* neutral);
 
 string getNameByOrderType(OrderType cardType);
 
