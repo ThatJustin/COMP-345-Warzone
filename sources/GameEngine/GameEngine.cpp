@@ -266,7 +266,7 @@ void GameEngine::mainGameLoop() {
     changeStateByTransition(IssueOrdersEnd);
 
     //check for every player
-    for(Player* player: players){
+    for(Player* player: getGamePlayers()){
         //check if a player has territory
         bool checkTerritory = false;
         //check among all territory if they are own by the player
@@ -279,13 +279,13 @@ void GameEngine::mainGameLoop() {
         //check if player doesnt have any territory
         if(!(checkTerritory)){
             //remove player from the list of players
-            players.erase(std::remove(players.begin(), players.end(), player), players.end());
+            getGamePlayers().erase(std::remove(getGamePlayers().begin(), getGamePlayers().end(), player), getGamePlayers().end());
         }
     }
 
     //check if there is only one player left
-    if(players.size() == 1){
-        cout<< "The winner is: " << players.at(0)->getPlayerName()<< endl;
+    if(getGamePlayers().size() == 1){
+        cout<< "The winner is: " << getGamePlayers().at(0)->getPlayerName()<< endl;
         //currentGameState = win;
         changeStateByTransition(Win);
     }
@@ -858,7 +858,7 @@ void AssignReinforcement::enterState() {
     this->gameEngine->turnNumber++;
 
     //go through each player
-    for(Player* player: players) {
+    for(Player* player: this->gameEngine->getGamePlayers()) {// or is it this->gameEngine.getgamePlayers()
         //if check the amount of territory own for each player and give army accordingly
         if (player->getTerritories().size() != 0) {
 
@@ -867,7 +867,7 @@ void AssignReinforcement::enterState() {
         }
 
         //if player own all territory given a number of army units corresponding to the continent control bonus value
-        for (Continent *continent: map->getContinents()) {
+        for (Continent *continent: this->gameEngine->gameMap->getContinents()) { // or is it map->getContinents
             for (Territory *territory: continent->getTerritories()) {
                 //verify if the player is the one that own the territory
                 if (territory->getTerritoryOwner() != player) {
@@ -964,10 +964,10 @@ void IssueOrders::enterState() {
     cout << "Entering " << *this << endl;
 
     //call the player issue order method to add order in their order list
-    for (Player* player : players) {
+    for (Player* player : this->gameEngine->getGamePlayers()) {
 
         //issue the order
-        player->issueOrder(map, players, deck, hand);
+        player->issueOrder(map, this->gameEngine->getGamePlayers(), deck, hand);
 
         //phase end when all player have no more order to issue for their turn
         //if(player->getOrdersList() == 0){
@@ -1065,7 +1065,7 @@ void ExecuteOrders::enterState() {
     //while there are still order to be executed
     while (orderplayed) {
         orderplayed = false; //once there are no more order to execute break out
-        for (Player* player : players) {
+        for (Player* player : this->gameEngine->getGamePlayers()) {
             //remove the order from the player's orderlist
             Orders *orders = player->removeOrder();
             //check if there are orders left to execute
