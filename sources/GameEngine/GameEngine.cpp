@@ -34,7 +34,6 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
-    this->observer = obs;
     this->turnNumber == 0;
 }
 
@@ -406,7 +405,7 @@ Player* GameEngine::getNeutralPlayer() const {
 
 void GameEngine::attach(Observer* obs) {
     Subject::attach(obs);
-    obs = obs;
+    observer = obs;
 }
 
 void GameEngine::detach(Observer* obs) {

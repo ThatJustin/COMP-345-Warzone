@@ -120,7 +120,7 @@ void testLoggingObserver(int argc, char** argv) {
     Player* test = gameEngine->getGamePlayers().back();
     Territory* t1_1 = new Territory(0, "t1", test);
 
-    test->getOrdersList()->addOrder(new Deploy(test, 0, t1_1));
+    test->getOrdersList()->addOrder(new Deploy(test, 5, t1_1));
 
     test->getOrdersList()->getOrdersList().at(0)->execute();
 
