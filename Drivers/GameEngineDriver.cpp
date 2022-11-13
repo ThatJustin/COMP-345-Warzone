@@ -96,22 +96,101 @@ void testMainGameLoop(){
     GameEngine* gameEngine = new GameEngine();
 
     //test if all other function work in mainGameLoop
-    gameEngine->mainGameLoop();
+    //gameEngine->mainGameLoop();
 
-    //assignreinforcement
+    //create players
+    Player* player1 = new Player("Rickky Bobby");
+    Player* player2 = new Player("Buddy TheElf");
+    Player* player3 = new Player("Ron Burgundy");
+
+    //push all the player in the gameengine players vector list of the startup phase
+    gameEngine->getGamePlayers().push_back(player1);
+    gameEngine->getGamePlayers().push_back(player2);
+    gameEngine->getGamePlayers().push_back(player3);
+
+    //push all the player in the gameengine players vector list of the maingameloop
+    gameEngine->players.push_back(player1);
+    gameEngine->players.push_back(player2);
+    gameEngine->players.push_back(player3);
+
+    //hardcode a map
+    //create a map and distribute them
+    Map* map = new Map();
+
+    //testing hardcode map
+    /*
+    auto* mapLoader = new MapLoader();
+    vector<Map*> maps;
+    vector<string> map_file_names;
+    auto path = std::filesystem::path("./Map Files");
+
+    // Here, I am looping through all the map files in the Map Files folder and loading them one by one
+    for (auto& map_file: std::filesystem::directory_iterator(path)) {
+        if (map_file.path().string().substr(12) == ".DS_Store") {
+            continue;
+        }
+        cout << "\tMap file: " << map_file.path().string().substr(12) << endl;
+
+        map_file_names.push_back(map_file.path().string().substr(12));
+
+        maps.push_back(mapLoader->loadMap(map_file.path().string()));
+    }
+
+    // I make sure to delete the MapLoader object here before the program/process is finished, which deletes the Map objects that were loaded as well
+    delete mapLoader;
+    */
+
+    //testing hard coding the map
+    Territory* territory1 = new Territory(0,"territory1",player1);
+    Territory* territory1_1 = new Territory(0,"territory1",player1);
+    //Territory* territory2 = new Territory(0,"t2",player2);
+    Territory* territory3 = new Territory(0,"territory3",player3);
+    //Territory* territory3_2 = new Territory(0,"t3",player3);
+    //Territory* territory3_3 = new Territory(0,"t3",player3);
+
+    player1->addTerritory(territory1);
+    player2->addTerritory(territory3);
+
+    territory1->addAdjacentTerritory(territory1_1);
+    territory1_1->addAdjacentTerritory(territory1);
+
+    territory1->addAdjacentTerritory(territory3);
+    territory3->addAdjacentTerritory(territory1);
+
+    territory3->setNumberOfArmies(5);
+
+    //gameEngine->gameMap->getTerritories();
+
+    //go through the gamestart phase
+    gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::AddPlayer);
+
+    //leave gamestart phase to go into maingameloop
+    //gameEngine->changeStateByTransition(GameEngine::GameStart); //same as gameEngine->mainGameLoop();
+
+    //amount of player
+    cout<<player1->getPlayerName()<<" has: " <<player1->getArmy()<<" has army" << endl;
+    cout<<player2->getPlayerName()<<" has: " <<player2->getArmy()<<" has army" << endl;
+    cout<<player3->getPlayerName()<<" has: " <<player3->getArmy()<<" has army" << endl;
+    cout<< endl;
+
+    //enter the assignreinforcementphase
+    gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::GameStart); //same as //gameEngine->gameStart();
+
+    cout<<"After the territory has been distributed:"<<endl;
+    cout<<player1->getPlayerName()<<" has: " <<player1->getArmy()<<" has army" << endl;
+    cout<<player2->getPlayerName()<<" has: " <<player2->getArmy()<<" has army" << endl;
+    cout<<player3->getPlayerName()<<" has: " <<player3->getArmy()<<" has army" << endl;
+    cout<< endl;
+
+    //enter the assignreinforcementphase
     gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::Endexecorders);
-
-    Player* player1;
-
-    //gameEngine->addPlayer(player1);
 
     //add test cases in a round robin fashion by part 2
     //AssignReinforcement;
 
-    cout<<"Player1 has: " <<player1->getArmy()<<" has army" << endl;
-
     //executeOrdersPhase();
 
     //issueOrdersPhase();
+
     delete gameEngine;
 }

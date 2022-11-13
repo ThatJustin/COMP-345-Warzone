@@ -220,12 +220,16 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
 
         //it will issue a deploy order and no other order
         Orders* orders = new Deploy(this, deployArmy, toDefendTerritory);
+        //remove the army from the pool
+        setReinforcementPool(-1);
 
         //put deploy at the top of the orderlist
-        //orders->execute();
         ordersList->add(orders);
-        //delete orders;
+
+        cout<< getPlayerName() << " still has army to deploy";
     }
+
+    cout<< getPlayerName() << " has no more army to deploy moving to the other orders that need to be issued";
 
     //Once it has deployed all its available army units, it can proceed with other kinds of orders.
     bool check = true;
@@ -330,7 +334,10 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
 
             ordersList->add(order);
 
-            endturn = false;
+            //if the player has no more order to issue, end its turn
+            if(getHandCards() == 0) {
+                endturn = false;
+            }
 
             //break out of the loop once the player turn is over
             if(endturn == false){//need to check when the player turn is over
