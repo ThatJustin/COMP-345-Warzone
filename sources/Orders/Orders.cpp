@@ -77,9 +77,11 @@ void Orders::detach(Observer* obs) {
 }
 
 string Orders::stringToLog() {
-    string orderResult_ = this->orderResult;
-
-    return "[Order] Order " + getNameByOrderType(getOrderType()) + " executed by player " + this->player->getPlayerName() + ".";
+    if (orderResult.empty()) {
+        return "[Order] Order " + getNameByOrderType(getOrderType()) + " executed by player " + this->player->getPlayerName() + ". Result: " + orderResult;
+    } else {
+        return "[Order] Order " + getNameByOrderType(getOrderType()) + " executed by player " + this->player->getPlayerName() + " has failed.";
+    }
 }
 
 /**

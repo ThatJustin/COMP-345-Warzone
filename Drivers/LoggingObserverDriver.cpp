@@ -124,4 +124,6 @@ void testLoggingObserver(int argc, char** argv) {
 
     test->getOrdersList()->getOrdersList().at(0)->execute();
 
+    delete gameEngine;
+
 }
