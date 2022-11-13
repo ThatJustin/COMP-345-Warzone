@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <filesystem>
 #include "sources/GameEngine/CommandProcessor.h"
 #include "sources/GameEngine/GameEngine.h"
@@ -10,7 +9,8 @@
 #include <random>
 
 void testGameStates() {
-    GameEngine* gameEngine = new GameEngine;
+    LogObserver* obs = new LogObserver;
+    GameEngine* gameEngine = new GameEngine(obs);
 
     // Show the transitions for demo by going to the start game first
     gameEngine->changeStateByTransition(GameEngine::StartGame);
@@ -32,15 +32,15 @@ void testStartupPhase(int argc, char** argv) {
         mapFileName = argv[2];
         isUsingConsole = false;
     }
-
+    LogObserver* logObserver = new LogObserver();
     CommandProcessor* commandProcessor;
     if (isUsingConsole) {
-        commandProcessor = new CommandProcessor(isUsingConsole, mapFileName);
+        commandProcessor = new CommandProcessor(isUsingConsole, mapFileName, logObserver);
     } else {
-        commandProcessor = new FileCommandProcessorAdapter(mapFileName);
+        commandProcessor = new FileCommandProcessorAdapter(mapFileName, logObserver);
     }
 
-    GameEngine* gameEngine = new GameEngine();
+    GameEngine* gameEngine = new GameEngine(logObserver);
     gameEngine->setCommandProcessor(commandProcessor);
     gameEngine->changeStateByTransition(GameEngine::StartGame);
 

@@ -63,7 +63,7 @@ public:
     Territory* targetTerritory(Map* map);
 
     //Issues an order
-    bool issueOrder(Map* map, vector<Player*> player, Deck* deck, Hand* hand);
+    bool issueOrder(Map* map, Player* neutral, vector<Player*> player, Deck* deck, Hand* hand);
 
     //Adds a territory to be owned by player
     void addTerritory(Territory* territory);
@@ -76,17 +76,16 @@ public:
 
     void setReinforcementPool(int reinforcementPoolUnits);
 
-    //get the amount of army per player
-    int getArmy();
-
-    //set the amount of army per player
-    //void setArmy(int reinforcementPoolUnits);
-
     //remove the order
     Orders* removeOrder();
 
     //list of players
-    vector<Player*> players;
+
+    int getReinforcementPool() const;
+
+    void setNegotiationWith(Player *player);
+
+    bool checkIsNegotiation(Player* player);
 
 private:
     //Collection of territories
@@ -101,10 +100,9 @@ private:
     //Player name
     string name;
 
+    Player* isNegotiationWith;
+
     //initial army units
     int reinforcementPoolUnits = 50;
 
-    //might remove later
-    //amount of soldier for the player
-    //int army;
 };

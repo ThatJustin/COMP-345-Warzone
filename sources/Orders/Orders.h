@@ -2,12 +2,11 @@
 // Created by Alex De Luca on 2022-09-14.
 //
 
-#ifndef COMP_345_ORDERS_H
-#define COMP_345_ORDERS_H
+#pragma once
 
 #include <vector>
 #include <iostream>
-//#include "sources/Player/Player.h"
+#include "sources/LogObserver/LoggingObserver.h"
 
 class Territory;
 
@@ -15,13 +14,17 @@ class Cards;
 
 class Player;
 
+class Deck;
+
 using namespace std;
 
 enum class OrderType {
     DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE
 };
 
-class Orders {
+class Orders : public ILoggable, public Subject{
+private:
+    Observer* observer;
 
 public:
     Orders();
@@ -47,6 +50,14 @@ public:
     Orders& operator=(const Orders& order);
 
     Player* player;
+
+    std::string stringToLog() override;
+
+    void attach(Observer* obs) override;
+
+    void detach(Observer* obs) override;
+
+    string orderResult;
 };
 
 class Deploy : public Orders {
@@ -93,8 +104,7 @@ public:
 
     Advance(const Advance& advance);
 
-    //Advance(int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Player* player);
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck);
 
     ~Advance() override;
 
@@ -128,6 +138,7 @@ private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
     Territory* m_targetTerritory;
+    Deck* m_deck;
 };
 
 class Bomb : public Orders {
@@ -169,8 +180,8 @@ public:
 
     Blockade(const Blockade& blockade);
 
-    //explicit Blockade(Territory* targetTerritory, Player* player);
-    explicit Blockade(Player* player, Territory* targetTerritory);
+
+    explicit Blockade(Player* player, Player* neutral, Territory* targetTerritory);
 
     ~Blockade() override;
 
@@ -194,6 +205,7 @@ public:
 
 private:
     Territory* m_targetTerritory;
+    Player* neutral;
 };
 
 class Airlift : public Orders {
@@ -272,9 +284,11 @@ private:
     Player* m_targetPlayer;
 };
 
-class OrdersList {
+class OrdersList : public ILoggable, public Subject{
 private:
     std::vector<Orders*> list;
+    Observer* observer;
+
 public:
     OrdersList();
 
@@ -282,15 +296,21 @@ public:
 
     ~OrdersList();
 
-    OrdersList& operator=(const OrdersList& orderslist);
+    OrdersList& operator=(const OrdersList& orders_list);
 
-    friend ostream& operator<<(ostream& stream, const OrdersList& ordersList);
+    friend ostream& operator<<(ostream& stream, const OrdersList& orders_list);
+
+    std::string stringToLog() override;
+
+    void attach(Observer* obs) override;
+
+    void detach(Observer* obs) override;
 
     void move(int from, int to);
 
     void remove(int index);
 
-    void add(Orders* o);
+    void addOrder(Orders* o);
 
     vector<Orders*> getOrdersList();
 
@@ -298,8 +318,7 @@ public:
 };
 
 //free functions
-Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory);
+Orders* createOrderByCardType(int cardType, Player* player, Player* targetPlayer, int numberOfArmyUnits,
+                              Territory* sourceTerritory, Territory* targetTerritory, Player* neutral);
 
 string getNameByOrderType(OrderType cardType);
-
-#endif //COMP_345_ORDERS_H

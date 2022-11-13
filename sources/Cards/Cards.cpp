@@ -209,7 +209,7 @@ void Cards::play(Player* player, Deck* deck, Orders* orders) {
     cout << "Playing card " << getNameByCardType(getType()) << endl;
     cout << endl;
 
-    player->getOrdersList()->add(orders); //add card type to the list
+    player->getOrdersList()->addOrder(orders); //add card type to the list
 
     deck->addCard(createCardByCardType(this->getType())); //add card base on their type
 

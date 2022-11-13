@@ -111,6 +111,10 @@ public:
     // Adds an adjacent territory to the specified territory by passing the pointer to the adjacent territory as a parameter
     void addAdjacentTerritory(Territory* territory);
 
+    bool isAdjacent(Territory *t);
+
+    Player *getPlayer();
+
 private:
     // An integer identifier representing the territory id and the number of armies on the territory
     int map_territory_id, number_of_armies;
@@ -126,6 +130,9 @@ private:
 
     // A pointer to the player that owns the territory
     Player* player;
+
+
+
 };
 
 class Map {

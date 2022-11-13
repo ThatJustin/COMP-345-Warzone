@@ -24,13 +24,14 @@ void testCommandProcessor(int argc, char** argv) {
         isUsingConsole = false;
     }
 
+    LogObserver* logObserver = new LogObserver();
     CommandProcessor* commandProcessor;
     if (isUsingConsole) {
-        commandProcessor = new CommandProcessor(isUsingConsole, mapFileName);
+        commandProcessor = new CommandProcessor(isUsingConsole, mapFileName, logObserver);
     } else {
-        commandProcessor = new FileCommandProcessorAdapter(mapFileName);
+        commandProcessor = new FileCommandProcessorAdapter(mapFileName, logObserver);
     }
-    GameEngine* gameEngine = new GameEngine();
+    GameEngine* gameEngine = new GameEngine(logObserver);
     gameEngine->setCommandProcessor(commandProcessor);
     gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::StartGame);
     cout << "Entering StartGame state." << endl;

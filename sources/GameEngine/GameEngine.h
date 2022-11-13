@@ -5,8 +5,10 @@
 #include "sources/Orders/Orders.h"
 #include <vector>
 #include <iostream>
+#include "sources/LogObserver/LoggingObserver.h"
 
 using namespace std;
+
 class Player;
 
 //for part 3
@@ -37,22 +39,31 @@ class Map;
 
 class Deck;
 
-class GameEngine {
+class GameEngine : public ILoggable, public Subject {
 private:
-
     //each state
     Start* start;
+
     MapLoaded* loadMap;
+
     MapValidated* mapValidated;
+
     PlayersAdded* playersAdded;
+
     AssignReinforcement* assignReinforcement;
+
     IssueOrders* issueOrders;
+
     ExecuteOrders* executeOrders;
+
     Win* win;
 
     CommandProcessor* commandProcessor;
+
+    Observer* observer;
+
 public:
-    GameEngine();
+    explicit GameEngine(LogObserver* obs);
 
     GameEngine(const GameEngine& gameEngine);
 
@@ -61,6 +72,12 @@ public:
     friend ostream& operator<<(ostream& stream, const GameEngine& player);
 
     GameEngine& operator=(const GameEngine& gameEngine);
+
+    std::string stringToLog() override;
+
+    void attach(Observer* obs) override;
+
+    void detach(Observer* obs) override;
 
     GameState* getCurrentGameState();
 
@@ -158,6 +175,7 @@ public:
 
 class Start : public GameState {
 private:
+
 public:
     explicit Start(GameEngine* gameEngine);
 
@@ -178,6 +196,7 @@ public:
 
 class MapLoaded : public GameState {
 private:
+
 public:
 
     explicit MapLoaded(GameEngine* gameEngine);
@@ -199,6 +218,7 @@ public:
 
 class MapValidated : public GameState {
 private:
+
 public:
 
     explicit MapValidated(GameEngine* gameEngine);
@@ -220,6 +240,7 @@ public:
 
 class PlayersAdded : public GameState {
 private:
+
 public:
 
     explicit PlayersAdded(GameEngine* gameEngine);
@@ -241,6 +262,7 @@ public:
 
 class AssignReinforcement : public GameState {
 private:
+
 public:
 
     explicit AssignReinforcement(GameEngine* gameEngine);
@@ -268,6 +290,7 @@ public:
 
 class IssueOrders : public GameState {
 private:
+
 public:
 
     explicit IssueOrders(GameEngine* gameEngine);
@@ -298,6 +321,7 @@ public:
 
 class ExecuteOrders : public GameState {
 private:
+
 public:
 
     explicit ExecuteOrders(GameEngine* gameEngine);
@@ -321,6 +345,7 @@ public:
 
 class Win : public GameState {
 private:
+
 public:
 
     explicit Win(GameEngine* gameEngine);

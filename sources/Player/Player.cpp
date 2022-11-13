@@ -13,7 +13,8 @@ Player::Player() {
     this->territories = vector<Territory*>();
     this->name = "";
     this->handCards = new Hand;
-    this->ordersList = new OrdersList();
+    this->ordersList = new OrdersList;
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -24,7 +25,8 @@ Player::Player(const string& name) {
     this->territories = vector<Territory*>();
     this->name = name;
     this->handCards = new Hand;
-    this->ordersList = new OrdersList();
+    this->ordersList = new OrdersList;
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -36,6 +38,7 @@ Player::Player(const Player& player) {
     this->handCards = new Hand(*player.handCards);
     this->name = player.name;
     this->ordersList = new OrdersList(*player.ordersList);
+    this->isNegotiationWith = nullptr;
 }
 
 /**
@@ -181,12 +184,12 @@ Territory* Player::targetTerritory(Map* map){
  * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand) {
+bool Player::issueOrder(Map *map, Player* neutral, vector<Player*> players ,Deck *deck, Hand* hand) {
 
     bool endturn = true;
 
     //while there is still army to the player, deploy them to conquer other territories
-    while (getArmy() > 0){
+    while (getReinforcementPool() > 0){
 
         //show the player the amount of territory they own
         cout<< "You own the territory: "<<endl;
@@ -216,7 +219,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         }
 
         //army available for specific player
-        int deployArmy = getArmy();
+        int deployArmy = getReinforcementPool();
 
         //it will issue a deploy order and no other order
         Orders* orders = new Deploy(this, deployArmy, toDefendTerritory);
@@ -224,7 +227,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
         setReinforcementPool(-1);
 
         //put deploy at the top of the orderlist
-        ordersList->add(orders);
+        ordersList->addOrder(orders);
 
         cout<< getPlayerName() << " still has army to deploy";
     }
@@ -268,13 +271,13 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
 
                 Territory* target = targetTerritory(map);
 
-                orders = new Blockade(this, target);
+                orders = new Blockade(this, neutral, target);
 
             } else if (getNameByCardType(cards->getType()) == getNameByOrderType(OrderType::NEGOTIATE)) {
 
                 Player* targetPlayer = nullptr;
 
-                for (Player* player :players) {
+                for (Player* player  : players) {
                     targetPlayer = player;
                     break;
                 }
@@ -285,7 +288,7 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
             handCards->remove(cards);
             deck->addCard(cards);
 
-            ordersList->add(orders);
+            ordersList->addOrder(orders);
         }
         else{
             //Joey recommendation:
@@ -330,9 +333,9 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
                 break;
             }
 
-            Orders* order = new Advance(this, reinforcementPoolUnits, sourceArea, targetArea);
+            Orders* order = new Advance(this, reinforcementPoolUnits, sourceArea, targetArea, deck);
 
-            ordersList->add(order);
+            ordersList->addOrder(order);
 
             //if the player has no more order to issue, end its turn
             if(getHandCards() == 0) {
@@ -348,7 +351,6 @@ bool Player::issueOrder(Map *map, vector<Player*> player,Deck *deck, Hand* hand)
             }
         }
     }
-
     return true;
 }
 
@@ -442,14 +444,6 @@ void Player::setReinforcementPool(int reinforcementPoolUnits_) {
     this->reinforcementPoolUnits = reinforcementPoolUnits_;
 }
 
-/**
- * for part 4
- * @return
- */
-int Player::getArmy() {
-
-    return reinforcementPoolUnits;
-}
 
 /**
  *remove the order from the ordered list
@@ -468,3 +462,15 @@ Orders* Player::removeOrder() {
     return order;
 }
 
+int Player::getReinforcementPool() const{
+    return this->reinforcementPoolUnits;
+}
+
+void Player::setNegotiationWith(Player* player){
+    this->isNegotiationWith = player;
+}
+
+bool Player::checkIsNegotiation(Player* player){
+//    cout << (this->isNegotiationWith == player) << endl;
+    return this->isNegotiationWith == player;
+}
