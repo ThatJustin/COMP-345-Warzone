@@ -14,48 +14,70 @@ using std::string;
 using std::list;
 using std::ofstream;
 
-/**
- *
- * Observer class
- *
- */
 
 /**
  * Observer constructor
  */
 Observer::Observer() {}
 
+/**
+ * Observer destructor
+ */
 Observer::~Observer() {}
 
+/**
+ * Subject constructor
+ */
 Subject::Subject() {
     observers = new list<Observer*>;
 }
 
+/**
+ * Subject destructor
+ */
 Subject::~Subject() {
     delete observers;
 }
 
+/**
+ * Adding an observer to the end of the observer list
+ */
 void Subject::attach(Observer* obs) {
     observers->push_back(obs);
 }
 
+/*
+ * Removing an observer from the end of the observer list
+ */
 void Subject::detach(Observer* obs) {
     observers->remove(obs);
 }
 
+/*
+ * Notifying the observer that a change has been made
+ */
 void Subject::notify(ILoggable* i_loggable) {
     for (auto& observer: *observers) {
         observer->update(i_loggable);
     }
 }
 
+/*
+ * LogObserver constructor
+ */
 LogObserver::LogObserver() {
 }
 
+/*
+ * LogObserver destructor
+ */
 LogObserver::~LogObserver() {
 
 }
 
+/*
+ * Updates the gamelog file when changes have been made in the subjects
+ */
 void LogObserver::update(ILoggable* i_loggable) {
     ofstream game_log_file("./Logs/gamelog.txt", ofstream::app | ofstream::out);
     if (game_log_file.is_open()) {
