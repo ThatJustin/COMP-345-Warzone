@@ -2,8 +2,9 @@
 
 #include <string>
 #include <vector>
+#include "sources/LogObserver/LoggingObserver.h"
 
-class Command {
+class Command  : public ILoggable, public Subject {
 public:
     Command();
 
@@ -13,7 +14,10 @@ public:
 
     ~Command();
 
+    std::string stringToLog() override;
+
     std::string command;
+
     std::string effect;
 
     void saveEffect(const std::string& commandEffect);
@@ -27,19 +31,26 @@ public:
     std::string getTransitionName() const;
 };
 
-class CommandProcessor {
-
+class CommandProcessor : public ILoggable, public Subject {
 public:
     CommandProcessor();
 
     CommandProcessor(const CommandProcessor& commandProcessor);
 
-    CommandProcessor(bool isUsingConsole, std::string inputFileName);
+    CommandProcessor(bool isUsingConsole, std::string inputFileName, Observer* obs);
 
     virtual ~CommandProcessor();
 
+    void attach(Observer* o) override;
+
+    void detach(Observer* o) override;
+
+    std::string stringToLog() override;
+
     std::vector<Command*> commands;
+
     bool isUsingConsole;
+
     std::string inputFileName;
 
     Command* getCommand(const std::string& currentState);
@@ -54,10 +65,11 @@ private:
     void saveCommand(Command* command);
 
     bool validate(Command* pCommand, const std::string& currentState);
+
+    Observer* observer;
 };
 
 class FileLineReader {
-
 public:
     FileLineReader();
 
@@ -81,7 +93,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
 public:
     FileCommandProcessorAdapter();
 
-    explicit FileCommandProcessorAdapter(const std::string& inputFileName);
+    explicit FileCommandProcessorAdapter(const std::string& inputFileName, Observer* obs);
 
     FileCommandProcessorAdapter(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
 
@@ -93,8 +105,7 @@ public:
     FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& fileCommandProcessorAdapter);
 
     FileLineReader* fileLineReader;
+
 private:
     std::string readCommand() override;
-
 };
-

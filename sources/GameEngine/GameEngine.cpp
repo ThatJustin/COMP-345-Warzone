@@ -6,11 +6,13 @@
 #include "sources/Map/Map.h"
 #include "sources/Player/Player.h"
 #include "sources/Cards/Cards.h"
+#include "sources/Orders/Orders.h"
 
 /**
  * Constructor of GameEngine
  */
-GameEngine::GameEngine() {
+GameEngine::GameEngine(LogObserver* obs) {
+    attach(obs);
     //Keep track of the current game state
     this->currentGameState = nullptr;
 
@@ -39,6 +41,7 @@ GameEngine::GameEngine() {
  * Destructor of GameEngine
  */
 GameEngine::~GameEngine() {
+    detach(observer);
     if (win != nullptr) {
         delete win;
         win = nullptr;
@@ -104,12 +107,14 @@ void GameEngine::changeStateByTransition(int transition) {
     //First time running the game
     if (currentGameState == nullptr) {
         this->currentGameState = getStateFromTransition(transition);
+        notify(this);
         this->getCurrentGameState()->enterState();
     } else {
         // isValidToTransitionAway will be used for when we need to validate that the transition is okay in the future
         // for now it's always true
         if (this->getCurrentGameState()->isValidToTransitionAway()) {
             this->currentGameState = getStateFromTransition(transition);
+            notify(this);
             this->getCurrentGameState()->enterState();
         }
     }
@@ -305,6 +310,7 @@ CommandProcessor* GameEngine::getCommandProcessor() const {
 }
 
 void GameEngine::addPlayer(Player* pPlayer) {
+    pPlayer->getOrdersList()->attach(observer);
     this->gamePlayers.push_back(pPlayer);
 }
 
@@ -395,6 +401,20 @@ Deck* GameEngine::getDeck() const {
  */
 Player* GameEngine::getNeutralPlayer() const {
     return neutral;
+}
+
+void GameEngine::attach(Observer* obs) {
+    Subject::attach(obs);
+    observer = obs;
+}
+
+void GameEngine::detach(Observer* obs) {
+    Subject::detach(obs);
+    obs = nullptr;
+}
+
+string GameEngine::stringToLog() {
+    return "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
 }
 
 /**
@@ -505,6 +525,7 @@ ostream& operator<<(ostream& stream, const Start& start) {
     stream << "State: " << start.name << endl;
     return stream;
 }
+
 
 /**
  * Assignment operator for the class.

@@ -17,11 +17,11 @@ void testCards() {
     Player* player = new Player("Rickky Bobby");
 
     std::vector<Cards*> deckCards; //create a vector of cards for the deck
-    deckCards.push_back(bomb); //add type bomb to the deckcards list
-    deckCards.push_back(reinforcement); //add type reinforcement to the deckcards list
-    deckCards.push_back(blockade); //add type blockade to the deckcards list
-    deckCards.push_back(airlift); //add type airlift to the deckcards list
-    deckCards.push_back(diplomacy); //add type diplomacy to the deckcards list
+    deckCards.push_back(bomb); //addOrder type bomb to the deckcards list
+    deckCards.push_back(reinforcement); //addOrder type reinforcement to the deckcards list
+    deckCards.push_back(blockade); //addOrder type blockade to the deckcards list
+    deckCards.push_back(airlift); //addOrder type airlift to the deckcards list
+    deckCards.push_back(diplomacy); //addOrder type diplomacy to the deckcards list
 
     Deck* deck = new Deck(deckCards);
 

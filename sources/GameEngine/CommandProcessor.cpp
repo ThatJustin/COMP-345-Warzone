@@ -27,13 +27,14 @@ Command::Command(const string& inputCommand) {
  */
 Command::~Command() {}
 
+
 /**
  * Saves the effect command and notifies the observer.
  * @param commandEffect
  */
 void Command::saveEffect(const std::string& commandEffect) {
     this->effect = commandEffect;
-    //Might need to notify observer in part 5
+    notify(this);
 }
 
 /**
@@ -91,6 +92,10 @@ Command::Command(const Command& command) {
     this->effect = command.effect;
 }
 
+string Command::stringToLog() {
+    return "[Command Effect] " + this->effect;
+}
+
 /**
  * Default constructor.
  */
@@ -105,10 +110,11 @@ CommandProcessor::CommandProcessor() {
  * @param isUsingConsole
  * @param inputFileName
  */
-CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName) {
+CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName, Observer* obs) {
     this->isUsingConsole = isUsingConsole;
     this->inputFileName = std::move(inputFileName);
     this->commands = vector<Command*>();
+    attach(obs);
 }
 
 /**
@@ -116,10 +122,18 @@ CommandProcessor::CommandProcessor(bool isUsingConsole, string inputFileName) {
  */
 CommandProcessor::~CommandProcessor() {
     for (auto cmd: this->commands) {
+        cmd->detach(observer);
         delete cmd;
+        cmd = nullptr;
     }
+    this->commands.clear();
+    detach(observer);
 }
 
+
+string CommandProcessor::stringToLog() {
+    return "[CommandProcessor] Command [" + this->commands.back()->command + "] has been saved to command collection. ";
+}
 
 /**
  * Reads input as the command and returns it.
@@ -141,6 +155,7 @@ string CommandProcessor::readCommand() {
  */
 void CommandProcessor::saveCommand(Command* command) {
     this->commands.push_back(command);
+    notify(this);
 }
 
 /**
@@ -151,9 +166,9 @@ void CommandProcessor::saveCommand(Command* command) {
 Command* CommandProcessor::getCommand(const string& currentState) {
     string inputCommand = readCommand();
     Command* command = new Command(inputCommand);
-    bool isValidTransition = validate(command, currentState);
+    command->attach(observer);
     saveCommand(command);
-    return isValidTransition == 0 ? nullptr : command;
+    return validate(command, currentState) == 0 ? nullptr : command;
 }
 
 /**
@@ -201,7 +216,7 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     } else if (com == "addplayer") {
         if (pCommand->getParam().empty()) {
-            pCommand->saveEffect("[INVALID COMMAND] Missing player name for addplayer");
+            pCommand->saveEffect("[Invalid Command] Missing player name for addplayer");
             return false;
         }
         if (currentState == "mapvalidated" || currentState == "playersadded") {
@@ -217,10 +232,10 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
         }
     }
     if (success) {
-        pCommand->saveEffect("[VALID COMMAND] " + com + " used in valid state " + currentState + ".");
+        pCommand->saveEffect("[Valid Command] " + com + " used in valid state " + currentState + ".");
         return true;
     }
-    pCommand->saveEffect("[INVALID COMMAND] Tried to use command " + com + " while in state " + currentState + ".");
+    pCommand->saveEffect("[Invalid Command] Tried to use command " + com + " while in state " + currentState + ".");
     return false;
 }
 
@@ -249,6 +264,16 @@ CommandProcessor::CommandProcessor(const CommandProcessor& commandProcessor) {
     this->isUsingConsole = commandProcessor.isUsingConsole;
 }
 
+void CommandProcessor::attach(Observer* obs) {
+    Subject::attach(obs);
+    this->observer = obs;
+}
+
+void CommandProcessor::detach(Observer* obs) {
+    Subject::detach(obs);
+    this->observer = nullptr;
+}
+
 /**
  * Default constructor.
  */
@@ -262,8 +287,8 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter() {
  * Parameterized Constructor.
  * @param inputFileName
  */
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName)
-        : CommandProcessor(false, inputFileName) {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(const string& inputFileName, Observer* obs)
+        : CommandProcessor(false, inputFileName, obs) {
     this->fileLineReader = new FileLineReader();
 }
 

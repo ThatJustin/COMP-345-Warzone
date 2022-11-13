@@ -5,6 +5,7 @@
 #include "headers/GameEngineDriver.h"
 #include "headers/CardsDriver.h"
 #include "headers/CommandProcessingDriver.h"
+#include "headers/LoggingObserverDriver.h"
 
 using namespace std;
 
@@ -19,6 +20,9 @@ int main(int argc, char** argv) {
 
 //    cout << "Testing OrderDrive" << endl;
 //    testOrderExecution();
+
+    cout<<"Testing LoggingObserverDriver:\n"<<endl;
+    testLoggingObserver(argc, argv);
 
     return 0;
 }

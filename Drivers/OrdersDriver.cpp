@@ -17,17 +17,17 @@ void testOrdersLists() {
     //adding the orders to the orders list
     OrdersList* ol = new OrdersList();
     cout << "Added Deploy Order to Orderslist.";
-    ol->add(de);
+    ol->addOrder(de);
     cout << endl << "Added Advance Order to Orderslist.";
-    ol->add(ad);
+    ol->addOrder(ad);
     cout << endl << "Added Bomb Order to Orderslist.";
-    ol->add(bo);
+    ol->addOrder(bo);
     cout << endl << "Added Blockade Order to Orderslist.";
-    ol->add(bl);
+    ol->addOrder(bl);
     cout << endl << "Added Airlift Order to Orderslist.";
-    ol->add(ai);
+    ol->addOrder(ai);
     cout << endl << "Added Negotiate Order to Orderslist.";
-    ol->add(ne);
+    ol->addOrder(ne);
     cout << endl << endl;
 
     cout << *ol << endl;
@@ -43,7 +43,7 @@ void testOrdersLists() {
     ol->displayList();
 
     cout << "Adding back the order that was just removed." << endl;
-    ol->add(ad);
+    ol->addOrder(ad);
     ol->displayList();
 
     cout << "Testing validate and execute for orders." << endl;
