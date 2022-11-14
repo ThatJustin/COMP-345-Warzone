@@ -50,3 +50,4 @@
 /MainDriver
 MainDriver.pdb
 *.DS_Store
+Logs/gamelog.txt

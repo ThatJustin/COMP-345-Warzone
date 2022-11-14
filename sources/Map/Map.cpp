@@ -353,6 +353,16 @@ void Territory::addAdjacentTerritory(Territory* territory) {
 }
 
 /**
+ * Changes ownership of the territory.
+ * @param pPlayer
+ */
+void Territory::transferTerritory(Player* pPlayer) {
+    this->getTerritoryOwner()->removeTerritory(this);
+    pPlayer->addTerritory(this);
+    this->setTerritoryOwner(player);
+}
+
+/**
  * Default constructor for the Map class
  */
 Map::Map() {

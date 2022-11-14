@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
 //    cout << "Testing CommandProcessor" << endl;
 //    testCommandProcessor(argc, argv);
 
-    //cout << "Testing GameEngineDriver StartupPhase" << endl;
-    //testStartupPhase(argc, argv);
+//    cout << "Testing GameEngineDriver StartupPhase" << endl;
+//    testStartupPhase(argc, argv);
 
     cout << "Testing GameEngineDriver MainGameLoop" << endl;
     testMainGameLoop();

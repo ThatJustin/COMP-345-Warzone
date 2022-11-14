@@ -201,7 +201,7 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
             Territory* source = toDefend().at(distToDefend(gen3) - 1); // source is first to defend
             if (source->getMapTerritoryId() != territory->getMapTerritoryId()) {
                 Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck);
-                this->ordersList->addOrder(advance_order);
+                this->getOrdersList()->addOrder(advance_order);
             }
         }
     }
@@ -210,7 +210,7 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
             Territory* source = toAttack().at(distToAttack(gen4) - 1); // source is first to defend
             if (source->getMapTerritoryId() != territory->getMapTerritoryId()) {
                 Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck);
-                this->ordersList->addOrder(advance_order);
+                this->getOrdersList()->addOrder(advance_order);
             }
         }
     }
@@ -359,4 +359,48 @@ void Player::setNegotiationWith(Player* player) {
 bool Player::checkIsNegotiation(Player* player) {
 //    cout << (this->isNegotiationWith == player) << endl;
     return this->isNegotiationWith == player;
+}
+
+void Player::removeOrders() {
+    while (this->ordersList->getOrdersList().size() > 0) {
+        ordersList->getOrdersList().pop_back();
+    }
+}
+
+void Player::useOrders() {
+    for (int i = 0; i < getOrdersList()->getOrdersList().size(); i++) {
+        ordersList->getOrdersList().at(i)->execute();
+    }
+    ordersList->getOrdersList().clear();
+    this->ordersList->getOrdersList() = vector<Orders*>();
+//    while(!ordersList->getOrdersList().empty()) {
+//        ordersList->getOrdersList().pop_back();
+//    }
+//    for (Orders* orders : player->getOrdersList()->getOrdersList()) {
+//        //This assumes the first order in the orderlist is a Deploy order which it MUST BE
+//        orders->execute();
+//        //remove it after
+////            player->getOrdersList()->remove(i);
+//    }
+}
+
+void Player::removeTerritory(Territory* pTerritory) {
+    for (int i = 0; i < this->territories.size(); ++i) {
+        if (pTerritory->getTerritoryName() == this->territories.at(i)->getTerritoryName()) {
+            this->territories.erase(this->territories.begin() + i);
+            break;
+        }
+    }
+//    if (pTerritory->getTerritoryOwner() == this) {
+//        int pos = -1;
+//        for (int i = 0; i < territories.size(); ++i) {
+//            if (pTerritory->getMapTerritoryId() == territories[i]->getMapTerritoryId()) {
+//                pos = i;
+//                break;
+//            }
+//        }
+//        if (pos >= 0) {
+//            territories.erase(territories.begin() + pos);
+//        }
+//    }
 }

@@ -87,6 +87,12 @@ public:
 
     bool checkIsNegotiation(Player* player);
 
+    void removeOrders();
+
+    void useOrders();
+
+    void removeTerritory(Territory* pTerritory);
+
 private:
     //Collection of territories
     vector<Territory*> territories;

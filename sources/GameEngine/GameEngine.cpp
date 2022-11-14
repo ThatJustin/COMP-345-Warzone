@@ -1031,14 +1031,10 @@ ExecuteOrders::~ExecuteOrders() {
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
     for (Player* player: gameEngine->getGamePlayers()) {
-        for (int i = 0; i < player->getOrdersList()->getOrdersList().size() - 1; i++) {
-            Orders* orders = player->getOrdersList()->getOrdersList().at(i);
-            //This assumes the first order in the orderlist is a Deploy order which it MUST BE
-            orders->execute();
-            //remove it after
-            player->getOrdersList()->remove(i);
-        }
+        player->useOrders();
     }
+
+    cout << endl;
     vector<Player*> playersToRemove = vector<Player*>();
     // Check if anyone owns 0 territories
     for (Player* player: gameEngine->getGamePlayers()) {

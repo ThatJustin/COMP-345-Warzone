@@ -550,7 +550,7 @@ void Advance::execute() {
             if (target_army_count == 0) {
                 cout << "Successfully conquered the target." << endl;
                 Player* target_player = m_targetTerritory->getPlayer();
-                m_targetTerritory->setTerritoryOwner(player);
+                m_targetTerritory->transferTerritory(player);
                 m_targetTerritory->setNumberOfArmies(source_army_count);
                 m_deck->draw(player);
                 orderResult = "Advance Order successful, territory is conquered: " + player->getPlayerName() + " has conquered " +
@@ -885,7 +885,7 @@ void Blockade::execute() {
     if (validate()) {
         int army = m_targetTerritory->getNumberOfArmies();
         m_targetTerritory->setNumberOfArmies(army * 2);
-        m_targetTerritory->setTerritoryOwner(neutral);
+        m_targetTerritory->transferTerritory(neutral);
         orderResult = "Blockade Order successfully executed: Doubled the army units on " + m_targetTerritory->getTerritoryName() +
                       " by " + player->getPlayerName() + " and transferred the ownership of " + m_targetTerritory->getTerritoryName()
                       + " to " + neutral->getPlayerName() + " (the neutral player in the game).";

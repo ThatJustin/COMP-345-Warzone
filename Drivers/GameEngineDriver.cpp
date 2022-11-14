@@ -104,62 +104,64 @@ void testMainGameLoop() {
     gameEngine->addPlayer(player1);
     gameEngine->addPlayer(player2);
     gameEngine->addPlayer(player3);
-
-    Territory* t1 = new Territory(0, "territory1", player1);
-    Territory* t2 = new Territory(1, "territory2", player2);
-    Territory* t3 = new Territory(2, "territory3", player3);
-    Territory* t4 = new Territory(3, "territory4", player1);
-    Territory* t5 = new Territory(4, "territory5", player3);
-
-    player1->addTerritory(t1);
-    player1->addTerritory(t4);
-    player2->addTerritory(t2);
-    player3->addTerritory(t3);
-    player3->addTerritory(t5);
-
-    t1->addAdjacentTerritory(t2);
-    t1->addAdjacentTerritory(t4);
-    t1->addAdjacentTerritory(t5);
-
-    t2->addAdjacentTerritory(t1);
-    t2->addAdjacentTerritory(t4);
-    t2->addAdjacentTerritory(t3);
-
-    t3->addAdjacentTerritory(t2);
-    t3->addAdjacentTerritory(t4);
-    t3->addAdjacentTerritory(t5);
-
-    t5->addAdjacentTerritory(t1);
-    t5->addAdjacentTerritory(t4);
-    t5->addAdjacentTerritory(t3);
-
-    t4->addAdjacentTerritory(t1);
-    t4->addAdjacentTerritory(t2);
-    t4->addAdjacentTerritory(t3);
-    t4->addAdjacentTerritory(t5);
-
-    continent->addTerritory(t1);
-    continent->addTerritory(t2);
-    continent->addTerritory(t3);
-    continent->addTerritory(t4);
-    continent->addTerritory(t5);
-    vector<Territory*> territories = vector<Territory*>();
-    territories.push_back(t1);
-    territories.push_back(t2);
-    territories.push_back(t3);
-    territories.push_back(t4);
-    territories.push_back(t5);
-
-    vector<Continent*> cont = vector<Continent*>();
-    cont.push_back(continent);
-
-    Map* map = new Map(territories, cont);
-
+//
+//    Territory* t1 = new Territory(0, "territory1", player1);
+//    Territory* t2 = new Territory(1, "territory2", player2);
+//    Territory* t3 = new Territory(2, "territory3", player3);
+//    Territory* t4 = new Territory(3, "territory4", player1);
+//    Territory* t5 = new Territory(4, "territory5", player3);
+//
+//    player1->addTerritory(t1);
+//    player1->addTerritory(t4);
+//    player2->addTerritory(t2);
+//    player3->addTerritory(t3);
+//    player3->addTerritory(t5);
+//
+//    t1->addAdjacentTerritory(t2);
+//    t1->addAdjacentTerritory(t4);
+//    t1->addAdjacentTerritory(t5);
+//
+//    t2->addAdjacentTerritory(t1);
+//    t2->addAdjacentTerritory(t4);
+//    t2->addAdjacentTerritory(t3);
+//
+//    t3->addAdjacentTerritory(t2);
+//    t3->addAdjacentTerritory(t4);
+//    t3->addAdjacentTerritory(t5);
+//
+//    t5->addAdjacentTerritory(t1);
+//    t5->addAdjacentTerritory(t4);
+//    t5->addAdjacentTerritory(t3);
+//
+//    t4->addAdjacentTerritory(t1);
+//    t4->addAdjacentTerritory(t2);
+//    t4->addAdjacentTerritory(t3);
+//    t4->addAdjacentTerritory(t5);
+//
+//    continent->addTerritory(t1);
+//    continent->addTerritory(t2);
+//    continent->addTerritory(t3);
+//    continent->addTerritory(t4);
+//    continent->addTerritory(t5);
+//    vector<Territory*> territories = vector<Territory*>();
+//    territories.push_back(t1);
+//    territories.push_back(t2);
+//    territories.push_back(t3);
+//    territories.push_back(t4);
+//    territories.push_back(t5);
+//
+//    vector<Continent*> cont = vector<Continent*>();
+//    cont.push_back(continent);
+//
+//    Map* map = new Map(territories, cont);
+    auto* mapLoader = new MapLoader();
+    Map* map = mapLoader->loadMap("./Map Files/Aden.map");
     gameEngine->setGameMap(map);
     // End of test data
-
     gameEngine->gameStart();
 
+    player1->getTerritories().at(0)->transferTerritory(player2);
+    cout << endl;
     gameEngine->mainGameLoop();
 
     delete gameEngine;
