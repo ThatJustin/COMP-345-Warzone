@@ -102,6 +102,9 @@ public:
     // Accessor for the pointer to the continent the territory belongs to
     Continent* getContinent();
 
+    // Mutator for the pointer to the continent the territory belongs to
+    void setContinent(Continent* a_continent);
+
     // Accessor for the pointer to the player that owns the territory
     Player* getTerritoryOwner();
 

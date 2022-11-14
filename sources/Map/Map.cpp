@@ -233,7 +233,8 @@ Territory& Territory::operator=(const Territory& territory) {
 ostream& operator<<(ostream& outs, const Territory& territory) {
     outs << "Territory Name: " << territory.territory_name << endl <<
          "Number of Armies: " << territory.number_of_armies << endl <<
-         "Within Continent: " << territory.continent->getContinentName() << endl;
+         "Within Continent: " << territory.continent->getContinentName() << endl <<
+         "Number of Adjacent Territories " << territory.adjacent_territories.size() << endl;
     if (territory.player == nullptr || territory.player->getPlayerName().empty()) {
         outs << "Owned by player: No player" << endl;
     } else {
@@ -309,6 +310,14 @@ vector<Territory*> Territory::getAdjacentTerritories() {
  */
 Continent* Territory::getContinent() {
     return this->continent;
+}
+
+/**
+ * Mutator for the pointer to the continent the territory belongs to
+ * @param continent The pointer to the continent the territory belongs to
+ */
+void Territory::setContinent(Continent* a_continent) {
+    this->continent = a_continent;
 }
 
 /**
@@ -511,7 +520,7 @@ void Map::depthFirstSearch(Continent* continent, int starting_territory_id, vect
         visited_territories.push_back(this->territories.at(starting_territory_id));
 
         // Here, I loop through all the territories inside the specific continent and their adjacent territories and
-        // checking if those territories exist in the map/graph. If they do, then I make sure to only call the DFS method recursively
+        // check if those territories exist in the map/graph. If they do, then I make sure to only call the DFS method recursively
         // on adjacent territories that are inside the specific continent and have not been visited yet
         for (auto& territory: continent->getTerritories()) {
             for (auto& adjacent_territory: territory->getAdjacentTerritories()) {
@@ -666,7 +675,6 @@ Map* MapLoader::loadMap(const string& map_file_path) {
     int map_continent_id = 0;
     int territories_section_count = 0;
     int map_territory_id = 0;
-    int map_file_line_first_territory_id = 0;
 
     ifstream map_file(map_file_path);
 
@@ -760,20 +768,22 @@ Map* MapLoader::loadMap(const string& map_file_path) {
                     // that the continent actually exists in the vector of continent pointers that point to all the continents in the map using a Continent object iterator, and if it does,
                     // I create a new territory with the territory name and the continent pointer that corresponds to the continent name parsed from that specific part of the map file line
                     if (skipped_strings_index == 4) {
-                        auto iterator = find_if(continents.begin(), continents.end(), [&](Continent* continent) {
-                            return continent->getContinentName() == map_file_line;
-                        });
-                        if (iterator != continents.end()) {
-                            continent = *iterator;
-                            auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name,
-                                                                                continent);
-                            territories.push_back(map_file_line_first_territory);
-                            map_territory_id++;
-                            continent->addTerritory(map_file_line_first_territory);
-                            continue;
-                        } else {
-                            map_file_line_first_territory_id--;
-                            break;
+                        auto iterator_continent = find_if(continents.begin(), continents.end(), [&](Continent* continent) { return continent->getContinentName() == map_file_line; });
+                        if (iterator_continent != continents.end()) {
+                            continent = *iterator_continent;
+                            auto iterator_territory = find_if(territories.begin(), territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == territory_name; });
+                            if (iterator_territory != territories.end()) {
+                                (*iterator_territory)->setContinent(continent);
+                                continent->addTerritory(*iterator_territory);
+                                continue;
+                            } else {
+                                auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name,
+                                                                                    continent);
+                                territories.push_back(map_file_line_first_territory);
+                                map_territory_id++;
+                                continent->addTerritory(map_file_line_first_territory);
+                                continue;
+                            }
                         }
                     }
                     if (skipped_strings_index < 4) {
@@ -783,12 +793,22 @@ Map* MapLoader::loadMap(const string& map_file_path) {
                     // Here, I am adding the adjacent territories to the newly added territory using the same territory id as the newly added territory
                     // which will be changed later on so that each adjacent territory actually holds the right territory id to reference the first time they
                     // are parsed at the beginning of a new map file line
-                    territories.at(map_file_line_first_territory_id)->addAdjacentTerritory(
-                            new Territory(map_territory_id, map_file_line, continent));
+                    auto iterator_adjacent_territory = find_if(territories.begin(), territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == map_file_line; });
+                    if (iterator_adjacent_territory != territories.end()) {
+                        auto iterator_past_territory = find_if(territories.begin(), territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == territory_name; });
+                        if (iterator_past_territory != territories.end()) {
+                            (*iterator_past_territory)->addAdjacentTerritory(*iterator_adjacent_territory);
+                        }
+                    } else {
+                        auto* map_file_line_adjacent_territory = new Territory(map_territory_id, map_file_line, continent);
+                        territories.push_back(map_file_line_adjacent_territory);
+                        map_territory_id++;
+                        auto iterator_past_territory = find_if(territories.begin(), territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == territory_name; });
+                        if (iterator_past_territory != territories.end()) {
+                            (*iterator_past_territory)->addAdjacentTerritory(map_file_line_adjacent_territory);
+                        }
+                    }
                 }
-
-                // This is the id that tracks the first territory  on each map file line
-                map_file_line_first_territory_id++;
             }
         }
     }
