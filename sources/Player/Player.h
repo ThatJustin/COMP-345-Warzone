@@ -56,12 +56,6 @@ public:
     //Territories for the player to attack
     vector<Territory*> toAttack();
 
-    //Territories from which the army come from
-    Territory* sourceTerritory(Map* map);
-
-    //Territories to send army to
-    Territory* targetTerritory(Map* map);
-
     //Issues an order
     bool issueOrder(Map* map, Player* neutral, vector<Player*> player, Deck* deck, Hand* hand);
 

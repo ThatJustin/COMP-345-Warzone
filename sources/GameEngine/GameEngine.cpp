@@ -258,9 +258,9 @@ void GameEngine::mainGameLoop() {
     while (!hasWinner) {
         changeStateByTransition(GameEngine::GameStart); // goes to assign reinforcement state
 
-        changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
-
-        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
+       changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
+        cout << endl;
+//        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
     }
 }
 

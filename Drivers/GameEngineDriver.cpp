@@ -96,7 +96,6 @@ void testMainGameLoop() {
     LogObserver* logObserver = new LogObserver();
     GameEngine* gameEngine = new GameEngine(logObserver);
 
-    Continent* continent = new Continent();
 
     Player* player1 = new Player("Rickky Bobby");
     Player* player2 = new Player("Buddy TheElf");
@@ -104,7 +103,7 @@ void testMainGameLoop() {
     gameEngine->addPlayer(player1);
     gameEngine->addPlayer(player2);
     gameEngine->addPlayer(player3);
-//
+
 //    Territory* t1 = new Territory(0, "territory1", player1);
 //    Territory* t2 = new Territory(1, "territory2", player2);
 //    Territory* t3 = new Territory(2, "territory3", player3);
@@ -149,15 +148,14 @@ void testMainGameLoop() {
 //    territories.push_back(t3);
 //    territories.push_back(t4);
 //    territories.push_back(t5);
-//
+
 //    vector<Continent*> cont = vector<Continent*>();
 //    cont.push_back(continent);
-//
-//    Map* map = new Map(territories, cont);
+    // End of test data
+
     auto* mapLoader = new MapLoader();
     Map* map = mapLoader->loadMap("./Map Files/Aden.map");
     gameEngine->setGameMap(map);
-    // End of test data
     gameEngine->gameStart();
 
     cout << endl;

@@ -107,10 +107,11 @@ vector<Territory*> Player::toAttack() {
     vector<Territory*> attackTerritories;
 
     //for all territory
-    for (Territory* terrritory: getTerritories()) {
+    for (Territory* ter: getTerritories()) {
 
         //check if the territory is adjacent
-        for (Territory* adjacent: terrritory->getAdjacentTerritories()) {
+        for (Territory* adjacent: ter->getAdjacentTerritories()) {
+            cout << adjacent << endl;
             cout << "[debug] adjacent owner " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
             //if does not belong to the same player
             if (adjacent->getTerritoryOwner()->getPlayerName() != this->getPlayerName() &&
