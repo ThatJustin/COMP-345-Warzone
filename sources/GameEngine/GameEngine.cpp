@@ -260,7 +260,7 @@ void GameEngine::mainGameLoop() {
 
         changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
 
-      //  changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
+        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
     }
 }
 
@@ -955,7 +955,7 @@ void IssueOrders::enterState() {
     //call the player issue order method to add order in their order list
     for (Player* player: this->gameEngine->getGamePlayers()) {
         if (!player->getTerritories().empty()) {
-            player->issueOrder(map, gameEngine->getNeutralPlayer(), this->gameEngine->getGamePlayers(), deck, hand);
+            player->issueOrder(gameEngine->gameMap, gameEngine->getNeutralPlayer(), this->gameEngine->getGamePlayers(), gameEngine->getDeck(), player->getHandCards());
         }
     }
     cout << endl;
@@ -1031,7 +1031,7 @@ ExecuteOrders::~ExecuteOrders() {
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
     for (Player* player: gameEngine->getGamePlayers()) {
-        for (int i = 0; i < player->getOrdersList()->getOrdersList().size(); i++) {
+        for (int i = 0; i < player->getOrdersList()->getOrdersList().size() - 1; i++) {
             Orders* orders = player->getOrdersList()->getOrdersList().at(i);
             //This assumes the first order in the orderlist is a Deploy order which it MUST BE
             orders->execute();
@@ -1048,18 +1048,16 @@ void ExecuteOrders::enterState() {
     }
     //remove them
     for (Player* player: playersToRemove) {
+        cout << player->getPlayerName() << " has no more territories and is removed from the game." << endl;
         gameEngine->getGamePlayers().erase(
                 std::remove(gameEngine->getGamePlayers().begin(), gameEngine->getGamePlayers().end(), player),
                 gameEngine->getGamePlayers().end());
     }
+    //Check if there's a winner (1 player left)
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
         this->gameEngine->changeStateByTransition(GameEngine::Win);
     }
-    //Check if there's a winner (1 player left)
-
-
-
     cout << endl;
 }
 

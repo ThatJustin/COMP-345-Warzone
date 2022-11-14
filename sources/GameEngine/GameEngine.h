@@ -282,9 +282,6 @@ public:
     friend ostream& operator<<(ostream& stream, const AssignReinforcement& assignReinforcement);
 
     AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
-
-    //Map
-    Map* map = nullptr;
 };
 
 class IssueOrders : public GameState {
@@ -307,12 +304,6 @@ public:
     friend ostream& operator<<(ostream& stream, const IssueOrders& issueOrders);
 
     IssueOrders& operator=(const IssueOrders& issueOrders);
-
-    Map* map = nullptr;
-
-    Deck* deck = nullptr;
-
-    Hand* hand = nullptr;
 };
 
 class ExecuteOrders : public GameState {

@@ -8,6 +8,7 @@
 #include <vector>
 #include <time.h>
 #include <random>
+
 /**
  * Default constructor.
  */
@@ -139,7 +140,6 @@ vector<Territory*> Player::toDefend() {
 }
 
 
-
 /**
  * Issues an order during the payer issue order phase.
  * OrderIssuingPhase:
@@ -191,28 +191,29 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
 
     std::random_device rd3; // obtain a random number from hardware
     std::mt19937 gen3(rd3()); // seed the generator
-    std::uniform_int_distribution<> distToDefend(0, this->toDefend().size()); // define the range
-
+    std::uniform_int_distribution<> distToDefend(1, this->toDefend().size()); // define the range
     std::random_device rd4; // obtain a random number from hardware
     std::mt19937 gen4(rd4()); // seed the generator
-    std::uniform_int_distribution<> distToAttack(0, this->toAttack().size()); // define the range
+    std::uniform_int_distribution<> distToAttack(1, this->toAttack().size()); // define the range
 
     for (Territory* territory: this->toDefend()) {
-        if(toDefendRandom(gen1)){
-            Territory* source = toDefend().at(distToDefend(gen3)); // source is first to defend
-            Orders* advance_order = new Advance(this,reinforcementPoolUnits,source,territory,deck);
-            this->ordersList->addOrder(advance_order);
+        if (toDefendRandom(gen1)) {
+            Territory* source = toDefend().at(distToDefend(gen3) - 1); // source is first to defend
+            if (source->getMapTerritoryId() != territory->getMapTerritoryId()) {
+                Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck);
+                this->ordersList->addOrder(advance_order);
+            }
         }
     }
     for (Territory* territory: this->toAttack()) {
-        if(toAttackRandom(gen2)){
-            Territory* source = toAttack().at(distToAttack(gen4)); // source is first to defend
-            Orders* advance_order = new Advance(this,reinforcementPoolUnits,source,territory,deck);
-            this->ordersList->addOrder(advance_order);
+        if (toAttackRandom(gen2)) {
+            Territory* source = toAttack().at(distToAttack(gen4) - 1); // source is first to defend
+            if (source->getMapTerritoryId() != territory->getMapTerritoryId()) {
+                Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck);
+                this->ordersList->addOrder(advance_order);
+            }
         }
     }
-
-
 
     //Use one card every issue order phase if they have a card
     if (!this->getHandCards()->getCards().empty()) {
