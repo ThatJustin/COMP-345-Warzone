@@ -112,7 +112,8 @@ vector<Territory*> Player::toAttack() {
         for (Territory* adjacent: terrritory->getAdjacentTerritories()) {
 
             //if does not belong to the same player
-            if (adjacent->getTerritoryOwner()->getPlayerName() != this->getPlayerName() && !adjacent->getTerritoryOwner()->checkIsNegotiation(this)) {
+            if (adjacent->getTerritoryOwner()->getPlayerName() != this->getPlayerName() &&
+                !adjacent->getTerritoryOwner()->checkIsNegotiation(this)) {
 
                 //if adjacent territory not already in list
                 if (find(attackTerritories.begin(), attackTerritories.end(), adjacent) == attackTerritories.end()) {
@@ -133,34 +134,11 @@ vector<Territory*> Player::toAttack() {
  */
 vector<Territory*> Player::toDefend() {
     // defend their own territories
+    //Maybe sort them on some sort of logic where it's orders from must defend to least needing to defend
     return this->getTerritories();
 }
 
-//Territories from which the army come from
-Territory* Player::sourceTerritory(Map* map) {
 
-    Territory* source = NULL;
-
-    for (Territory* territory: map->getTerritories()) {
-        source = territory;
-        break;
-    }
-
-    return source;
-}
-
-//Territories to send army to
-Territory* Player::targetTerritory(Map* map) {
-
-    Territory* target = NULL;
-
-    for (Territory* territory: map->getTerritories()) {
-        target = territory;
-        break;
-    }
-
-    return target;
-}
 
 /**
  * Issues an order during the payer issue order phase.
@@ -209,32 +187,36 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
 
     //Use one card every issue order phase if they have a card
     if (!this->getHandCards()->getCards().empty()) {
-        Cards* cardsToPlays = this->getHandCards()->getCards().at(0);
+        Cards* cardsToPlays = this->getHandCards()->getCards().front();
         if (cardsToPlays != nullptr) {
             cout << "Issuing Card Order" << endl;
             Orders* orderToMake = nullptr;
             switch (cardsToPlays->getType()) { // ignore missing for now
                 case BOMB:
                     if (!toAttack().empty()) {
-                        Territory* target = toAttack().at(0);
+                        Territory* target = toAttack().front();
                         orderToMake = new Bomb(this, target);
                     }
                     break;
                 case BLOCKADE:
                     if (!toDefend().empty()) {
-                        Territory* target = toDefend().at(0);
+                        Territory* target = toDefend().front();
                         orderToMake = new Blockade(this, neutral, target);
                     }
                     break;
-//                case AIRLIFT:
-//                    if (!toDefend().empty()) {
-//                        Territory* target = toDefend().at(0);
-//                        orderToMake = new Airlift(this, reinforcementPoolUnits, source, target);
-//                    }
-//                    break;
-//                case DIPLOMACY:
-//                    orderToMake = new Negotiate(this, negotiatePlayer);
-//                    break;
+                case AIRLIFT:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().back(); // target is last to defend
+                        Territory* source = toDefend().front(); // source is first to defend
+                        orderToMake = new Airlift(this, reinforcementPoolUnits, source, target);
+                    }
+                    break;
+                case DIPLOMACY:
+                    if (!toAttack().empty()) {
+                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
+                        orderToMake = new Negotiate(this, negotiatePlayer);
+                    }
+                    break;
             }
             if (orderToMake != nullptr) {
                 //this handles creating the order and removing it from players hand + back to deck
@@ -334,24 +316,6 @@ Player& Player::operator=(const Player& player) {
  */
 void Player::setReinforcementPool(int reinforcementPoolUnits_) {
     this->reinforcementPoolUnits = reinforcementPoolUnits_;
-}
-
-
-/**
- *remove the order from the ordered list
- * @return
- */
-Orders* Player::removeOrder() {
-    //if there is no order in the list return null
-    if (ordersList->getOrdersList().size() == 0) {
-        return nullptr;
-    }
-    //put the order in the orderlist
-    auto orderlist = ordersList->getOrdersList();
-
-    Orders* order = orderlist.at(0);
-    ordersList->remove(0);
-    return order;
 }
 
 int Player::getReinforcementPool() const {
