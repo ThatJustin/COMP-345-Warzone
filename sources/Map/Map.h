@@ -118,8 +118,6 @@ public:
 
     Player *getPlayer();
 
-    void transferTerritory(Player* pPlayer);
-
 private:
     // An integer identifier representing the territory id and the number of armies on the territory
     int map_territory_id, number_of_armies;

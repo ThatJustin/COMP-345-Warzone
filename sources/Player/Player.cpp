@@ -111,7 +111,7 @@ vector<Territory*> Player::toAttack() {
 
         //check if the territory is adjacent
         for (Territory* adjacent: terrritory->getAdjacentTerritories()) {
-
+            cout << "[debug] adjacent owner " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
             //if does not belong to the same player
             if (adjacent->getTerritoryOwner()->getPlayerName() != this->getPlayerName() &&
                 !adjacent->getTerritoryOwner()->checkIsNegotiation(this)) {
@@ -391,16 +391,4 @@ void Player::removeTerritory(Territory* pTerritory) {
             break;
         }
     }
-//    if (pTerritory->getTerritoryOwner() == this) {
-//        int pos = -1;
-//        for (int i = 0; i < territories.size(); ++i) {
-//            if (pTerritory->getMapTerritoryId() == territories[i]->getMapTerritoryId()) {
-//                pos = i;
-//                break;
-//            }
-//        }
-//        if (pos >= 0) {
-//            territories.erase(territories.begin() + pos);
-//        }
-//    }
 }

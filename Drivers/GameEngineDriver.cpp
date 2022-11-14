@@ -160,7 +160,6 @@ void testMainGameLoop() {
     // End of test data
     gameEngine->gameStart();
 
-    player1->getTerritories().at(0)->transferTerritory(player2);
     cout << endl;
     gameEngine->mainGameLoop();
 
