@@ -229,12 +229,12 @@ CardsType& Cards::getType() {
  * @param cardsType
  * @return
  */
-string getNameByCardType(CardsType cardsType) {
+std::string getNameByCardType(CardsType cardsType) {
     switch (cardsType) {
         case BOMB:
             return "bomb";
-        case REINFORCEMENT:
-            return "reinforcement";
+//        case REINFORCEMENT:
+//            return "reinforcement";
         case BLOCKADE:
             return "blockade";
         case AIRLIFT:

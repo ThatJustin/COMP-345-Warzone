@@ -114,8 +114,6 @@ public:
 
     bool isUsingConsole();
 
-    std::vector<Player*> players;
-
     std::vector<Territory*> territories;
 
 // Keep track of the current state
@@ -146,6 +144,10 @@ public:
     bool isPlayerAdded(Player* pPlayer);
 
     void gameStart();
+
+    bool hasWinner = false;
+
+    void setGameMap(Map* pMap);
 };
 
 class GameState {
@@ -281,9 +283,6 @@ public:
 
     AssignReinforcement& operator=(const AssignReinforcement& assignReinforcement);
 
-    //for maingameloop
-    std::vector<Player*> players;
-
     //Map
     Map* map = nullptr;
 };
@@ -308,9 +307,6 @@ public:
     friend ostream& operator<<(ostream& stream, const IssueOrders& issueOrders);
 
     IssueOrders& operator=(const IssueOrders& issueOrders);
-
-    //for maingameloop
-    std::vector<Player*> players;
 
     Map* map = nullptr;
 
@@ -340,7 +336,6 @@ public:
 
     ExecuteOrders& operator=(const ExecuteOrders& executeOrders);
 
-    std::vector<Player*> players;
 };
 
 class Win : public GameState {

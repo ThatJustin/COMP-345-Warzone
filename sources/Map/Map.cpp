@@ -104,7 +104,6 @@ int Continent::getContinentControlBonusValue() {
 }
 
 
-
 /**
  * Accessor for the territories found on the continent
  * @return A vector of territory pointers that point to the territories found on the continent
@@ -124,6 +123,17 @@ void Continent::addTerritory(Territory* territory) {
         }
     }
     this->territories.push_back(territory);
+}
+
+bool Continent::isContinentOwner(const string& playerName) {
+    bool isOwner = true;
+    for (Territory* t: this->getTerritories()) {
+        if (t->getTerritoryOwner()->getPlayerName() != playerName) {
+            isOwner = false;
+            break;
+        }
+    }
+    return isOwner;
 }
 
 /**
@@ -248,6 +258,7 @@ bool Territory::isAdjacent(Territory* t) {
     }
     return false;
 }
+
 /**
  * Mutator for the territory id
  * @param territory_id The id of the territory to set
@@ -469,7 +480,8 @@ void Map::depthFirstSearch(int starting_territory_id, vector<Territory*>& visite
         // Here, I loop through all the adjacent territories of the territory being pointed to by the territory pointer
         // with that specific territory id and checking if those adjacent territories have been visited or not.
         // If they have not, then I call the DFS method recursively on them
-        for (auto& adjacent_territory: this->getTerritoryByTerritoryID(starting_territory_id)->getAdjacentTerritories()) {
+        for (auto& adjacent_territory: this->getTerritoryByTerritoryID(
+                starting_territory_id)->getAdjacentTerritories()) {
             if (find(visited_territories.begin(), visited_territories.end(), adjacent_territory) ==
                 visited_territories.end()) {
                 this->depthFirstSearch(adjacent_territory->getMapTerritoryId(), visited_territories);
@@ -692,7 +704,8 @@ Map* MapLoader::loadMap(const string& map_file_path) {
 
                 // I take a substring of the map file line which corresponds to the continent name then
                 // adding a new continent to the vector of continents with that continent name and its respective control bonus value
-                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('=')), stoi(map_file_line.substr(map_file_line.find('=') + 1))));
+                continents.push_back(new Continent(map_continent_id, map_file_line.substr(0, map_file_line.find('=')),
+                                                   stoi(map_file_line.substr(map_file_line.find('=') + 1))));
                 map_continent_id++;
             }
         }
