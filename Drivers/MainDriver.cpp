@@ -20,11 +20,8 @@ int main(int argc, char** argv) {
 //    cout << "Testing GameEngineDriver StartupPhase" << endl;
 //    testStartupPhase(argc, argv);
 
-    cout << "Testing loadMap" << endl;
-    testLoadMaps();
-
 //    cout << "Testing GameEngineDriver MainGameLoop" << endl;
-//    testMainGameLoop();
+    testMainGameLoop();
 
 //    cout << "Testing OrderDrive" << endl;
 //    testOrderExecution();

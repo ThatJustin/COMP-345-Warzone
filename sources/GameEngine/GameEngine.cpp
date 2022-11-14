@@ -258,9 +258,9 @@ void GameEngine::mainGameLoop() {
     while (!hasWinner) {
         changeStateByTransition(GameEngine::GameStart); // goes to assign reinforcement state
 
-       changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
+        changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
         cout << endl;
-//        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
+        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
     }
 }
 
@@ -955,7 +955,8 @@ void IssueOrders::enterState() {
     //call the player issue order method to add order in their order list
     for (Player* player: this->gameEngine->getGamePlayers()) {
         if (!player->getTerritories().empty()) {
-            player->issueOrder(gameEngine->gameMap, gameEngine->getNeutralPlayer(), this->gameEngine->getGamePlayers(), gameEngine->getDeck(), player->getHandCards());
+            player->issueOrder(gameEngine->gameMap, gameEngine->getNeutralPlayer(), this->gameEngine->getGamePlayers(),
+                               gameEngine->getDeck(), player->getHandCards());
         }
     }
     cout << endl;

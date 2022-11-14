@@ -104,7 +104,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck, bool isMoveAdvance);
 
     ~Advance() override;
 
@@ -139,6 +139,7 @@ private:
     Territory* m_sourceTerritory;
     Territory* m_targetTerritory;
     Deck* m_deck;
+    bool bisMoveAdvance = false;
 };
 
 class Bomb : public Orders {
@@ -315,6 +316,8 @@ public:
     vector<Orders*> getOrdersList();
 
     void displayList();
+
+    void clearOrders();
 };
 
 //free functions
