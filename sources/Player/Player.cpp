@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <time.h>
-
+#include <random>
 /**
  * Default constructor.
  */
@@ -181,7 +181,36 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
     cout << "Out of units to deploy." << endl;
 
     //Advance
+    std::random_device rd1;
+    std::mt19937 gen1(rd1());
+    std::bernoulli_distribution toDefendRandom(0.6);
 
+    std::random_device rd2;
+    std::mt19937 gen2(rd1());
+    std::bernoulli_distribution toAttackRandom(0.4);
+
+    std::random_device rd3; // obtain a random number from hardware
+    std::mt19937 gen3(rd3()); // seed the generator
+    std::uniform_int_distribution<> distToDefend(0, this->toDefend().size()); // define the range
+
+    std::random_device rd4; // obtain a random number from hardware
+    std::mt19937 gen4(rd4()); // seed the generator
+    std::uniform_int_distribution<> distToAttack(0, this->toAttack().size()); // define the range
+
+    for (Territory* territory: this->toDefend()) {
+        if(toDefendRandom(gen1)){
+            Territory* source = toDefend().at(distToDefend(gen3)); // source is first to defend
+            Orders* advance_order = new Advance(this,reinforcementPoolUnits,source,territory,deck);
+            this->ordersList->addOrder(advance_order);
+        }
+    }
+    for (Territory* territory: this->toAttack()) {
+        if(toAttackRandom(gen2)){
+            Territory* source = toAttack().at(distToAttack(gen4)); // source is first to defend
+            Orders* advance_order = new Advance(this,reinforcementPoolUnits,source,territory,deck);
+            this->ordersList->addOrder(advance_order);
+        }
+    }
 
 
 
