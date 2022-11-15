@@ -211,7 +211,6 @@ bool Player::issueOrder(GameEngine* gameEngine) {
         if (toDefendRandom(gen1)) {
             for (Territory* source: this->getTerritories()) {
                 if (source->isAdjacent(territory) &&
-                    territory->getPlayerName() != gameEngine->getNeutralPlayer()->getPlayerName() &&
                     source->getPlayerName() == territory->getPlayerName()) {
                     if (source->getTerritoryName() != territory->getTerritoryName()) {
                         int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
