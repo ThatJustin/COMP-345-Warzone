@@ -66,6 +66,7 @@ public:
 
     Deploy(const Deploy& deploy);
 
+    //Deploy(int numberOfArmyUnits, Territory* targetTerritory, Player* player);
     Deploy(Player* player, int numberOfArmyUnits, Territory* targetTerritory);
 
     ~Deploy() override;
@@ -103,7 +104,7 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck, bool isMoveAdvance);
 
     ~Advance() override;
 
@@ -138,6 +139,7 @@ private:
     Territory* m_sourceTerritory;
     Territory* m_targetTerritory;
     Deck* m_deck;
+    bool bisMoveAdvance = false;
 };
 
 class Bomb : public Orders {
@@ -146,6 +148,7 @@ public:
 
     Bomb(const Bomb& bomb);
 
+    //explicit Bomb(Territory* targetTerritory, Player* player);
     explicit Bomb(Player* player, Territory* targetTerritory);
 
     ~Bomb() override;
@@ -177,6 +180,7 @@ public:
     Blockade();
 
     Blockade(const Blockade& blockade);
+
 
     explicit Blockade(Player* player, Player* neutral, Territory* targetTerritory);
 
@@ -211,6 +215,7 @@ public:
 
     Airlift(const Airlift& airlift);
 
+    //Airlift(int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory, Player* player);
     Airlift(Player* player, int mNumberOfArmyUnits, Territory* mSourceTerritory, Territory* mTargetTerritory);
 
     ~Airlift() override;
@@ -253,6 +258,7 @@ public:
 
     Negotiate(const Negotiate& negotiate);
 
+    //explicit Negotiate(Player* targetPlayer, Player* player);
     explicit Negotiate(Player* player, Player* targetPlayer);
 
     ~Negotiate() override;
@@ -310,6 +316,8 @@ public:
     vector<Orders*> getOrdersList();
 
     void displayList();
+
+    void clearOrders();
 };
 
 //free functions

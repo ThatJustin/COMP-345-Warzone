@@ -119,21 +119,23 @@ void testOrderExecution() {
     /** Advance */
 
     cout << "Testing invalid advance order (invalid advance: territories not adjacent)" << endl;
-    Advance* invalid_advance_1 = new Advance(p1, 12, t1, t2, deck);
+    Advance* invalid_advance_1 = new Advance(p1, 12, t1, t2, deck, true);
     invalid_advance_1->execute();
     cout << endl;
 
     cout << "Testing valid advance order (valid advance: move army between territories)" << endl;
     t1->setNumberOfArmies(20);
     t1_1->setNumberOfArmies(33);
-    Advance* advance_move = new Advance(p1, 12, t1, t1_1, deck);
+    Advance* advance_move = new Advance(p1, 12, t1, t1_1, deck, true);
     advance_move->execute();
     cout << endl;
 
     cout << "Testing successfully conquering a territory" << endl;
     cout << "How many cards are in the deck? " << deck->cardSize() << endl;
     cout << "Who owns t3? " << t3->getPlayerName() << endl;
-    Advance* advance = new Advance(p1, 30, t1, t3, deck);
+    t1->setNumberOfArmies(100);
+    t3->setNumberOfArmies(5);
+    Advance* advance = new Advance(p1, 100, t1, t3, deck, false);
     advance->execute();
     cout << "Who owns t3? " << t3->getPlayerName() << endl;
     cout << "How many cards are in the deck after conquering a territory? " << deck->cardSize() << endl;
@@ -142,7 +144,7 @@ void testOrderExecution() {
     cout << "Testing invalid Advance order (they are negotiating)" << endl;
     p1->setNegotiationWith(t4->getTerritoryOwner());
     t4->getTerritoryOwner()->setNegotiationWith(p1);
-    Advance* advance_negotiate = new Advance(p1, 30, t1, t4, deck);
+    Advance* advance_negotiate = new Advance(p1, 30, t1, t4, deck, false);
     advance_negotiate->execute();
     cout << endl;
 

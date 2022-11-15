@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "sources/Player/Player.h"
+#include "sources/Orders/Orders.h"
 #include <vector>
 #include <iostream>
 #include "sources/LogObserver/LoggingObserver.h"
@@ -8,6 +10,10 @@
 using namespace std;
 
 class Player;
+
+//for part 3
+class Map;
+class OrdersList;
 
 class GameState;
 
@@ -78,6 +84,9 @@ public:
     //Keep track of the current param for loadmap/addplayer
     string commandParam;
 
+    //The players playing max 2-6
+    std::vector<Player*> gamePlayers;
+
     CommandProcessor* getCommandProcessor() const;
 
     //All valid transitions
@@ -108,14 +117,13 @@ public:
 
     bool isUsingConsole();
 
+    std::vector<Territory*> territories;
+
 // Keep track of the current state
     GameState* currentGameState;
 
     //The map the game engine is using.
     Map* gameMap;
-
-    //The players playing max 2-6
-    std::vector<Player*> gamePlayers;
 
     Deck* deck;
 
@@ -136,6 +144,16 @@ public:
     bool isPlayerAdded(Player* pPlayer);
 
     void gameStart();
+
+    bool hasWinner = false;
+
+    void setGameMap(Map* pMap);
+
+    void removePlayer(Player* pPlayer);
+
+    void setDemo(bool b);
+
+    bool bIsDemo = false;
 };
 
 class GameState {
@@ -314,6 +332,7 @@ public:
     friend ostream& operator<<(ostream& stream, const ExecuteOrders& executeOrders);
 
     ExecuteOrders& operator=(const ExecuteOrders& executeOrders);
+
 };
 
 class Win : public GameState {

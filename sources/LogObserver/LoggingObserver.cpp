@@ -58,7 +58,9 @@ void Subject::detach(Observer* obs) {
  */
 void Subject::notify(ILoggable* i_loggable) {
     for (auto& observer: *observers) {
-        observer->update(i_loggable);
+        if (observer != nullptr) {
+            observer->update(i_loggable);
+        }
     }
 }
 

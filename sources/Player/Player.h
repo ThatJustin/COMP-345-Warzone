@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "sources/Orders/Orders.h"
 
 using namespace std;
 
@@ -12,6 +13,12 @@ class Territory;
 class OrdersList;
 
 class Hand;
+
+class Map;
+
+class Deck;
+
+class GameEngine;
 
 class Player {
 public:
@@ -52,7 +59,7 @@ public:
     vector<Territory*> toAttack();
 
     //Issues an order
-    bool issueOrder();
+    bool issueOrder(GameEngine* gameEngine);
 
     //Adds a territory to be owned by player
     void addTerritory(Territory* territory);
@@ -70,6 +77,10 @@ public:
     void setNegotiationWith(Player *player);
 
     bool checkIsNegotiation(Player* player);
+
+    void useOrders();
+
+    void removeTerritory(Territory* pTerritory);
 
 private:
     //Collection of territories

@@ -3,6 +3,12 @@
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
+#include "../GameEngine/GameEngine.h"
+#include <set>
+#include <algorithm>
+#include <vector>
+#include <time.h>
+#include <random>
 
 /**
  * Default constructor.
@@ -91,56 +97,209 @@ Hand* Player::getHandCards() {
     return handCards;
 }
 
-/**
- * Returns a vector of territories (pointer) the player defends.
- * @return vector territories
- */
-vector<Territory*> Player::toDefend() {
-    // For now return an arbitrary list of territories to defend
-    vector<Territory*> defendTerritories;
-    auto* territory1 = new Territory(1, "Plule", this);
-    auto* territory2 = new Territory(2, "Woflington", this);
-    auto* territory3 = new Territory(3, "Chuih Cha", this);
-    auto* territory4 = new Territory(4, "Soscele", this);
-    defendTerritories.push_back(territory1);
-    defendTerritories.push_back(territory2);
-    defendTerritories.push_back(territory3);
-    defendTerritories.push_back(territory4);
-    return defendTerritories;
-}
 
 /**
  * Returns a vector of territories (pointer) the player will attack.
  * @return vector territories
  */
 vector<Territory*> Player::toAttack() {
-    // For now return an arbitrary list of territories to attack
+
     vector<Territory*> attackTerritories;
-    auto* territory1 = new Territory(5, "Voflein", this);
-    auto* territory2 = new Territory(6, "Ocrax", this);
-    auto* territory3 = new Territory(7, "Tewhuicia Caskein", this);
-    auto* territory4 = new Territory(8, "Eshana", this);
-    attackTerritories.push_back(territory1);
-    attackTerritories.push_back(territory2);
-    attackTerritories.push_back(territory3);
-    attackTerritories.push_back(territory4);
+    // Get all adjacent territories ties that aren't owned by the player.
+    for (Territory* ter: getTerritories()) {
+        //check if the territory is adjacent
+        for (Territory* adjacent: ter->getAdjacentTerritories()) {
+            if (adjacent->getTerritoryOwner()->getPlayerName() != ter->getTerritoryOwner()->getPlayerName()) {
+                //if adjacent territory not already in list
+                if (!(find(attackTerritories.begin(), attackTerritories.end(), adjacent) != attackTerritories.end())) {
+                    //add to the list of territories that can be attacked
+                    attackTerritories.push_back(adjacent);
+                }
+            }
+        }
+    }
+    // Similar to toDefend, but the opposite, but sort based on the lowest, so it's easier to kill
+    sort(attackTerritories.begin(), attackTerritories.end(),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() < b->getNumberOfArmies();
+         });
     return attackTerritories;
 }
 
 /**
+ * Returns a vector of territories (pointer) the player defends.
+ * @return vector territories
+ */
+vector<Territory*> Player::toDefend() {
+    // Try sorting them based on army count, return territories with the most units,
+    // they are your strongest territory and might win the game for the player
+    vector<Territory*> territoriesToDefend = getTerritories();
+    sort(begin(territoriesToDefend), end(territoriesToDefend),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() >
+                    b->getNumberOfArmies();
+         });
+    return territoriesToDefend;
+
+}
+
+
+/**
  * Issues an order during the payer issue order phase.
- *
+ * OrderIssuingPhase:
+ * 1.The player decides which neighboring territories are to be attacked in priority
+    (as a list return by the toAttack() method),
+    and which of their own territories are to be defended in priority (as a list returned by the toDefend() method).
+ * 2.The player issues deploy orders on its own territories that are in the list returned by toDefend().
+    As long as the player has army units in their reinforcement pool (see startup phase and reinforcement phase),
+    it will issue a deploy order and no other order. Once it has deployed all its available army units, it can proceed with other kinds of orders.
+ * 3.The player issues advance orders to either (1) move army units from one of its own territory to another of its own territories in order to defend it
+    (using toDefend() to make the decision), and/or (2) move army units from one of its own territories to a neighboring enemy territory to attack them
+    (using toAttack() to make the decision).
+ * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder() {
+bool Player::issueOrder(GameEngine* gameEngine) {
+    //Keep issuing deploy orders until no more units in reinforcement pool
 
-    //For testing purposes in assignment 1, will create an order and issue it
-    Orders* bomb = new Bomb();
-    Orders* airlift = new Airlift();
-    Orders* negotiate = new Negotiate();
-    this->ordersList->addOrder(bomb);
-    this->ordersList->addOrder(airlift);
-    this->ordersList->addOrder(negotiate);
+    //We do not want to modify actual pool here, it's done during the deploy order execution
+    int reinforcementPoolCount = getReinforcementPool();
+
+    while (reinforcementPoolCount > 0) {
+        srand(time(NULL));
+        for (Territory* territory: this->toDefend()) {
+            if (reinforcementPoolCount == 0) {
+                goto noMoreReinforcementPool;
+            }
+            int countToDeploy = (rand() % reinforcementPoolCount) + 1;
+            if ((reinforcementPoolCount - countToDeploy) < 0) {
+                //the remaining
+                countToDeploy = reinforcementPoolCount;
+            }
+
+            cout << "Issuing Deploy Order for " << countToDeploy << " units to territory "
+                 << territory->getTerritoryName() << ".";
+            Orders* orders = new Deploy(this, countToDeploy, territory);
+            this->ordersList->addOrder(orders);
+            reinforcementPoolCount -= countToDeploy;
+            cout << " Remaining units in pool " << reinforcementPoolCount << "." << endl;
+        }
+    }
+    noMoreReinforcementPool:
+
+    cout << "Out of units to deploy." << endl;
+
+    //Advance
+    std::random_device rd1;
+    std::mt19937 gen1(rd1());
+    std::bernoulli_distribution toDefendRandom(0.9);
+
+    std::random_device rd2;
+    std::mt19937 gen2(rd1());
+    std::bernoulli_distribution toAttackRandom(0.9);
+
+    std::random_device rd3; // obtain a random number from hardware
+    std::mt19937 gen3(rd3()); // seed the generator
+    std::uniform_int_distribution<> distToDefend(1, this->toDefend().size()); // define the range
+    std::random_device rd4; // obtain a random number from hardware
+    std::mt19937 gen4(rd4()); // seed the generator
+    std::uniform_int_distribution<> distToAttack(1, this->toAttack().size()); // define the range
+    vector<Territory*> territoriesToDefend = toDefend();
+    vector<Territory*> territoriesToAttack = toAttack();
+    int defendCounter = 0;
+    srand(time(NULL));
+    int maxDefendCount = (rand() % 5) + 1;
+    for (Territory* territory: territoriesToDefend) {
+        if (toDefendRandom(gen1)) {
+            for (Territory* source: this->getTerritories()) {
+                if (source->isAdjacent(territory)) {
+                    if (source->getTerritoryName() != territory->getTerritoryName()) {
+                        int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
+
+                        Orders* advance_order = new Advance(this, armyCountToMove, source, territory,
+                                                            gameEngine->getDeck(),
+                                                            true);
+                        this->getOrdersList()->addOrder(advance_order);
+                        cout << "Issuing Advance order to move player army. " << defendCounter << endl;
+                        defendCounter++;
+                        if (defendCounter == maxDefendCount) {
+                            cout << "Reached the maximum " << maxDefendCount << " move advance orders." << endl;
+                            goto finishedMoveAdv;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    finishedMoveAdv:
+    int attackCounter = 0;
+    srand(time(NULL));
+    int maxAttackCount = (rand() % 5) + 5;
+    for (Territory* territory: territoriesToAttack) {
+        if (toAttackRandom(gen2)) {
+
+            // This is a territory that is adjacent to my own, but first we need to find which the adjacent one is
+            for (Territory* source: this->getTerritories()) {
+                if (source->isAdjacent(territory) &&
+                    source->getPlayerName() != territory->getPlayerName()) {
+                    if (source->getTerritoryName() != territory->getTerritoryName()) {
+                        int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
+                        Orders* advance_order = new Advance(this, armyCountToMove, source, territory,
+                                                            gameEngine->getDeck(),
+                                                            false);
+                        this->getOrdersList()->addOrder(advance_order);
+                        cout << "Issuing Advance order to attack target army. " << attackCounter << endl;
+                        attackCounter++;
+                        if (attackCounter == maxAttackCount) {
+                            cout << "Reached the maximum " << maxAttackCount << " attack advance orders." << endl;
+                            goto finishAdvAttack;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    finishAdvAttack:
+    //Use one card every issue order phase if they have a card
+    if (!this->getHandCards()->getCards().empty()) {
+        Cards* cardsToPlays = this->getHandCards()->getCards().front();
+        if (cardsToPlays != nullptr) {
+            cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
+            Orders* orderToMake = nullptr;
+            switch (cardsToPlays->getType()) { // ignore missing for now
+                case BOMB:
+                    if (!toAttack().empty()) {
+                        Territory* target = toAttack().front();
+                        orderToMake = new Bomb(this, target);
+                    }
+                    break;
+                case BLOCKADE:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().front();
+                        orderToMake = new Blockade(this, gameEngine->getNeutralPlayer(), target);
+                    }
+                    break;
+                case AIRLIFT:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().back(); // target is last to defend
+                        Territory* source = toDefend().front(); // source is first to defend
+                        orderToMake = new Airlift(this, reinforcementPoolUnits, source, target);
+                    }
+                    break;
+                case DIPLOMACY:
+                    if (!toAttack().empty()) {
+                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
+                        orderToMake = new Negotiate(this, negotiatePlayer);
+                    }
+                    break;
+            }
+            if (orderToMake != nullptr) {
+                //this handles creating the order and removing it from players hand + back to deck
+                cardsToPlays->play(this, gameEngine->getDeck(), orderToMake);
+            }
+        }
+    }
     return true;
 }
 
@@ -226,23 +385,44 @@ Player& Player::operator=(const Player& player) {
     this->territories = player.territories;
     return *this;
 }
+
 /**
  * Sets the initial army units for the player.
  * @param reinforcementPoolUnits
  */
 void Player::setReinforcementPool(int reinforcementPoolUnits_) {
+    if (reinforcementPoolUnits_ < 0) {
+        cout << endl;
+    }
     this->reinforcementPoolUnits = reinforcementPoolUnits_;
 }
 
-int Player::getReinforcementPool() const{
+int Player::getReinforcementPool() const {
     return this->reinforcementPoolUnits;
 }
 
-void Player::setNegotiationWith(Player* player){
+void Player::setNegotiationWith(Player* player) {
     this->isNegotiationWith = player;
 }
 
-bool Player::checkIsNegotiation(Player* player){
+bool Player::checkIsNegotiation(Player* player) {
 //    cout << (this->isNegotiationWith == player) << endl;
     return this->isNegotiationWith == player;
+}
+
+void Player::useOrders() {
+    for (int i = 0; i < getOrdersList()->getOrdersList().size(); i++) {
+        ordersList->getOrdersList().at(i)->execute();
+    }
+    getOrdersList()->clearOrders();
+    cout << endl;
+}
+
+void Player::removeTerritory(Territory* pTerritory) {
+    for (int i = 0; i < this->territories.size(); ++i) {
+        if (pTerritory->getTerritoryName() == this->territories.at(i)->getTerritoryName()) {
+            this->territories.erase(this->territories.begin() + i);
+            break;
+        }
+    }
 }

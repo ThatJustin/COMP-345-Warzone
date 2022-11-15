@@ -1,7 +1,9 @@
 #include "GameEngine.h"
+#include "../Map/Map.h"
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include "math.h"
 #include "CommandProcessor.h"
 #include "sources/Map/Map.h"
 #include "sources/Player/Player.h"
@@ -218,8 +220,7 @@ void GameEngine::startupPhase() {
 
     changeStateByTransition(StartGame);
 
-    bool runningStartupPhase = true;
-    while (runningStartupPhase) {
+    while (true) {
         string curStateName = this->getCurrentGameState()->name;
         Command* c = this->commandProcessor->getCommand(curStateName);
         if (c == nullptr) {
@@ -235,6 +236,7 @@ void GameEngine::startupPhase() {
             this->commandParam = c->getParam();
             changeStateByTransition(AddPlayer);
         } else if (c->getTransitionName() == "gamestart") {
+            //Maingameloop is called after gameStart
             gameStart();
         } else if (c->getTransitionName() == "replay") {
             prepareForReplay();
@@ -252,8 +254,14 @@ void GameEngine::startupPhase() {
  * The valid transitions are IssueOrder, IssueOrdersEnd, Execorder, Endexecorders, Win
  */
 void GameEngine::mainGameLoop() {
-    // When this function is called, you are already in the AssignReinforcement state
+    //When this function is called, you are already in the AssignReinforcement state
+    while (!hasWinner) {
+        changeStateByTransition(GameEngine::GameStart); // goes to assign reinforcement state
 
+        changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
+        cout << endl;
+        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
+    }
 }
 
 /**
@@ -268,7 +276,7 @@ void GameEngine::prepareForReplay() {
     gamePlayers.clear();
     delete deck;
     delete neutral;
-
+    this->hasWinner = false;
     this->commandParam = "";
     this->commandTransitionName = "";
     this->gameMap = nullptr;
@@ -311,11 +319,14 @@ CommandProcessor* GameEngine::getCommandProcessor() const {
 
 void GameEngine::addPlayer(Player* pPlayer) {
     pPlayer->getOrdersList()->attach(observer);
-    this->gamePlayers.push_back(pPlayer);
+    cout << endl;
+    gamePlayers.push_back(pPlayer);
+    cout << endl;
+
 }
 
 vector<Player*> GameEngine::getGamePlayers() {
-    return this->gamePlayers;
+    return gamePlayers;
 }
 
 bool GameEngine::isPlayerAdded(Player* pPlayer) {
@@ -382,9 +393,9 @@ void GameEngine::gameStart() {
             neutral->addTerritory(territory);
         }
     }
-    changeStateByTransition(GameEngine::GameStart);
-    //Once mainGameLoop is called, the game will run by itself until it gets to the win state and then
-    mainGameLoop();
+    //Once mainGameLoop is called, the game will run by itself until it gets to the win state
+//    mainGameLoop();
+    //disable for A2 demo, we'll do it manually in test driver
 }
 
 /**
@@ -415,6 +426,30 @@ void GameEngine::detach(Observer* obs) {
 
 string GameEngine::stringToLog() {
     return "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
+}
+
+void GameEngine::setGameMap(Map* pMap) {
+    this->gameMap = pMap;
+}
+
+void GameEngine::removePlayer(Player* pPlayer) {
+    int pos = -1;
+    for (int i = 0; i < this->gamePlayers.size(); i++) {
+        Player* player = this->gamePlayers.at(i);
+        if (pPlayer->getPlayerName() == player->getPlayerName()) {
+            pos = i;
+            break;
+        }
+    }
+    if (pos >= 0) {
+        cout << endl;
+        gamePlayers.erase(gamePlayers.begin() + pos);
+        cout << endl;
+    }
+}
+
+void GameEngine::setDemo(bool b) {
+    bIsDemo = b;
 }
 
 /**
@@ -758,14 +793,14 @@ void PlayersAdded::enterState() {
  * @return
  */
 bool PlayersAdded::isValidToTransitionAway() {
-    if (gameEngine->gamePlayers.size() < 2 && this->gameEngine->commandTransitionName != "addplayer") {
+    if (gameEngine->getGamePlayers().size() < 2 && this->gameEngine->commandTransitionName != "addplayer") {
         cout << "A minimum of 2 players are required to play this game." << endl;
         return false;
     }
     if (this->gameEngine->commandTransitionName == "addplayer") {
         return true;
     }
-    return gameEngine->gamePlayers.size() >= 2 && gameEngine->gamePlayers.size() <= 6;
+    return gameEngine->getGamePlayers().size() >= 2 && gameEngine->getGamePlayers().size() <= 6;
 }
 
 /**
@@ -825,13 +860,45 @@ AssignReinforcement::~AssignReinforcement() {
 
 /**
  * Handles what happens when entering a specific state.
+ * Phase to give player army:
+ * 1.Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down)._/
+ * 2.If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
+ * 3.In any case, the minimal number of reinforcement army units per turn for any player is 3._/
+ * 4.These army units are placed in the player’s reinforcement pool.-
+ * 5.This must be implemented in a function/method named reinforcementPhase() in the game engine. _/
  */
 void AssignReinforcement::enterState() {
     cout << "Entering " << *this << endl;
-    // Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
+
+    //Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
     this->gameEngine->turnNumber++;
 
-
+    for (Player* player: this->gameEngine->getGamePlayers()) {
+        cout << endl << "AssignReinforcement for player " << player->getPlayerName() << " " << endl;
+        //Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down).
+        int countToAdd = 0;
+        if (!player->getTerritories().empty()) {
+            int terrReinf = (int) std::floor((player->getTerritories().size()) / 3);
+            countToAdd = countToAdd + terrReinf;
+            cout << "Units from territories " << countToAdd << endl;
+        }
+        // If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
+        for (Continent* continent: gameEngine->gameMap->getContinents()) {
+            if (continent->isContinentOwner(player->getPlayerName())) {
+                countToAdd = countToAdd + continent->getContinentControlBonusValue();
+                cout << "Player " << player->getPlayerName() << " owns all territories on continent "
+                     << continent->getContinentName() << " bonus of " << continent->getContinentControlBonusValue()
+                     << " added.";
+            }
+        }
+        //In any case, the minimal number of reinforcement army units per turn for any player is 3.
+        if (countToAdd < 3) {
+            countToAdd = 3;
+        }
+        player->setReinforcementPool(player->getReinforcementPool() + countToAdd);
+        cout << endl << "Total new reinforcement units " << countToAdd << "." << endl;
+    }
+    cout << endl;
 }
 
 /**
@@ -900,11 +967,26 @@ IssueOrders::~IssueOrders() {
 
 /**
  * Handles what happens when entering a specific state.
+ * Phase that Player issue order:
+ * 1.Players issue orders and place them in their order list through a call to the Player::issueOrder() method._/
+ * 2.This method is called in round-robin fashion across all players by the game engine._/
+ * 3.This phase ends when all players have signified that they don’t have any more orders to issue for this turn.
+ * 4.This must be implemented in a function/method named issueOrdersPhase() in the game engine. -
  */
 void IssueOrders::enterState() {
     cout << "Entering " << *this << endl;
+    //Reset anything required to start a neww issue order phase
+    for (Player* player: this->gameEngine->getGamePlayers()) {
+        player->setNegotiationWith(nullptr);
+    }
 
-
+    //call the player issue order method to add order in their order list
+    for (Player* player: this->gameEngine->getGamePlayers()) {
+        if (!player->getTerritories().empty()) {
+            player->issueOrder(gameEngine);
+        }
+    }
+    cout << endl;
 }
 
 /**
@@ -968,11 +1050,44 @@ ExecuteOrders::~ExecuteOrders() {
 
 /**
  * Handles what happens when entering a specific state.
+ * Phase to execute player's order:
+ * 1.Once all the players have signified in the same turn that they are not issuing one more order,_/
+ * the game engine proceeds to execute the top order on the list of orders of each player in a round-robin fashion (i.e. the “Order Execution Phase”—see below).
+ * 2.Once all the players’ orders have been executed, the main game loop goes back to the reinforcement phase._/
+ * 3.This must be implemented in a function/method named executeOrdersPhase() in the game engine._/
  */
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
-
-
+    if (gameEngine->bIsDemo) {
+        cout << "Skipping using orders for demo purpose." << endl;
+    } else {
+        for (Player* player: gameEngine->getGamePlayers()) {
+            player->useOrders();
+        }
+    }
+    cout << endl;
+    vector<Player*> playersToRemove = vector<Player*>();
+    // Check if anyone owns 0 territories
+    for (Player* player: gameEngine->getGamePlayers()) {
+        if (player->getTerritories().empty()) {
+            playersToRemove.push_back(player);
+            cout << endl;
+        }
+    }
+    //remove them
+    for (Player* player: playersToRemove) {
+        cout << player->getPlayerName() << " has no more territories and is removed from the game." << endl;
+        gameEngine->removePlayer(player);
+        cout << endl;
+    }
+    playersToRemove.clear();
+    cout << endl;
+    //Check if there's a winner (1 player left)
+    if (gameEngine->getGamePlayers().size() == 1) {
+        gameEngine->hasWinner = true;
+        this->gameEngine->changeStateByTransition(GameEngine::Win);
+    }
+    cout << endl;
 }
 
 /**
@@ -1043,6 +1158,8 @@ Win::~Win() {
  */
 void Win::enterState() {
     cout << "Entering " << *this << endl;
+
+    cout << "Player " << gameEngine->getGamePlayers().at(0)->getPlayerName() << " has won the game!" << endl;
 
 }
 

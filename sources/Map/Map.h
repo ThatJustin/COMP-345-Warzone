@@ -41,6 +41,11 @@ public:
     // Adds a territory to the continent
     void addTerritory(Territory* territory);
 
+    //Returns the name of a player IF they own all territories in the continent
+    bool isContinentOwner(const std::string& playerName);
+
+    void setContinentControlBonusValue(int continentControlBonusValue);
+
 private:
     // An integer identifier representing the continent id
     int map_continent_id;
@@ -99,6 +104,9 @@ public:
     // Accessor for the pointer to the continent the territory belongs to
     Continent* getContinent();
 
+    // Mutator for the pointer to the continent the territory belongs to
+    void setContinent(Continent* a_continent);
+
     // Accessor for the pointer to the player that owns the territory
     Player* getTerritoryOwner();
 
@@ -115,6 +123,8 @@ public:
 
     Player *getPlayer();
 
+    Territory* getClosestSourceTerritory(Player* pPlayer);
+
 private:
     // An integer identifier representing the territory id and the number of armies on the territory
     int map_territory_id, number_of_armies;
@@ -130,7 +140,6 @@ private:
 
     // A pointer to the player that owns the territory
     Player* player;
-
 
 
 };
