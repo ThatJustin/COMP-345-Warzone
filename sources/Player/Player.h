@@ -18,6 +18,8 @@ class Map;
 
 class Deck;
 
+class GameEngine;
+
 class Player {
 public:
     //Constructor
@@ -57,7 +59,7 @@ public:
     vector<Territory*> toAttack();
 
     //Issues an order
-    bool issueOrder(Map* map, Player* neutral, vector<Player*> player, Deck* deck, Hand* hand);
+    bool issueOrder(GameEngine* gameEngine);
 
     //Adds a territory to be owned by player
     void addTerritory(Territory* territory);
@@ -70,18 +72,11 @@ public:
 
     void setReinforcementPool(int reinforcementPoolUnits);
 
-    //remove the order
-    Orders* removeOrder();
-
-    //list of players
-
     int getReinforcementPool() const;
 
     void setNegotiationWith(Player *player);
 
     bool checkIsNegotiation(Player* player);
-
-    void removeOrders();
 
     void useOrders();
 

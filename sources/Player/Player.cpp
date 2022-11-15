@@ -3,6 +3,7 @@
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
+#include "../GameEngine/GameEngine.h"
 #include <set>
 #include <algorithm>
 #include <vector>
@@ -103,29 +104,25 @@ Hand* Player::getHandCards() {
  */
 vector<Territory*> Player::toAttack() {
 
-    //create list of attack territories
     vector<Territory*> attackTerritories;
-
-    //for all territory
+    // Get all adjacent territories ties that aren't owned by the player.
     for (Territory* ter: getTerritories()) {
-
         //check if the territory is adjacent
         for (Territory* adjacent: ter->getAdjacentTerritories()) {
-//            cout << adjacent << endl;
-//            cout << "[debug] adjacent owner " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
-            //if does not belong to the same player
-            if (adjacent->getTerritoryOwner()->getPlayerName() != ter->getTerritoryOwner()->getPlayerName() &&
-                !adjacent->getTerritoryOwner()->checkIsNegotiation(this)) {
-
+            if (adjacent->getTerritoryOwner()->getPlayerName() != ter->getTerritoryOwner()->getPlayerName()) {
                 //if adjacent territory not already in list
                 if (!(find(attackTerritories.begin(), attackTerritories.end(), adjacent) != attackTerritories.end())) {
-
                     //add to the list of territories that can be attacked
                     attackTerritories.push_back(adjacent);
                 }
             }
         }
     }
+    // Similar to toDefend, but the opposite, but sort based on the lowest, so it's easier to kill
+    sort(attackTerritories.begin(), attackTerritories.end(),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() < b->getNumberOfArmies();
+         });
     return attackTerritories;
 }
 
@@ -134,14 +131,12 @@ vector<Territory*> Player::toAttack() {
  * @return vector territories
  */
 vector<Territory*> Player::toDefend() {
-    // Old
-//    return this->getTerritories();
-
-    // Try sorting them based on army count, return territories with the least amount of units
+    // Try sorting them based on army count, return territories with the most units,
+    // they are your strongest territory and might win the game for the player
     vector<Territory*> territoriesToDefend = getTerritories();
     sort(begin(territoriesToDefend), end(territoriesToDefend),
          [](Territory* a, Territory* b) -> bool {
-             return a->getNumberOfArmies() <
+             return a->getNumberOfArmies() >
                     b->getNumberOfArmies();
          });
     return territoriesToDefend;
@@ -164,7 +159,7 @@ vector<Territory*> Player::toDefend() {
  * 4.The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
  * @return
  */
-bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck* deck, Hand* hand) {
+bool Player::issueOrder(GameEngine* gameEngine) {
     //Keep issuing deploy orders until no more units in reinforcement pool
 
     //We do not want to modify actual pool here, it's done during the deploy order execution
@@ -174,7 +169,7 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
         srand(time(NULL));
         for (Territory* territory: this->toDefend()) {
             if (reinforcementPoolCount == 0) {
-               goto noMoreReinforcementPool;
+                goto noMoreReinforcementPool;
             }
             int countToDeploy = (rand() % reinforcementPoolCount) + 1;
             if ((reinforcementPoolCount - countToDeploy) < 0) {
@@ -197,11 +192,11 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
     //Advance
     std::random_device rd1;
     std::mt19937 gen1(rd1());
-    std::bernoulli_distribution toDefendRandom(0.6);
+    std::bernoulli_distribution toDefendRandom(0.4);
 
     std::random_device rd2;
     std::mt19937 gen2(rd1());
-    std::bernoulli_distribution toAttackRandom(0.4);
+    std::bernoulli_distribution toAttackRandom(0.8);
 
     std::random_device rd3; // obtain a random number from hardware
     std::mt19937 gen3(rd3()); // seed the generator
@@ -209,17 +204,20 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
     std::random_device rd4; // obtain a random number from hardware
     std::mt19937 gen4(rd4()); // seed the generator
     std::uniform_int_distribution<> distToAttack(1, this->toAttack().size()); // define the range
-
-    int maxDefendCount = 0;
     vector<Territory*> territoriesToDefend = toDefend();
-
+    vector<Territory*> territoriesToAttack = toAttack();
+    int maxDefendCount = 0;
     for (Territory* territory: territoriesToDefend) {
         if (toDefendRandom(gen1)) {
             for (Territory* source: this->getTerritories()) {
-                if (source->isAdjacent(territory) && territory->getPlayerName() != neutral->getPlayerName() &&
+                if (source->isAdjacent(territory) &&
+                    territory->getPlayerName() != gameEngine->getNeutralPlayer()->getPlayerName() &&
                     source->getPlayerName() == territory->getPlayerName()) {
                     if (source->getTerritoryName() != territory->getTerritoryName()) {
-                        Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck,
+                        int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
+
+                        Orders* advance_order = new Advance(this, armyCountToMove, source, territory,
+                                                            gameEngine->getDeck(),
                                                             true);
                         this->getOrdersList()->addOrder(advance_order);
                         maxDefendCount++;
@@ -233,21 +231,19 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
         }
     }
     int maxAttackCount = 0;
-    vector<Territory*> territoriesToAttack = toAttack();
+
     for (Territory* territory: territoriesToAttack) {
         if (toAttackRandom(gen2)) {
 
             // This is a territory that is adjacent to my own, but first we need to find which the adjacent one is
             for (Territory* source: this->getTerritories()) {
-                if (source->isAdjacent(territory) && territory->getPlayerName() != neutral->getPlayerName() &&
+                if (source->isAdjacent(territory) &&
+                    territory->getPlayerName() != gameEngine->getNeutralPlayer()->getPlayerName() &&
                     source->getPlayerName() != territory->getPlayerName()) {
-
-                    cout << " Size of toAttack " << toAttack().size() << " picking index of " << distToAttack(gen4)
-                         << endl;
-//                    Territory* source = toAttack().at(distToAttack(gen4) - 1); // source is first to defend
-                    cout << "It is adjacent? " << source->isAdjacent(territory) << endl;
                     if (source->getTerritoryName() != territory->getTerritoryName()) {
-                        Orders* advance_order = new Advance(this, reinforcementPoolUnits, source, territory, deck,
+                        int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
+                        Orders* advance_order = new Advance(this, armyCountToMove, source, territory,
+                                                            gameEngine->getDeck(),
                                                             false);
                         this->getOrdersList()->addOrder(advance_order);
                         maxAttackCount++;
@@ -260,46 +256,47 @@ bool Player::issueOrder(Map* map, Player* neutral, vector<Player*> players, Deck
             }
         }
     }
+
     breakout:
     //Use one card every issue order phase if they have a card
-//    if (!this->getHandCards()->getCards().empty()) {
-//        Cards* cardsToPlays = this->getHandCards()->getCards().front();
-//        if (cardsToPlays != nullptr) {
-//            cout << "Issuing Card Order" << endl;
-//            Orders* orderToMake = nullptr;
-//            switch (cardsToPlays->getType()) { // ignore missing for now
-//                case BOMB:
-//                    if (!toAttack().empty()) {
-//                        Territory* target = toAttack().front();
-//                        orderToMake = new Bomb(this, target);
-//                    }
-//                    break;
-//                case BLOCKADE:
-//                    if (!toDefend().empty()) {
-//                        Territory* target = toDefend().front();
-//                        orderToMake = new Blockade(this, neutral, target);
-//                    }
-//                    break;
-//                case AIRLIFT:
-//                    if (!toDefend().empty()) {
-//                        Territory* target = toDefend().back(); // target is last to defend
-//                        Territory* source = toDefend().front(); // source is first to defend
-//                        orderToMake = new Airlift(this, reinforcementPoolUnits, source, target);
-//                    }
-//                    break;
-//                case DIPLOMACY:
-//                    if (!toAttack().empty()) {
-//                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
-//                        orderToMake = new Negotiate(this, negotiatePlayer);
-//                    }
-//                    break;
-//            }
-//            if (orderToMake != nullptr) {
-//                //this handles creating the order and removing it from players hand + back to deck
-//                cardsToPlays->play(this, deck, orderToMake);
-//            }
-//        }
-//    }
+    if (!this->getHandCards()->getCards().empty()) {
+        Cards* cardsToPlays = this->getHandCards()->getCards().front();
+        if (cardsToPlays != nullptr) {
+            cout << "Issuing Card Order" << endl;
+            Orders* orderToMake = nullptr;
+            switch (cardsToPlays->getType()) { // ignore missing for now
+                case BOMB:
+                    if (!toAttack().empty()) {
+                        Territory* target = toAttack().front();
+                        orderToMake = new Bomb(this, target);
+                    }
+                    break;
+                case BLOCKADE:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().front();
+                        orderToMake = new Blockade(this, gameEngine->getNeutralPlayer(), target);
+                    }
+                    break;
+                case AIRLIFT:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().back(); // target is last to defend
+                        Territory* source = toDefend().front(); // source is first to defend
+                        orderToMake = new Airlift(this, reinforcementPoolUnits, source, target);
+                    }
+                    break;
+                case DIPLOMACY:
+                    if (!toAttack().empty()) {
+                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
+                        orderToMake = new Negotiate(this, negotiatePlayer);
+                    }
+                    break;
+            }
+            if (orderToMake != nullptr) {
+                //this handles creating the order and removing it from players hand + back to deck
+                cardsToPlays->play(this, gameEngine->getDeck(), orderToMake);
+            }
+        }
+    }
     return true;
 }
 
@@ -408,12 +405,6 @@ void Player::setNegotiationWith(Player* player) {
 bool Player::checkIsNegotiation(Player* player) {
 //    cout << (this->isNegotiationWith == player) << endl;
     return this->isNegotiationWith == player;
-}
-
-void Player::removeOrders() {
-    while (this->ordersList->getOrdersList().size() > 0) {
-        ordersList->getOrdersList().pop_back();
-    }
 }
 
 void Player::useOrders() {

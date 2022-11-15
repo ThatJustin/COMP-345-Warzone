@@ -319,11 +319,14 @@ CommandProcessor* GameEngine::getCommandProcessor() const {
 
 void GameEngine::addPlayer(Player* pPlayer) {
     pPlayer->getOrdersList()->attach(observer);
-    this->gamePlayers.push_back(pPlayer);
+    cout << endl;
+    gamePlayers.push_back(pPlayer);
+    cout << endl;
+
 }
 
 vector<Player*> GameEngine::getGamePlayers() {
-    return this->gamePlayers;
+    return gamePlayers;
 }
 
 bool GameEngine::isPlayerAdded(Player* pPlayer) {
@@ -427,6 +430,22 @@ string GameEngine::stringToLog() {
 
 void GameEngine::setGameMap(Map* pMap) {
     this->gameMap = pMap;
+}
+
+void GameEngine::removePlayer(Player* pPlayer) {
+    int pos = -1;
+    for (int i = 0; i < this->gamePlayers.size(); i++) {
+        Player* player = this->gamePlayers.at(i);
+        if (pPlayer->getPlayerName() == player->getPlayerName()) {
+            pos = i;
+            break;
+        }
+    }
+    if (pos >= 0) {
+        cout << endl;
+        gamePlayers.erase(gamePlayers.begin() + pos);
+        cout << endl;
+    }
 }
 
 /**
@@ -770,14 +789,14 @@ void PlayersAdded::enterState() {
  * @return
  */
 bool PlayersAdded::isValidToTransitionAway() {
-    if (gameEngine->gamePlayers.size() < 2 && this->gameEngine->commandTransitionName != "addplayer") {
+    if (gameEngine->getGamePlayers().size() < 2 && this->gameEngine->commandTransitionName != "addplayer") {
         cout << "A minimum of 2 players are required to play this game." << endl;
         return false;
     }
     if (this->gameEngine->commandTransitionName == "addplayer") {
         return true;
     }
-    return gameEngine->gamePlayers.size() >= 2 && gameEngine->gamePlayers.size() <= 6;
+    return gameEngine->getGamePlayers().size() >= 2 && gameEngine->getGamePlayers().size() <= 6;
 }
 
 /**
@@ -849,18 +868,18 @@ void AssignReinforcement::enterState() {
 
     //Increment the turn, this increments each time this state is entered (full circle achieved in maingameloop)
     this->gameEngine->turnNumber++;
-    int countToAdd = 0;
 
     for (Player* player: this->gameEngine->getGamePlayers()) {
         cout << "AssignReinforcement for player " << player->getPlayerName();
         //Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down).
+        int countToAdd = 0;
         if (!player->getTerritories().empty()) {
             countToAdd = countToAdd + (int) std::floor((player->getTerritories().size()) / 3);
         }
         // If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
         for (Continent* continent: gameEngine->gameMap->getContinents()) {
             if (continent->isContinentOwner(player->getPlayerName())) {
-                countToAdd = countToAdd + continent->getContinentControlBonusValue();
+//                countToAdd = countToAdd + continent->getContinentControlBonusValue();
             }
         }
         //In any case, the minimal number of reinforcement army units per turn for any player is 3.
@@ -955,8 +974,7 @@ void IssueOrders::enterState() {
     //call the player issue order method to add order in their order list
     for (Player* player: this->gameEngine->getGamePlayers()) {
         if (!player->getTerritories().empty()) {
-            player->issueOrder(gameEngine->gameMap, gameEngine->getNeutralPlayer(), this->gameEngine->getGamePlayers(),
-                               gameEngine->getDeck(), player->getHandCards());
+            player->issueOrder(gameEngine);
         }
     }
     cout << endl;
@@ -1041,15 +1059,17 @@ void ExecuteOrders::enterState() {
     for (Player* player: gameEngine->getGamePlayers()) {
         if (player->getTerritories().empty()) {
             playersToRemove.push_back(player);
+            cout << endl;
         }
     }
     //remove them
     for (Player* player: playersToRemove) {
         cout << player->getPlayerName() << " has no more territories and is removed from the game." << endl;
-        gameEngine->getGamePlayers().erase(
-                std::remove(gameEngine->getGamePlayers().begin(), gameEngine->getGamePlayers().end(), player),
-                gameEngine->getGamePlayers().end());
+        gameEngine->removePlayer(player);
+        cout << endl;
     }
+    playersToRemove.clear();
+    cout << endl;
     //Check if there's a winner (1 player left)
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
@@ -1126,6 +1146,8 @@ Win::~Win() {
  */
 void Win::enterState() {
     cout << "Entering " << *this << endl;
+
+    cout << "Player " << gameEngine->getGamePlayers().at(0)->getPlayerName() << " has won the game!" << endl;
 
 }
 
