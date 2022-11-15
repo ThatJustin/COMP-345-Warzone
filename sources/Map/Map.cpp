@@ -770,20 +770,20 @@ Map* MapLoader::loadMap(const string& map_file_path) {
                     if (skipped_strings_index == 4) {
                         auto iterator_continent = find_if(continents.begin(), continents.end(), [&](Continent* continent) { return continent->getContinentName() == map_file_line; });
                         if (iterator_continent != continents.end()) {
-                            continent = *iterator_continent;
                             auto iterator_territory = find_if(territories.begin(), territories.end(), [&](Territory* territory) { return territory->getTerritoryName() == territory_name; });
                             if (iterator_territory != territories.end()) {
-                                (*iterator_territory)->setContinent(continent);
-                                continent->addTerritory(*iterator_territory);
-                                continue;
-                            } else {
-                                auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name,
-                                                                                    continent);
-                                territories.push_back(map_file_line_first_territory);
-                                map_territory_id++;
-                                continent->addTerritory(map_file_line_first_territory);
-                                continue;
+                                auto iterator_changed_adjacent_territory = find_if((*iterator_territory)->getAdjacentTerritories().begin(), (*iterator_territory)->getAdjacentTerritories().end(), [&](Territory* adjacent_territory) { return adjacent_territory->getContinent()->getContinentName() == continent->getContinentName(); });
+                                if (iterator_changed_adjacent_territory == (*iterator_territory)->getAdjacentTerritories().end()) {
+                                    (*iterator_territory)->setContinent(*iterator_continent);
+                                    (*iterator_continent)->addTerritory(*iterator_territory);
+                                    continue;
+                                }
                             }
+                            auto* map_file_line_first_territory = new Territory(map_territory_id, territory_name, *iterator_continent);
+                            territories.push_back(map_file_line_first_territory);
+                            map_territory_id++;
+                            (*iterator_continent)->addTerritory(map_file_line_first_territory);
+                            continue;
                         }
                     }
                     if (skipped_strings_index < 4) {
