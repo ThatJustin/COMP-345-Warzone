@@ -6,8 +6,11 @@
 #include "headers/CardsDriver.h"
 #include "headers/CommandProcessingDriver.h"
 #include "headers/LoggingObserverDriver.h"
+#include "sources/Player/Player.h"
 #include <time.h>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 

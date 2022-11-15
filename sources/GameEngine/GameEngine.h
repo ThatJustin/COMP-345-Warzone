@@ -84,6 +84,9 @@ public:
     //Keep track of the current param for loadmap/addplayer
     string commandParam;
 
+    //The players playing max 2-6
+    std::vector<Player*> gamePlayers;
+
     CommandProcessor* getCommandProcessor() const;
 
     //All valid transitions
@@ -122,9 +125,6 @@ public:
     //The map the game engine is using.
     Map* gameMap;
 
-    //The players playing max 2-6
-    std::vector<Player*> gamePlayers;
-
     Deck* deck;
 
     Player* neutral;
@@ -148,6 +148,9 @@ public:
     bool hasWinner = false;
 
     void setGameMap(Map* pMap);
+
+    void removePlayer(Player* pPlayer);
+
 };
 
 class GameState {

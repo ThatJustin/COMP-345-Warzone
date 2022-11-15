@@ -312,14 +312,14 @@ Deploy::~Deploy() {
  * @return true if valid, false otherwise
  */
 bool Deploy::validate() {
-    cout << "[DEBUG] Validating deploy" << endl;
-    cout << "Deploy" << endl;
-    cout << "\tArmy number units: " << this->m_numberOfArmyUnits << endl;
-    if (this->m_targetTerritory != nullptr) {
-        cout << "\tTarget Territory: " << this->m_targetTerritory->getTerritoryName() << endl;
-    } else {
-        cout << "\tTarget Territory: NONE " << endl;
-    }
+//    cout << "[DEBUG] Validating deploy" << endl;
+//    cout << "Deploy" << endl;
+//    cout << "\tArmy number units: " << this->m_numberOfArmyUnits << endl;
+//    if (this->m_targetTerritory != nullptr) {
+//        cout << "\tTarget Territory: " << this->m_targetTerritory->getTerritoryName() << endl;
+//    } else {
+//        cout << "\tTarget Territory: NONE " << endl;
+//    }
     if (m_numberOfArmyUnits < 0) {
         cout << "Deploy Order is invalid. Player cannot deploy a negative number of reinforcement." << endl;
         return false;
@@ -618,6 +618,15 @@ void Advance::execute() {
                 orderResult = "Advance Order successful, territory is conquered: " + player->getPlayerName() +
                               " has conquered " +
                               m_targetTerritory->getTerritoryName() + " from " + target_player->getPlayerName() + ".";
+            } else {
+                //Attack went through, but player didn't win, update the territory army counts
+                m_sourceTerritory->setNumberOfArmies(source_army_count);
+                m_targetTerritory->setNumberOfArmies(target_army_count);
+                cout << "Advance Order end, the fight has ended! " + m_sourceTerritory->getTerritoryName() + " has " +
+                        to_string(source_army_count) + " armies left and " +
+                        m_targetTerritory->getTerritoryName() + " has " + to_string(target_army_count) +
+                        " armies left." << endl;
+                cout << endl;
             }
         }
         notify(this);
