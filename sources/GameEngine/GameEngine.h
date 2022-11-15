@@ -151,6 +151,9 @@ public:
 
     void removePlayer(Player* pPlayer);
 
+    void setDemo(bool b);
+
+    bool bIsDemo = false;
 };
 
 class GameState {

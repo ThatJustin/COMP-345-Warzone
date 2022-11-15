@@ -133,7 +133,9 @@ void testOrderExecution() {
     cout << "Testing successfully conquering a territory" << endl;
     cout << "How many cards are in the deck? " << deck->cardSize() << endl;
     cout << "Who owns t3? " << t3->getPlayerName() << endl;
-    Advance* advance = new Advance(p1, 30, t1, t3, deck, false);
+    t1->setNumberOfArmies(100);
+    t3->setNumberOfArmies(5);
+    Advance* advance = new Advance(p1, 100, t1, t3, deck, false);
     advance->execute();
     cout << "Who owns t3? " << t3->getPlayerName() << endl;
     cout << "How many cards are in the deck after conquering a territory? " << deck->cardSize() << endl;

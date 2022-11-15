@@ -312,14 +312,6 @@ Deploy::~Deploy() {
  * @return true if valid, false otherwise
  */
 bool Deploy::validate() {
-//    cout << "[DEBUG] Validating deploy" << endl;
-//    cout << "Deploy" << endl;
-//    cout << "\tArmy number units: " << this->m_numberOfArmyUnits << endl;
-//    if (this->m_targetTerritory != nullptr) {
-//        cout << "\tTarget Territory: " << this->m_targetTerritory->getTerritoryName() << endl;
-//    } else {
-//        cout << "\tTarget Territory: NONE " << endl;
-//    }
     if (m_numberOfArmyUnits < 0) {
         cout << "Deploy Order is invalid. Player cannot deploy a negative number of reinforcement." << endl;
         return false;
@@ -507,24 +499,24 @@ bool Advance::validate() {
     if (bisMoveAdvance) {
         cout << "Advance order is to MOVE" << endl;
         cout << "Source territory owner " << m_sourceTerritory->getPlayerName() << " player name "
-             << player->getPlayerName() << endl;
+             << player->getPlayerName() << "." << endl;
 
         if (m_sourceTerritory->getPlayerName() != m_targetTerritory->getPlayerName()) {
-            cout << "Invalid advance order ! Player " << player->getPlayerName()
-                      << " does not own the source territory " << m_sourceTerritory->getPlayerName() << endl;
+            cout << "Invalid advance order. Player " << player->getPlayerName()
+                 << " does not own the source territory " << m_sourceTerritory->getTerritoryName() << "." << endl;
             return false;
         }
         if (!m_sourceTerritory->isAdjacent(m_targetTerritory)) {
-            cout << "Invalid advance order ! Player " << player->getPlayerName() << "'s target territory "
-                      << m_targetTerritory->getPlayerName() << " is not adjacent to their source territory "
-                      << m_sourceTerritory->getPlayerName() << endl;
+            cout << "Invalid advance order. Player " << player->getPlayerName() << "'s target territory "
+                 << m_targetTerritory->getTerritoryName() << " isn't adjacent to source territory "
+                 << m_sourceTerritory->getTerritoryName() << "." << endl;
             return false;
         }
     } else {
         cout << "Advance order is to to attack." << endl;
         cout << "Source territory owner " << m_sourceTerritory->getPlayerName() << " player name "
              << player->getPlayerName() << endl;
-        cout << "Target territory owner " << m_targetTerritory->getPlayerName() << endl;
+        cout << "Target territory owner " << m_targetTerritory->getPlayerName() << "." << endl;
 
         if (m_sourceTerritory->getPlayerName() == m_targetTerritory->getPlayerName()) {
             cout << "Invalid advance order. Player cannot attack their own territory." << endl;
@@ -532,12 +524,12 @@ bool Advance::validate() {
         }
         if (!m_sourceTerritory->isAdjacent(m_targetTerritory)) {
             cout << "Invalid advance order. Player " << player->getPlayerName() << "'s target territory "
-                      << m_targetTerritory->getPlayerName() << " is not adjacent to their source territory "
-                      << m_sourceTerritory->getPlayerName() << endl;
+                 << m_targetTerritory->getTerritoryName() << " isn't adjacent to source territory "
+                 << m_sourceTerritory->getTerritoryName() << "." << endl;
             return false;
         }
         if (player->checkIsNegotiation(m_targetTerritory->getTerritoryOwner())) {
-            cout << "Invalid advance order. Player cannot attack while negotiating with them.." << endl;
+            cout << "Invalid advance order. Player cannot attack while negotiating with them." << endl;
             return false;
         }
     }
@@ -547,8 +539,8 @@ bool Advance::validate() {
     }
     if (m_numberOfArmyUnits > m_sourceTerritory->getNumberOfArmies()) {
         cout << "Invalid advance order. Player " << player->getPlayerName() << " cannot advance "
-                  << m_numberOfArmyUnits << " from territory " << m_sourceTerritory->getPlayerName()
-                  << " which only has " << m_sourceTerritory->getNumberOfArmies() << " units." << endl;
+             << m_numberOfArmyUnits << " from territory " << m_sourceTerritory->getTerritoryName()
+             << " which only has " << m_sourceTerritory->getNumberOfArmies() << " units." << endl;
         return false;
     }
     return true;
@@ -1284,8 +1276,8 @@ bool Negotiate::validate() {
              << m_targetPlayer->getPlayerName() << "." << endl;
         return true;
     }
-    cout << "Negotiate Order is not valid: cannot negotiate with yourself (Current Player: "
-         << player->getPlayerName() << "; Target Player to Negotiate with: " << m_targetPlayer->getPlayerName() << ")."
+    cout << "Negotiate Order is not valid: cannot negotiate with yourself. Player "
+         << player->getPlayerName() << " tried to negotiate with " << m_targetPlayer->getPlayerName() << "."
          << endl;
     return false;
 }

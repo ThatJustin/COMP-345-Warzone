@@ -79,6 +79,7 @@ void testStartupPhase(int argc, char** argv) {
     delete gameEngine;
 }
 
+
 /**
  * You must deliver a driver as a free function named testMainGameLoop() that demonstrates that:
  * (1) a player receives the correct number of army units in the reinforcement phase (showing different cases);
@@ -93,73 +94,106 @@ void testStartupPhase(int argc, char** argv) {
 //free function for the main game loop
 void testMainGameLoop() {
     //Setup test data
-    LogObserver* logObserver = new LogObserver();
-    GameEngine* gameEngine = new GameEngine(logObserver);
 
-
+    vector<Territory*> ter = vector<Territory*>();
     Player* player1 = new Player("Rickky Bobby");
     Player* player2 = new Player("Buddy TheElf");
-    Player* player3 = new Player("Ron Burgundy");
-    gameEngine->addPlayer(player1);
-    gameEngine->addPlayer(player2);
-    gameEngine->addPlayer(player3);
+    Player* player3 = new Player("Santana");
+    Player* player4 = new Player("James Bond");
 
-//    Territory* t1 = new Territory(0, "territory1", player1);
-//    Territory* t2 = new Territory(1, "territory2", player2);
-//    Territory* t3 = new Territory(2, "territory3", player3);
-//    Territory* t4 = new Territory(3, "territory4", player1);
-//    Territory* t5 = new Territory(4, "territory5", player3);
-//
-//    player1->addTerritory(t1);
-//    player1->addTerritory(t4);
-//    player2->addTerritory(t2);
-//    player3->addTerritory(t3);
-//    player3->addTerritory(t5);
-//
-//    t1->addAdjacentTerritory(t2);
-//    t1->addAdjacentTerritory(t4);
-//    t1->addAdjacentTerritory(t5);
-//
-//    t2->addAdjacentTerritory(t1);
-//    t2->addAdjacentTerritory(t4);
-//    t2->addAdjacentTerritory(t3);
-//
-//    t3->addAdjacentTerritory(t2);
-//    t3->addAdjacentTerritory(t4);
-//    t3->addAdjacentTerritory(t5);
-//
-//    t5->addAdjacentTerritory(t1);
-//    t5->addAdjacentTerritory(t4);
-//    t5->addAdjacentTerritory(t3);
-//
-//    t4->addAdjacentTerritory(t1);
-//    t4->addAdjacentTerritory(t2);
-//    t4->addAdjacentTerritory(t3);
-//    t4->addAdjacentTerritory(t5);
-//
-//    continent->addTerritory(t1);
-//    continent->addTerritory(t2);
-//    continent->addTerritory(t3);
-//    continent->addTerritory(t4);
-//    continent->addTerritory(t5);
-//    vector<Territory*> territories = vector<Territory*>();
-//    territories.push_back(t1);
-//    territories.push_back(t2);
-//    territories.push_back(t3);
-//    territories.push_back(t4);
-//    territories.push_back(t5);
+    vector<Continent*> cont = vector<Continent*>();
+    Continent* continent1 = new Continent;
+    continent1->setContinentControlBonusValue(3);
+    Territory* continent1_t1 = new Territory(1, "continent1_t1", player1);
+    Territory* continent1_t2 = new Territory(2, "continent1_t2", player2);
+    Territory* continent1_t3 = new Territory(3, "continent1_t3", player1);
+    Territory* continent1_t4 = new Territory(4, "continent1_t4", player2);
 
-//    vector<Continent*> cont = vector<Continent*>();
-//    cont.push_back(continent);
-    // End of test data
+    ter.push_back(continent1_t1);
+    ter.push_back(continent1_t2);
+    ter.push_back(continent1_t3);
+    ter.push_back(continent1_t4);
+    continent1_t1->addAdjacentTerritory(continent1_t2);
+    continent1_t1->addAdjacentTerritory(continent1_t3);
+
+    continent1_t2->addAdjacentTerritory(continent1_t1);
+    continent1_t2->addAdjacentTerritory(continent1_t4);
+
+    continent1_t3->addAdjacentTerritory(continent1_t1);
+    continent1_t3->addAdjacentTerritory(continent1_t4);
+
+    continent1_t4->addAdjacentTerritory(continent1_t2);
+    continent1_t4->addAdjacentTerritory(continent1_t3);
+
+    player1->addTerritory(continent1_t1);
+    player1->addTerritory(continent1_t3);
+
+    player2->addTerritory(continent1_t2);
+    player2->addTerritory(continent1_t4);
+    cont.push_back(continent1);
+    // End of continent 1
+
+    //    Continent 2 is owned all by player 2 to show continent bonus
+    Continent* continent2 = new Continent;
+    continent2->setContinentControlBonusValue(5);
+    Territory* continent2_t1 = new Territory(5, "continent2_t1", player2);
+    Territory* continent2_t2 = new Territory(6, "continent2_t2", player2);
+    Territory* continent2_t3 = new Territory(7, "continent2_t3", player2);
+
+    continent2_t1->addAdjacentTerritory(continent2_t2);
+    continent2_t1->addAdjacentTerritory(continent2_t3);
+
+    continent2_t2->addAdjacentTerritory(continent2_t1);
+    continent2_t2->addAdjacentTerritory(continent2_t3);
+
+    continent2_t3->addAdjacentTerritory(continent2_t1);
+    continent2_t3->addAdjacentTerritory(continent2_t2);
+
+    player2->addTerritory(continent2_t1);
+    player2->addTerritory(continent2_t2);
+    player2->addTerritory(continent2_t3);
+    cont.push_back(continent2);
+    // End of continent 2
 
     auto* mapLoader = new MapLoader();
     Map* map = mapLoader->loadMap("./Map Files/Aden.map");
+    LogObserver* logObserver = new LogObserver();
+    GameEngine* gameEngine = new GameEngine(logObserver);
+    gameEngine->addPlayer(player1);
+    gameEngine->addPlayer(player2);
+    gameEngine->addPlayer(player3);
+    gameEngine->addPlayer(player4);
     gameEngine->setGameMap(map);
+    gameEngine->setDemo(true);
     gameEngine->gameStart();
+//(1) a player receives the correct number of army units in the reinforcement phase (showing different cases);
+    cout << "Testing that a player receives the correct number of army units in the reinforcement phase" << endl;
+    gameEngine->changeStateByTransition(GameEngine::GameStart);
 
-    cout << endl;
-    gameEngine->mainGameLoop();
+    // (2) a player will only issue deploy orders and no other kind of orders if they still have army units in their reinforcement pool;
+// (3) a player can issue advance orders to either defend or attack, based on the toAttack() and toDefend() lists;
+// (4) a player can play cards to issue orders;
+    cout << "Testing issuing deploy, advance and card orders." << endl;
 
+    gameEngine->changeStateByTransition(GameEngine::IssueOrder);
+
+// (5) a player that does not control any territory is removed from the game;
+// (6) the game ends when a single player controls all the territories.
+    cout << "Testing people who lose all territories are removed from the game." << endl;
+    cout << "and that if one player owns all territories the game is over." << endl ;
+    cout << "Emulating only one player with territories remaining." << endl << endl;
+    Player* neutral = new Player("Neutral");
+    for (int i = 1; i < gameEngine->getGamePlayers().size(); i++) {
+        for (Territory* t: gameEngine->getGamePlayers().at(i)->getTerritories()) {
+            cout << "Removing territory " << t->getTerritoryName() << " from player "
+                 << t->getTerritoryOwner()->getPlayerName() << endl;
+            t->getTerritoryOwner()->removeTerritory(t);
+            t->setTerritoryOwner(neutral);
+            neutral->addTerritory(t);
+        }
+    }
+
+    gameEngine->changeStateByTransition(GameEngine::IssueOrdersEnd);
+    cout << "End of demo for maingameloop functionality." << endl;
     delete gameEngine;
 }

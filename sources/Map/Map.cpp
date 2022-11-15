@@ -103,6 +103,9 @@ int Continent::getContinentControlBonusValue() {
     return this->continent_control_bonus_value;
 }
 
+void Continent::setContinentControlBonusValue(int continentControlBonusValue) {
+    this->continent_control_bonus_value = continentControlBonusValue;
+}
 
 /**
  * Accessor for the territories found on the continent

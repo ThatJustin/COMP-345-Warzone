@@ -448,6 +448,10 @@ void GameEngine::removePlayer(Player* pPlayer) {
     }
 }
 
+void GameEngine::setDemo(bool b) {
+    bIsDemo = b;
+}
+
 /**
  * Default constructor
  */
@@ -870,16 +874,21 @@ void AssignReinforcement::enterState() {
     this->gameEngine->turnNumber++;
 
     for (Player* player: this->gameEngine->getGamePlayers()) {
-        cout << "AssignReinforcement for player " << player->getPlayerName();
+        cout << endl << "AssignReinforcement for player " << player->getPlayerName() << " " << endl;
         //Players are given a number of army units that depends on the number of territories they own, (# of territories owned divided by 3, rounded down).
         int countToAdd = 0;
         if (!player->getTerritories().empty()) {
-            countToAdd = countToAdd + (int) std::floor((player->getTerritories().size()) / 3);
+            int terrReinf = (int) std::floor((player->getTerritories().size()) / 3);
+            countToAdd = countToAdd + terrReinf;
+            cout << "Units from territories " << countToAdd << endl;
         }
         // If the player owns all the territories of an entire continent, the player is given a number of army units corresponding to the continent’s control bonus value.
         for (Continent* continent: gameEngine->gameMap->getContinents()) {
             if (continent->isContinentOwner(player->getPlayerName())) {
-//                countToAdd = countToAdd + continent->getContinentControlBonusValue();
+                countToAdd = countToAdd + continent->getContinentControlBonusValue();
+                cout << "Player " << player->getPlayerName() << " owns all territories on continent "
+                     << continent->getContinentName() << " bonus of " << continent->getContinentControlBonusValue()
+                     << " added.";
             }
         }
         //In any case, the minimal number of reinforcement army units per turn for any player is 3.
@@ -887,7 +896,7 @@ void AssignReinforcement::enterState() {
             countToAdd = 3;
         }
         player->setReinforcementPool(player->getReinforcementPool() + countToAdd);
-        cout << " added " << countToAdd << " new reinforcement units." << endl;
+        cout << endl << "Total new reinforcement units " << countToAdd << "." << endl;
     }
     cout << endl;
 }
@@ -1049,10 +1058,13 @@ ExecuteOrders::~ExecuteOrders() {
  */
 void ExecuteOrders::enterState() {
     cout << "Entering " << *this << endl;
-    for (Player* player: gameEngine->getGamePlayers()) {
-        player->useOrders();
+    if (gameEngine->bIsDemo) {
+        cout << "Skipping using orders for demo purpose." << endl;
+    } else {
+        for (Player* player: gameEngine->getGamePlayers()) {
+            player->useOrders();
+        }
     }
-
     cout << endl;
     vector<Player*> playersToRemove = vector<Player*>();
     // Check if anyone owns 0 territories

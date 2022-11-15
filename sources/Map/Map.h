@@ -44,6 +44,8 @@ public:
     //Returns the name of a player IF they own all territories in the continent
     bool isContinentOwner(const std::string& playerName);
 
+    void setContinentControlBonusValue(int continentControlBonusValue);
+
 private:
     // An integer identifier representing the continent id
     int map_continent_id;
@@ -120,6 +122,8 @@ public:
     bool isAdjacent(Territory *t);
 
     Player *getPlayer();
+
+    Territory* getClosestSourceTerritory(Player* pPlayer);
 
 private:
     // An integer identifier representing the territory id and the number of armies on the territory

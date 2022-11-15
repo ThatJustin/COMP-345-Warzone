@@ -192,11 +192,11 @@ bool Player::issueOrder(GameEngine* gameEngine) {
     //Advance
     std::random_device rd1;
     std::mt19937 gen1(rd1());
-    std::bernoulli_distribution toDefendRandom(0.4);
+    std::bernoulli_distribution toDefendRandom(0.9);
 
     std::random_device rd2;
     std::mt19937 gen2(rd1());
-    std::bernoulli_distribution toAttackRandom(0.8);
+    std::bernoulli_distribution toAttackRandom(0.9);
 
     std::random_device rd3; // obtain a random number from hardware
     std::mt19937 gen3(rd3()); // seed the generator
@@ -206,12 +206,13 @@ bool Player::issueOrder(GameEngine* gameEngine) {
     std::uniform_int_distribution<> distToAttack(1, this->toAttack().size()); // define the range
     vector<Territory*> territoriesToDefend = toDefend();
     vector<Territory*> territoriesToAttack = toAttack();
-    int maxDefendCount = 0;
+    int defendCounter = 0;
+    srand(time(NULL));
+    int maxDefendCount = (rand() % 5) + 1;
     for (Territory* territory: territoriesToDefend) {
         if (toDefendRandom(gen1)) {
             for (Territory* source: this->getTerritories()) {
-                if (source->isAdjacent(territory) &&
-                    source->getPlayerName() == territory->getPlayerName()) {
+                if (source->isAdjacent(territory)) {
                     if (source->getTerritoryName() != territory->getTerritoryName()) {
                         int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
 
@@ -219,25 +220,27 @@ bool Player::issueOrder(GameEngine* gameEngine) {
                                                             gameEngine->getDeck(),
                                                             true);
                         this->getOrdersList()->addOrder(advance_order);
-                        maxDefendCount++;
-                        if (maxDefendCount == 5) {
-                            cout << "Reached the maximum 5 move advance orders." << endl;
-                            break;
+                        cout << "Issuing Advance order to move player army. " << defendCounter << endl;
+                        defendCounter++;
+                        if (defendCounter == maxDefendCount) {
+                            cout << "Reached the maximum " << maxDefendCount << " move advance orders." << endl;
+                            goto finishedMoveAdv;
                         }
                     }
                 }
             }
         }
     }
-    int maxAttackCount = 0;
-
+    finishedMoveAdv:
+    int attackCounter = 0;
+    srand(time(NULL));
+    int maxAttackCount = (rand() % 5) + 5;
     for (Territory* territory: territoriesToAttack) {
         if (toAttackRandom(gen2)) {
 
             // This is a territory that is adjacent to my own, but first we need to find which the adjacent one is
             for (Territory* source: this->getTerritories()) {
                 if (source->isAdjacent(territory) &&
-                    territory->getPlayerName() != gameEngine->getNeutralPlayer()->getPlayerName() &&
                     source->getPlayerName() != territory->getPlayerName()) {
                     if (source->getTerritoryName() != territory->getTerritoryName()) {
                         int armyCountToMove = std::floor(source->getNumberOfArmies() / 2);
@@ -245,10 +248,11 @@ bool Player::issueOrder(GameEngine* gameEngine) {
                                                             gameEngine->getDeck(),
                                                             false);
                         this->getOrdersList()->addOrder(advance_order);
-                        maxAttackCount++;
-                        if (maxAttackCount == 5) {
-                            cout << "Reached the maximum 5 attack advance orders." << endl;
-                            goto breakout;
+                        cout << "Issuing Advance order to attack target army. " << attackCounter << endl;
+                        attackCounter++;
+                        if (attackCounter == maxAttackCount) {
+                            cout << "Reached the maximum " << maxAttackCount << " attack advance orders." << endl;
+                            goto finishAdvAttack;
                         }
                     }
                 }
@@ -256,12 +260,12 @@ bool Player::issueOrder(GameEngine* gameEngine) {
         }
     }
 
-    breakout:
+    finishAdvAttack:
     //Use one card every issue order phase if they have a card
     if (!this->getHandCards()->getCards().empty()) {
         Cards* cardsToPlays = this->getHandCards()->getCards().front();
         if (cardsToPlays != nullptr) {
-            cout << "Issuing Card Order" << endl;
+            cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
             Orders* orderToMake = nullptr;
             switch (cardsToPlays->getType()) { // ignore missing for now
                 case BOMB:
