@@ -62,7 +62,7 @@ void testCommandProcessor(int argc, char** argv) {
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
             gameEngine->currentGameState = gameEngine->getStateFromTransition(GameEngine::Play);
-            cout << "Entering replay state." << endl;
+            cout << "Entering StartGame state." << endl;
         } else if (c->getTransitionName() == "quit") {
             cout << "Thanks for playing!" << endl;
             break;
