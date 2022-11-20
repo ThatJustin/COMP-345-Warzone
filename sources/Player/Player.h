@@ -20,6 +20,8 @@ class Deck;
 
 class GameEngine;
 
+class PlayerStrategy;
+
 class Player {
 public:
     //Constructor
@@ -82,6 +84,10 @@ public:
 
     void removeTerritory(Territory* pTerritory);
 
+    PlayerStrategy* getPlayerStrategy() const;
+
+    void setPlayerStrategy(PlayerStrategy* playerStrategy);
+
 private:
     //Collection of territories
     vector<Territory*> territories;
@@ -99,5 +105,7 @@ private:
 
     //initial army units
     int reinforcementPoolUnits = 50;
+
+    PlayerStrategy* ps;
 
 };
