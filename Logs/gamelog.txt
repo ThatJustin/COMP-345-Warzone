@@ -32024,3 +32024,11 @@
 [Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [issueorders].
 [Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [executeorders].
 [Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [win].

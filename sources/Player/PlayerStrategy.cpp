@@ -40,11 +40,12 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
  */
 AggressivePlayerStrategy::AggressivePlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
 
+        //not sure what to add here
         this->player = pPlayer;
 }
 
 /*
- * AggessivePlayerStrtegy toDefend method
+ * AggessivePlayerStrategy toDefend method
  */
 vector<Territory*> AggressivePlayerStrategy::toDefend() {
 
@@ -100,6 +101,9 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
 
 bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
+    /*need to use gameEngine for the implementation?*/
+    //GameEngine* gameEngine = new GameEngine();
+
     //list of territory todefend
     vector<Territory*> defendPriority = toDefend();
 
@@ -118,7 +122,7 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     //make sure its always a different territory
     vector<Territory*>  differentTerritory;
 
-    //dummy definition to be able to use the Advance order
+    //dummy definition to be able to use the Advance order, might change later
     Deck* deck;
 
     //loop through each territory in the attack list
@@ -168,14 +172,33 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 }
 
 //NeutralPlayerStrategy
-NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
+
+    //PlayerStrategy* ps = new PlayerStrategy(this->player);
+    AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(pPlayer);
+
+    //check if it is attack
+    if(isattacked){
+        //if so turn into an aggressive player
+        //PlayerStrategy(pPlayer->setPlayerStrategy(aps->player->getPlayerStrategy());
+    }
+}
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
-    return {};
+
+    vector<Territory*> defendPriority;
+
+    //return true if the neutral player is being attacked
+    isattacked = true;
+
+    return defendPriority; //{};
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
-    return {};
+
+    vector<Territory*> attackPriority;
+
+    return attackPriority; //{};
 }
 
 bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {

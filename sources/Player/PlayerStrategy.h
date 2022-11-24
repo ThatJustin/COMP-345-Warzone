@@ -76,6 +76,8 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
+
+    bool isattacked;
 };
 
 class CheaterPlayerStrategy : public PlayerStrategy {
