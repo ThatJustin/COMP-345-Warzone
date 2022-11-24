@@ -10,6 +10,12 @@ class GameEngine;
 
 class Player;
 
+class Orders;
+
+class Deck;
+
+class GameEngine;
+
 class PlayerStrategy {
 public:
     explicit PlayerStrategy(Player* pPlayer);
@@ -19,7 +25,11 @@ public:
     virtual vector<Territory*> toAttack() = 0;
 
     virtual bool issueOrder(GameEngine* gameEngine) = 0;
+
     Player* player;
+
+    vector<Orders*> ordersList;
+
 private:
     Player* getPlayer() const;
 };
