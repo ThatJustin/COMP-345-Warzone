@@ -154,6 +154,8 @@ public:
     void setDemo(bool b);
 
     bool bIsDemo = false;
+
+    Player* getPlayer;
 };
 
 class GameState {

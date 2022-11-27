@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "../Orders/Orders.h"
 #include "../Map/Map.h"
+#include "../GameEngine/GameEngine.h"
 
 #include <Vector>
 #include <iostream>
@@ -102,7 +103,6 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
 bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
     /*need to use gameEngine for the implementation?*/
-    //GameEngine* gameEngine = new GameEngine();
 
     //list of territory todefend
     vector<Territory*> defendPriority = toDefend();
@@ -111,7 +111,7 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     Territory* defend = defendPriority.at(0);
 
     //deploys armies on its strongest country
-    Orders* deployorders = new Deploy(player,player->getReinforcementPool(), defend);
+    Orders* deployorders = new Deploy(gameEngine->getPlayer,gameEngine->getPlayer->getReinforcementPool(), defend);
     deployorders->execute();
     cout<< deployorders<<endl;
     delete deployorders;
@@ -122,22 +122,19 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     //make sure its always a different territory
     vector<Territory*>  differentTerritory;
 
-    //dummy definition to be able to use the Advance order, might change later
-    Deck* deck;
-
     //loop through each territory in the attack list
     for (Territory* territory: attack){
         //get all territory adjacent
         for(Territory* source: territory->getAdjacentTerritories()){
             //check if the territory is owned by the player
-            if(source->getTerritoryOwner() == player){
+            if(source->getTerritoryOwner() == gameEngine->getPlayer){
                 //check if territory not already in the list
                 if(!(find(differentTerritory.begin(), differentTerritory.end(), source) != differentTerritory.end())){
 
                     //advance order now that all deploy are over
-                    Orders* orders = new Advance(player,source->getNumberOfArmies(), source, territory, deck, true);
+                    Orders* orders = new Advance(gameEngine->getPlayer,source->getNumberOfArmies(), source, territory, gameEngine->deck, true);
                     //add order in the list
-                    player->getOrdersList()->addOrder(orders);
+                    gameEngine->getPlayer->getOrdersList()->addOrder(orders);
                     //push the order in the orderlist
                     ordersList.push_back(orders);
                     cout<< deployorders<<endl;

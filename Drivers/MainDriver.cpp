@@ -6,6 +6,7 @@
 #include "headers/CardsDriver.h"
 #include "headers/CommandProcessingDriver.h"
 #include "headers/LoggingObserverDriver.h"
+#include "headers/PlayerStrategiesDriver.h"
 #include <time.h>
 #include <cmath>
 
@@ -20,8 +21,8 @@ int main(int argc, char** argv) {
 //    cout << "Testing GameEngineDriver StartupPhase" << endl;
 //    testStartupPhase(argc, argv);
 
-    cout << "Testing GameEngineDriver MainGameLoop" << endl;
-    testMainGameLoop();
+//    cout << "Testing GameEngineDriver MainGameLoop" << endl;
+//    testMainGameLoop();
 
 //    cout << "Testing OrderDrive" << endl;
 //    testOrderExecution();
@@ -29,6 +30,8 @@ int main(int argc, char** argv) {
 //    cout<<"Testing LoggingObserverDriver:\n"<<endl;
 //    testLoggingObserver(argc, argv);
 
+      cout<<"Testing PlayerStrategiesDriver:\n"<<endl;
+      testPlayerStrategies();
 
     return 0;
 }

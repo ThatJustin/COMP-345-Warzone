@@ -36,6 +36,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
+    this->getPlayer = new Player();
     this->turnNumber == 0;
 }
 
@@ -283,6 +284,7 @@ void GameEngine::prepareForReplay() {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
+    this->getPlayer = new Player();
     this->turnNumber == 0;
 
     // If it's being read from a file
