@@ -177,7 +177,7 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(p
     //check if it is attack
     if(isattacked){
         //if so turn into an aggressive player
-        //PlayerStrategy(pPlayer->setPlayerStrategy(aps->player->getPlayerStrategy());
+        pPlayer->setPlayerStrategy(aps);
     }
 }
 

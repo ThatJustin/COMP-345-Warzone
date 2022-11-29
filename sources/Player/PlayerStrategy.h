@@ -14,8 +14,6 @@ class Orders;
 
 class Deck;
 
-class GameEngine;
-
 class PlayerStrategy {
 public:
     explicit PlayerStrategy(Player* pPlayer);
