@@ -1,5 +1,14 @@
 #include "PlayerStrategy.h"
+#include "Player.h"
+#include "../Orders/Orders.h"
+#include "../Map/Map.h"
+#include "../GameEngine/GameEngine.h"
 
+#include <Vector>
+#include <iostream>
+#include "algorithm"
+
+using namespace std;
 //PlayerStrategy
 PlayerStrategy::PlayerStrategy(Player* pPlayer) {
     this->player = pPlayer;
@@ -77,7 +86,29 @@ vector<Territory*> CheaterPlayerStrategy::toDefend() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
-    return {};
+    //cheaterTerritory vector to return
+    vector<Territory*> cheaterTerritory;
+
+    //loop trough each territory owned by all the player
+    for(Territory* territory: player->getTerritories()) {
+        //loop through each adjacent territory
+        for (Territory *adjacent: territory->getAdjacentTerritories()) {
+            //check if the territory is not already owned by the cheater
+            if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()){
+                //if the adjacent territory isnt already in the list
+                if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
+                    cheaterTerritory.push_back(adjacent);
+                }
+            }
+        }
+    }
+
+    sort(cheaterTerritory.begin(), cheaterTerritory.end(),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() < b->getNumberOfArmies();
+         });
+
+    return cheaterTerritory;
 }
 
 bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
