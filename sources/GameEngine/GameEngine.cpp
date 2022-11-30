@@ -9,6 +9,7 @@
 #include "sources/Player/Player.h"
 #include "sources/Cards/Cards.h"
 #include "sources/Orders/Orders.h"
+#include "sources/Player/PlayerStrategy.h"
 
 /**
  * Constructor of GameEngine
@@ -394,8 +395,7 @@ void GameEngine::gameStart() {
         }
     }
     //Once mainGameLoop is called, the game will run by itself until it gets to the win state
-//    mainGameLoop();
-    //disable for A2 demo, we'll do it manually in test driver
+    mainGameLoop();
 }
 
 /**
