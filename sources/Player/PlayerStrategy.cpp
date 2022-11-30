@@ -26,14 +26,130 @@ Player* PlayerStrategy::getPlayer() const {
 HumanPlayerStrategy::HumanPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
 
 vector<Territory*> HumanPlayerStrategy::toDefend() {
-    return {};
+    // Try sorting them based on army count, return territories with the most units,
+    vector<Territory*> territoriesToDefend = player->getTerritories();
+    sort(begin(territoriesToDefend), end(territoriesToDefend),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() >
+                    b->getNumberOfArmies();
+         });
+    return territoriesToDefend;
 }
 
 vector<Territory*> HumanPlayerStrategy::toAttack() {
-    return {};
+    vector<Territory*> attackTerritories;
+    // Get all adjacent territories ties that aren't owned by the player.
+    for (Territory* ter: this->player->getTerritories()) {
+        //check if the territory is adjacent
+        for (Territory* adjacent: ter->getAdjacentTerritories()) {
+            if (adjacent->getTerritoryOwner()->getPlayerName() != ter->getTerritoryOwner()->getPlayerName()) {
+                //if adjacent territory not already in list
+                if (!(find(attackTerritories.begin(), attackTerritories.end(), adjacent) != attackTerritories.end())) {
+                    //add to the list of territories that can be attacked
+                    attackTerritories.push_back(adjacent);
+                }
+            }
+        }
+    }
+    // Similar to toDefend, but the opposite, but sort based on the lowest, so it's easier to kill
+    sort(attackTerritories.begin(), attackTerritories.end(),
+         [](Territory* a, Territory* b) -> bool {
+             return a->getNumberOfArmies() < b->getNumberOfArmies();
+         });
+    return attackTerritories;
 }
 
 bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    int reinforcementPoolCount = player->getReinforcementPool();
+    while (reinforcementPoolCount > 0) {
+        if (reinforcementPoolCount == 0) {
+            goto noMoreReinforcementPool;
+        }
+        int countToDeploy;
+        cout << "How many units would you like to deploy? Available units " << reinforcementPoolCount << endl;
+        cin >> countToDeploy;
+
+        if ((reinforcementPoolCount - countToDeploy) < 0) {
+            //the remaining
+            countToDeploy = reinforcementPoolCount;
+        }
+        cout << "Here is a list of your territories (format [Index] TerritoryName - Units stationed)" << endl;
+        for (int i = 0; i < this->toDefend().size(); i++) {
+            auto territory = toDefend()[i];
+            if (territory != nullptr) {
+                cout << "[" << i << "] " << territory->getTerritoryName() << " - " << territory->getNumberOfArmies()
+                     << endl;
+            }
+        }
+        cout << "Input which territory by Index you'd like to deploy " << countToDeploy << " units to." << endl;
+        int territoryIndex;
+        cin >> territoryIndex;
+        auto territory = toDefend()[territoryIndex];
+        cout << "Issuing Deploy Order for " << countToDeploy << " units to territory "
+             << territory->getTerritoryName() << ".";
+        Orders* orders = new Deploy(player, countToDeploy, territory);
+        player->getOrdersList()->addOrder(orders);
+        reinforcementPoolCount -= countToDeploy;
+        cout << " Remaining units in pool " << reinforcementPoolCount << "." << endl;
+    }
+    noMoreReinforcementPool:
+    cout << "Out of units to deploy." << endl;
+
+//Advance moves
+
+    //Use one card every issue order phase if they have a card
+    if (!player->getHandCards()->getCards().empty()) {
+        cout << "Available cards to play :" << endl;
+        for (int i = 0; i < player->getHandCards()->getCards().size(); i++) {
+            auto card = player->getHandCards()->getCards()[i];
+            if (card != nullptr) {
+                cout << "[" << i << "] " << getNameByCardType(card->getType()) << endl;
+            }
+        }
+        pickNewCard:
+        int cardIndex;
+        cout << "Input which card by Index you'd like to play." << endl;
+        cin >> cardIndex;
+        if (cardIndex >= 0 && cardIndex <= player->getHandCards()->getCards().size()) {
+            Cards* cardsToPlays = player->getHandCards()->getCards().at(cardIndex);
+            cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
+            Orders* orderToMake = nullptr;
+            switch (cardsToPlays->getType()) { // ignore missing for now
+                case BOMB:
+                    if (!toAttack().empty()) {
+                        Territory* target = toAttack().front();
+                        orderToMake = new Bomb(player, target);
+                    }
+                    break;
+                case BLOCKADE:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().front();
+                        orderToMake = new Blockade(player, gameEngine->getNeutralPlayer(), target);
+                    }
+                    break;
+                case AIRLIFT:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().back(); // target is last to defend
+                        Territory* source = toDefend().front(); // source is first to defend
+                        orderToMake = new Airlift(player, player->getReinforcementPool(), source, target);
+                    }
+                    break;
+                case DIPLOMACY:
+                    if (!toAttack().empty()) {
+                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
+                        orderToMake = new Negotiate(player, negotiatePlayer);
+                    }
+                    break;
+            }
+            if (orderToMake != nullptr) {
+                //this handles creating the order and removing it from players hand + back to deck
+                cardsToPlays->play(player, gameEngine->getDeck(), orderToMake);
+            }
+        } else {
+            cout << "This card doesn't exist, please try again." << endl;
+            goto pickNewCard;
+        }
+    }
     return true;
 }
 
@@ -103,7 +219,6 @@ DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(p
 
 vector<Territory*> DefaultPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,
-    // they are your strongest territory and might win the game for the player
     vector<Territory*> territoriesToDefend = player->getTerritories();
     sort(begin(territoriesToDefend), end(territoriesToDefend),
          [](Territory* a, Territory* b) -> bool {

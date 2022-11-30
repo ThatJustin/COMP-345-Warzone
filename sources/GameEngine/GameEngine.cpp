@@ -777,6 +777,9 @@ void PlayersAdded::enterState() {
         cout << "There is already the maximum amount of players 6. Please go to the next state." << endl;
         return;
     }
+    if (player->getPlayerName() == "Human") {
+        player->setPlayerStrategy(new HumanPlayerStrategy(player));
+    }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
         cout << "Player " << this->gameEngine->commandParam << " successfully added." << endl;
