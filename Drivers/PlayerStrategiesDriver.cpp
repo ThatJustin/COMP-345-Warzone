@@ -22,31 +22,38 @@ void testPlayerStrategies(){
     vector<Continent*> continents;
     vector<Territory*> territories;
 
-    //(1) different players can be assigned different strategies that lead to different behavior
-    //using the Strategy design pattern;
-    Player* player1 = new Player("Rickky Bobby");
-
-    Player* player2 = new Player("Buddy TheElf");
-
-    PlayerStrategy* aggressivePlayer = new AggressivePlayerStrategy(player1);
-
-    PlayerStrategy* neutralPlayer = new NeutralPlayerStrategy(player2);
-
     Deck* deck = nullptr;
 
     Map* map = new Map(territories, continents);
     //auto* mapLoader = new MapLoader();
     //Map* map = mapLoader->loadMap("./Map Files/Aden.map");
 
+    //(1) different players can be assigned different strategies that lead to different behavior
+    //using the Strategy design pattern;
+    Player* player1 = new Player("Rickky Bobby");
+
+    Player* player2 = new Player("Buddy TheElf");
+
+    Player* player3 = new Player("Kevin Hart");
+
+    PlayerStrategy* aggressivePlayer = new AggressivePlayerStrategy(player1);
+
+    PlayerStrategy* neutralPlayer = new NeutralPlayerStrategy(player2);
+
+    PlayerStrategy* cheaterPlayer = new CheaterPlayerStrategy(player3);
+
+
     Territory* continent1_t1 = new Territory(1, "continent1_t1", player1);
     Territory* continent1_t2 = new Territory(2, "continent1_t2", player2);
     Territory* continent1_t3 = new Territory(3, "continent1_t3", player1);
     Territory* continent1_t4 = new Territory(4, "continent1_t4", player2);
+    Territory* continent1_t5 = new Territory(5, "continent1_t5", player3);
 
     territories.push_back(continent1_t1);
     territories.push_back(continent1_t2);
     territories.push_back(continent1_t3);
     territories.push_back(continent1_t4);
+    territories.push_back(continent1_t5);
 
     continent1_t1->addAdjacentTerritory(continent1_t2);
     continent1_t2->addAdjacentTerritory(continent1_t1);
@@ -54,6 +61,8 @@ void testPlayerStrategies(){
     continent1_t3->addAdjacentTerritory(continent1_t2);
     continent1_t3->addAdjacentTerritory(continent1_t4);
     continent1_t4->addAdjacentTerritory(continent1_t3);
+    continent1_t4->addAdjacentTerritory(continent1_t5);
+    continent1_t5->addAdjacentTerritory(continent1_t4)
 
     continent1_t1->setTerritoryOwner(player1);
     continent1_t2->setTerritoryOwner(player2);
