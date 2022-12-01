@@ -75,7 +75,7 @@ vector<Territory*> NeutralPlayerStrategy::toAttack() {
 }
 
 bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-    return true;
+    return {};
 }
 
 //CheaterPlayerStrategy
@@ -86,6 +86,11 @@ vector<Territory*> CheaterPlayerStrategy::toDefend() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
+    return {};
+}
+
+bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+
     //cheaterTerritory vector to return
     vector<Territory*> cheaterTerritory;
 
@@ -95,7 +100,7 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
         for (Territory *adjacent: territory->getAdjacentTerritories()) {
             //check if the territory is not already owned by the cheater
             if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()){
-                //if the adjacent territory isnt already in the list
+                //if the adjacent territory isn't already in the list
                 if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
                     cheaterTerritory.push_back(adjacent);
                 }
@@ -103,14 +108,11 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
         }
     }
 
-    sort(cheaterTerritory.begin(), cheaterTerritory.end(),
-         [](Territory* a, Territory* b) -> bool {
-             return a->getNumberOfArmies() < b->getNumberOfArmies();
-         });
+    sort(toAttack().begin(), toAttack().end(),[](Territory* a, Territory* b) -> bool {
+        return a->getNumberOfArmies() < b->getNumberOfArmies();
+    });
 
-    return cheaterTerritory;
-}
+    gameEngine->territories = cheaterTerritory;
 
-bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-    return false;
+    return true;
 }
