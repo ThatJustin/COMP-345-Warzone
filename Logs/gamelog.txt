@@ -32000,3 +32000,40 @@
 [Mon Nov 14 16:49:03 2022] [Order] Order advance executed by player Ron Burgundy. Result: Advance Order successfully executed: Advancing army from Barron to Bella on Bella by Ron Burgundy.
 [Mon Nov 14 16:49:03 2022] [Order] Order advance executed by player Ron Burgundy. Result: Advance Order successfully executed: Advancing army from Bella to Riviera on Riviera by Ron Burgundy.
 [Mon Nov 14 16:49:03 2022] [Order] Order advance executed by player Ron Burgundy. Result: Advance Order successfully executed: Advancing army from Mastic to Riviera on Riviera by Ron Burgundy.
+[Sun Nov 20 18:57:18 2022] [State Change] Game has changed to state [assignreinforcement].
+[Sun Nov 20 18:57:18 2022] [State Change] Game has changed to state [issueorders].
+[Sun Nov 20 18:57:18 2022] [State Change] Game has changed to state [executeorders].
+[Sun Nov 20 18:57:18 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 14:40:40 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 14:40:40 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 14:40:40 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 14:40:40 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 14:40:45 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 14:40:45 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 14:40:45 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 14:40:45 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 15:38:32 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 15:38:32 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 15:38:32 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 15:38:32 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 16:27:27 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 16:27:27 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 16:27:27 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 16:27:27 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 16:27:31 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 18:40:18 2022] [State Change] Game has changed to state [win].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [assignreinforcement].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [issueorders].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [executeorders].
+[Thu Nov 24 18:40:21 2022] [State Change] Game has changed to state [win].
+[Tue Nov 29 16:42:12 2022] [State Change] Game has changed to state [start].
+[Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [assignreinforcement].
+[Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [issueorders].
+[Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [executeorders].
+[Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [win].
