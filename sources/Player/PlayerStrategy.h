@@ -78,3 +78,14 @@ public:
 
     bool issueOrder(GameEngine* gameEngine) override;
 };
+
+class DefaultPlayerStrategy : public PlayerStrategy {
+public:
+    explicit DefaultPlayerStrategy(Player* pPlayer);
+
+    vector<Territory*> toDefend() override;
+
+    vector<Territory*> toAttack() override;
+
+    bool issueOrder(GameEngine* gameEngine) override;
+};
