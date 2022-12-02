@@ -492,20 +492,20 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     // and deploying their entire/whole reinforcement pool to the first territory and advancing half of the number of armies
     // that the player's strongest territory (toDefend().back()) has to the second weakest territory on the vector of territories
     // returned from the toDefend() method. This is a design decision that could be different/changed depending on preference
-    Territory* territory_for_deploy_order = toDefend()[0];
-    Territory* territory_for_advance_order = toDefend()[1];
+    Territory* weakest_territory = toDefend()[0];
+    Territory* second_weakest_territory = toDefend()[1];
 
     cout << "Issuing Deploy Order for " << player->getReinforcementPool() << " units to territory "
-         << territory_for_deploy_order->getTerritoryName() << ".";
+         << weakest_territory->getTerritoryName() << ".";
 
-    Orders* deploy_order = new Deploy(player, player->getReinforcementPool(), territory_for_deploy_order);
+    Orders* deploy_order = new Deploy(player, player->getReinforcementPool(), weakest_territory);
     player->getOrdersList()->addOrder(deploy_order);
 
     cout << "Issuing Advance Order for " << count_to_advance << " units from territory "
          << toDefend().back()->getTerritoryName() << " to territory "
-         << territory_for_advance_order->getTerritoryName() << ".";
+         << second_weakest_territory->getTerritoryName() << ".";
 
-    Orders* advance_order = new Advance(player, count_to_advance, toDefend().back(), territory_for_advance_order,
+    Orders* advance_order = new Advance(player, count_to_advance, toDefend().back(), second_weakest_territory,
                                         gameEngine->getDeck(), true);
     player->getOrdersList()->addOrder(advance_order);
 
@@ -515,6 +515,11 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
             Orders* order_to_be_made = nullptr;
 
             switch (player->getHandCards()->getCards().front()->getType()) {
+                case AIRLIFT:
+                    if (weakest_territory != nullptr && second_weakest_territory != nullptr) {
+                        order_to_be_made = new Airlift(player, player->getReinforcementPool(), second_weakest_territory, weakest_territory);
+                    }
+                    break;
                 case DIPLOMACY: {
                     Player* negotiation_player = nullptr;
 
