@@ -296,7 +296,8 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     //Use one card every issue order phase if they have a card
     startOfCards:
     if (!player->getHandCards()->getCards().empty()) {
-        cout << "Would you like to use cards? Enter 1 for yes and 0 for no." << endl;
+        cout << "Would you like to use cards? Enter 1 for yes and 0 for no. You have ("
+             << player->getHandCards()->getCards().size() << ") cards remaining." << endl;
         int cardUsage;
         cin >> cardUsage;
         if (cardUsage == 1) {
@@ -315,7 +316,7 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
                 Cards* cardsToPlays = player->getHandCards()->getCards().at(cardIndex);
                 cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
                 Orders* orderToMake = nullptr;
-                switch (cardsToPlays->getType()) { // ignore missing for now
+                switch (cardsToPlays->getType()) {
                     case BOMB:
                         if (!HumanPlayerStrategy::toAttack().empty()) {
                             int index = 0;
@@ -423,6 +424,8 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
                 goto pickNewCard;
             }
         }
+    } else {
+        cout << "You do not have any cards to play." << endl;
     }
     return true;
 }

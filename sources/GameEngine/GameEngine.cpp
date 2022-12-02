@@ -891,7 +891,7 @@ void AssignReinforcement::enterState() {
                 countToAdd = countToAdd + continent->getContinentControlBonusValue();
                 cout << "Player " << player->getPlayerName() << " owns all territories on continent "
                      << continent->getContinentName() << " bonus of " << continent->getContinentControlBonusValue()
-                     << " added.";
+                     << " added." << endl;
             }
         }
         //In any case, the minimal number of reinforcement army units per turn for any player is 3.
