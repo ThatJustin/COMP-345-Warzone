@@ -4,14 +4,8 @@
 #include "sources/Cards/Cards.h"
 #include <algorithm>
 #include <cmath>
-#include "sources/Orders/Orders.h"
-#include "sources/Cards/Cards.h"
-#include "sources/Map/Map.h"
-#include "Player.h"
-#include <cmath>
 #include "sources/GameEngine/GameEngine.h"
 #include <set>
-#include <algorithm>
 #include <vector>
 #include <time.h>
 #include <random>
