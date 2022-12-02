@@ -318,20 +318,27 @@ bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     //cheaterTerritory vector to return
     vector<Territory*> cheaterTerritory;
 
+    //something like this must be done so that it recognize that cheater territory get the territory originaly distributed
+    cheaterTerritory.push_back(player->getTerritories().at(0));
+
+    cout<<player->getPlayerName() << " has "<< cheaterTerritory.size() << " territory." <<endl;
+
     //loop trough each territory owned by all the player
     for(Territory* territory: player->getTerritories()) {
-        cout<<player->getPlayerName()<<endl;
+        //cout<<player->getPlayerName()<<endl;
         //loop through each adjacent territory
         for (Territory* adjacent: territory->getAdjacentTerritories()) {
             cout<<territory->getAdjacentTerritories().size()<<endl;
             //check if the territory is not already owned by the cheater
             if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()){
-                cout<<adjacent->getTerritoryOwner()->getPlayerName()<<endl;
+                cout<<"Stealing from: " <<adjacent->getTerritoryOwner()->getPlayerName()<<endl;
                 //if the adjacent territory isn't already in the list
                 if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
                     cheaterTerritory.push_back(adjacent);
-                    //conquer player 2 territory
-                    cout<< "over here: " <<cheaterTerritory.size()<<endl;
+                    //need to add it so that it will return the amount you want to the driver
+                    //player->getTerritories().push_back(adjacent);
+                    //conquer player 2,4 territory
+                    cout<< "Amount of territory controlled: " <<cheaterTerritory.size()<<endl;
                 }
             }
         }

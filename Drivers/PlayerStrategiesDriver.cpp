@@ -14,15 +14,7 @@ using namespace std;
  */
 void testPlayerStrategies(){
 
-    vector<Player*> players;
-    vector<Continent*> continents;
     vector<Territory*> territories;
-
-    Deck* deck = nullptr;
-
-    //Map* map = new Map(territories, continents);
-    //auto* mapLoader = new MapLoader();
-    //Map* map = mapLoader->loadMap("./Map Files/Aden.map");
 
     //(1) different players can be assigned different strategies that lead to different behavior
     //using the Strategy design pattern;
@@ -42,12 +34,25 @@ void testPlayerStrategies(){
 
     PlayerStrategy* benevolentPlayer = new BenevolentPlayerStrategy(player4);
 
+    player1->setPlayerStrategy(aggressivePlayer);
+    player2->setPlayerStrategy(neutralPlayer);
+    player3->setPlayerStrategy(cheaterPlayer);
+    player4->setPlayerStrategy(benevolentPlayer);
+
+    Deck* deck = nullptr;
+
+    player1->setReinforcementPool(15);
+    player3->setReinforcementPool(15);
+
+    //vector<Player*> players;
+    vector<Continent*> continents;
+
     Territory* continent1_t1 = new Territory(1, "continent1_t1", player1);
     Territory* continent1_t2 = new Territory(2, "continent1_t2", player2);
     Territory* continent1_t3 = new Territory(3, "continent1_t3", player1);
     Territory* continent1_t4 = new Territory(4, "continent1_t4", player2);
     Territory* continent1_t5 = new Territory(5, "continent1_t5", player3);
-    Territory* continent1_t6 = new Territory(6, "continent1_t6",player4);
+    Territory* continent1_t6 = new Territory(6, "continent1_t6", player4);
 
     territories.push_back(continent1_t1);
     territories.push_back(continent1_t2);
@@ -64,18 +69,15 @@ void testPlayerStrategies(){
     continent1_t4->addAdjacentTerritory(continent1_t3);
     continent1_t4->addAdjacentTerritory(continent1_t5);
     continent1_t5->addAdjacentTerritory(continent1_t4);
-    continent1_t6->addAdjacentTerritory(continent1_t5);
     continent1_t5->addAdjacentTerritory(continent1_t6);
+    continent1_t6->addAdjacentTerritory(continent1_t5);
 
-    continent1_t1->setTerritoryOwner(player1);
-    continent1_t2->setTerritoryOwner(player2);
-    continent1_t3->setTerritoryOwner(player2);
-    continent1_t4->setTerritoryOwner(player2);
-    continent1_t5->setTerritoryOwner(player3);
-    continent1_t6->setTerritoryOwner(player4);
-
-    player1->setReinforcementPool(15);
-    player3->setReinforcementPool(15);
+    //continent1_t1->setTerritoryOwner(player1);
+    //continent1_t2->setTerritoryOwner(player2);
+    //continent1_t3->setTerritoryOwner(player2);
+    //continent1_t4->setTerritoryOwner(player2);
+    //continent1_t5->setTerritoryOwner(player3);
+    //continent1_t6->setTerritoryOwner(player4);
 
     player1->addTerritory(continent1_t1);
     player1->addTerritory(continent1_t3);
@@ -85,11 +87,6 @@ void testPlayerStrategies(){
     player4->addTerritory(continent1_t6);
 
     cout<<player1->getPlayerName()<< " turn to attack, he is an aggressive player."<< endl;
-
-    player1->setPlayerStrategy(aggressivePlayer);
-    player2->setPlayerStrategy(neutralPlayer);
-    player3->setPlayerStrategy(cheaterPlayer);
-    player4->setPlayerStrategy(benevolentPlayer);
 
     //Map* map = new Map(territories, continents);
     auto* mapLoader = new MapLoader();
@@ -121,15 +118,18 @@ void testPlayerStrategies(){
     cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
     cout<<endl;
 
-    cout<<player3->getPlayerName() << " issue order is: " << player3->issueOrder(gameEngine) << endl;
-    cout<<endl;
-
+    cout<<player3->getPlayerName()<< " has "<< player3->getReinforcementPool() << " army." <<endl;
     cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()<< " territory." <<endl;
     cout<<endl;
 
-    cout<<player4->getPlayerName() << " issue order is: " << player4->issueOrder(gameEngine) << endl;
+    cout<<player3->getPlayerName() << " issue order is: " << player3->issueOrder(gameEngine) << endl;
     cout<<endl;
 
+    cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()+2<< " territory." <<endl;
+    cout<<endl;
+
+    //cout<<player4->getPlayerName() << " issue order is: " << player4->issueOrder(gameEngine) << endl;
+    //cout<<endl;
 
     delete gameEngine;
 }
