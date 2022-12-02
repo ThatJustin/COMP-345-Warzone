@@ -72,6 +72,13 @@ void testPlayerStrategies(){
     continent1_t5->addAdjacentTerritory(continent1_t6);
     continent1_t6->addAdjacentTerritory(continent1_t5);
 
+    continent1_t1->setNumberOfArmies(14);
+    continent1_t2->setNumberOfArmies(15);
+    continent1_t3->setNumberOfArmies(4);
+    continent1_t4->setNumberOfArmies(15);
+    continent1_t5->setNumberOfArmies(15);
+    continent1_t6->setNumberOfArmies(15);
+
     //continent1_t1->setTerritoryOwner(player1);
     //continent1_t2->setTerritoryOwner(player2);
     //continent1_t3->setTerritoryOwner(player2);

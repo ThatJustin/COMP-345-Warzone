@@ -104,10 +104,6 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
 
 bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
-    /*need to use gameEngine for the implementation?*/
-
-    cout<<gameEngine->getPlayer->getPlayerName()<<endl;
-
     //list of territory todefend
     vector<Territory*> defendPriority = toDefend();
 
@@ -115,9 +111,9 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     Territory* defend = defendPriority.at(0);
 
     //deploys armies on its strongest country
-    Orders* deployorders = new Deploy(gameEngine->getPlayer,gameEngine->getPlayer->getReinforcementPool(), defend);
+    Orders* deployorders = new Deploy(player, player->getReinforcementPool(), defend);
     deployorders->execute();
-    cout<< deployorders<<endl;
+    cout<< deployorders->orderResult<<endl;
     delete deployorders;
 
     //get the territory to attack
@@ -129,24 +125,24 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     //loop through each territory in the attack list
     for (Territory* territory: attack){
         //get all territory adjacent
-
         for(Territory* source: territory->getAdjacentTerritories()){
             //check if the territory is owned by the player
-            if(source->getTerritoryOwner() == gameEngine->getPlayer){
+            if(source->getTerritoryOwner() == player){
                 //check if territory not already in the list
                 if(!(find(differentTerritory.begin(), differentTerritory.end(), source) != differentTerritory.end())){
 
                     //advance order now that all deploy are over
-                    Orders* orders = new Advance(gameEngine->getPlayer,source->getNumberOfArmies(), source, territory, gameEngine->deck, true);
+                    Orders* orders = new Advance(player,source->getNumberOfArmies(), source, territory, gameEngine->deck, true);
                     //add order in the list
-                    gameEngine->getPlayer->getOrdersList()->addOrder(orders);
+                    player->getOrdersList()->addOrder(orders);
                     //push the order in the orderlist
                     ordersList.push_back(orders);
-                    cout<< deployorders<<endl;
+                    //cout<< deployorders<<endl;
                     //add the current territory in the list of territory already visited
                     differentTerritory.push_back(source);
                 }
             }
+            //push the territories in the gameengine as well
             gameEngine->territories.push_back(source);
         }
     }
