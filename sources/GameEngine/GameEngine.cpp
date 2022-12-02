@@ -779,6 +779,8 @@ void PlayersAdded::enterState() {
     }
     if (player->getPlayerName() == "Human") {
         player->setPlayerStrategy(new HumanPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Benevolent") {
+        player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
     }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
