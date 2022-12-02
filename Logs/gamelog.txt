@@ -32037,3 +32037,5 @@
 [Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [issueorders].
 [Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [executeorders].
 [Tue Nov 29 16:42:30 2022] [State Change] Game has changed to state [win].
+[Thu Dec 01 16:17:13 2022] [State Change] Game has changed to state [issueorders].
+[Fri Dec 02 11:30:14 2022] [OrderList] Order deploy added by player The Rock.
