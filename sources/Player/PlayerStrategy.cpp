@@ -12,6 +12,7 @@
 #include <vector>
 #include <time.h>
 #include <random>
+#include <bits/stdc++.h>
 
 //PlayerStrategy
 PlayerStrategy::PlayerStrategy(Player* pPlayer) {
@@ -60,10 +61,11 @@ vector<Territory*> HumanPlayerStrategy::toAttack() {
 }
 
 bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    cout << "Issuing orders for HumanPlayerStrategy." << endl;
     int reinforcementPoolCount = player->getReinforcementPool();
     while (reinforcementPoolCount > 0) {
-        if (reinforcementPoolCount == 0) {
-            goto noMoreReinforcementPool;
+        if (player->getTerritories().empty()) {
+            break;
         }
         int countToDeploy;
         cout << "How many units would you like to deploy? Available units " << reinforcementPoolCount << endl;
@@ -74,8 +76,8 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
             countToDeploy = reinforcementPoolCount;
         }
         cout << "Here is a list of your territories (format [Index] TerritoryName - Units stationed)" << endl;
-        for (int i = 0; i < this->toDefend().size(); i++) {
-            auto territory = toDefend()[i];
+        for (int i = 0; i < HumanPlayerStrategy::toDefend().size(); i++) {
+            auto territory = HumanPlayerStrategy::toDefend()[i];
             if (territory != nullptr) {
                 cout << "[" << i << "] " << territory->getTerritoryName() << " - " << territory->getNumberOfArmies()
                      << endl;
@@ -84,7 +86,7 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
         cout << "Input which territory by Index you'd like to deploy " << countToDeploy << " units to." << endl;
         int territoryIndex;
         cin >> territoryIndex;
-        auto territory = toDefend()[territoryIndex];
+        auto territory = HumanPlayerStrategy::toDefend()[territoryIndex];
         cout << "Issuing Deploy Order for " << countToDeploy << " units to territory "
              << territory->getTerritoryName() << ".";
         Orders* orders = new Deploy(player, countToDeploy, territory);
@@ -92,62 +94,334 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
         reinforcementPoolCount -= countToDeploy;
         cout << " Remaining units in pool " << reinforcementPoolCount << "." << endl;
     }
-    noMoreReinforcementPool:
     cout << "Out of units to deploy." << endl;
 
-//Advance moves
-
-    //Use one card every issue order phase if they have a card
-    if (!player->getHandCards()->getCards().empty()) {
-        cout << "Available cards to play :" << endl;
-        for (int i = 0; i < player->getHandCards()->getCards().size(); i++) {
-            auto card = player->getHandCards()->getCards()[i];
-            if (card != nullptr) {
-                cout << "[" << i << "] " << getNameByCardType(card->getType()) << endl;
+    //Advance moves
+    if (!HumanPlayerStrategy::toDefend().empty()) {
+        continueAdvMoveOrder:
+        cout << "Would you like to issue Advance Move orders?" << endl;
+        issueMoveOrder:
+        cout << "Enter 1 for yes and 0 for no." << endl;
+        int isIssuing;
+        cin >> isIssuing;
+        if (isIssuing == 0) {
+            cout << "Skipping issuing advance move orders." << endl;
+            goto finishedMoveAdv;
+        } else if (isIssuing == 1) {
+            pickSourceAgain:
+            cout
+                    << "Here is a list of your territories (format [Index] TerritoryName - Units stationed) that you can issue advance move orders to.\r\nEnter -1 to stop issuing advance move orders."
+                    << endl;
+            int sourceTargetArmyCountZero;
+            for (int i = 0; i < HumanPlayerStrategy::toDefend().size(); i++) {
+                auto territory = HumanPlayerStrategy::toDefend()[i];
+                if (territory->getNumberOfArmies() != 0) {
+                    cout << "[" << i << "] " << territory->getTerritoryName() << " - "
+                         << territory->getNumberOfArmies()
+                         << endl;
+                    sourceTargetArmyCountZero++;
+                }
             }
-        }
-        pickNewCard:
-        int cardIndex;
-        cout << "Input which card by Index you'd like to play." << endl;
-        cin >> cardIndex;
-        if (cardIndex >= 0 && cardIndex <= player->getHandCards()->getCards().size()) {
-            Cards* cardsToPlays = player->getHandCards()->getCards().at(cardIndex);
-            cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
-            Orders* orderToMake = nullptr;
-            switch (cardsToPlays->getType()) { // ignore missing for now
-                case BOMB:
-                    if (!toAttack().empty()) {
-                        Territory* target = toAttack().front();
-                        orderToMake = new Bomb(player, target);
-                    }
-                    break;
-                case BLOCKADE:
-                    if (!toDefend().empty()) {
-                        Territory* target = toDefend().front();
-                        orderToMake = new Blockade(player, gameEngine->getNeutralPlayer(), target);
-                    }
-                    break;
-                case AIRLIFT:
-                    if (!toDefend().empty()) {
-                        Territory* target = toDefend().back(); // target is last to defend
-                        Territory* source = toDefend().front(); // source is first to defend
-                        orderToMake = new Airlift(player, player->getReinforcementPool(), source, target);
-                    }
-                    break;
-                case DIPLOMACY:
-                    if (!toAttack().empty()) {
-                        Player* negotiatePlayer = toAttack().front()->getTerritoryOwner();
-                        orderToMake = new Negotiate(player, negotiatePlayer);
-                    }
-                    break;
+            if (sourceTargetArmyCountZero == 0) {
+                cout << "Skipping issuing advance move orders. Your territories have no available units to move."
+                     << endl;
+                goto finishedMoveAdv;
             }
-            if (orderToMake != nullptr) {
-                //this handles creating the order and removing it from players hand + back to deck
-                cardsToPlays->play(player, gameEngine->getDeck(), orderToMake);
+            int sourceTerritoryIndex;
+            cin >> sourceTerritoryIndex;
+            if (sourceTerritoryIndex == -1) {
+                goto finishedMoveAdv;
+            } else {
+                int sourceTerritoryUnitMoveCount;
+                cout << "How many units would you like to move from this territory? (Available: "
+                     << HumanPlayerStrategy::toDefend()[sourceTerritoryIndex]->getNumberOfArmies() << ")" << endl;
+                cin >> sourceTerritoryUnitMoveCount;
+                cout
+                        << "Here is a list of your territories (format [Index] TerritoryName - Units stationed) that you can move units to.\r\nEnter -1 to stop issuing advance move orders."
+                        << endl;
+                int adjCount = 0;
+                for (int i = 0; i < HumanPlayerStrategy::toDefend().size(); i++) {
+                    auto sourceTerritory = HumanPlayerStrategy::toDefend()[i];
+                    if (sourceTerritory->getTerritoryName() !=
+                        HumanPlayerStrategy::toDefend()[sourceTerritoryIndex]->getTerritoryName() &&
+                        sourceTerritory->isAdjacent(HumanPlayerStrategy::toDefend()[sourceTerritoryIndex])) {
+                        cout << "[" << i << "] " << sourceTerritory->getTerritoryName() << " - "
+                             << sourceTerritory->getNumberOfArmies()
+                             << endl;
+                        adjCount++;
+                    }
+                }
+                int targetTerritoryIndex;
+                cin >> targetTerritoryIndex;
+                if (adjCount == 0) {
+                    cout << "You do not own any adjacent territories to this one. Pick another..." << endl;
+                    goto pickSourceAgain;
+                }
+                if (sourceTerritoryIndex == -1) {
+                    goto finishedMoveAdv;
+                } else {
+                    auto source = HumanPlayerStrategy::toDefend()[sourceTerritoryIndex];
+                    auto target = HumanPlayerStrategy::toDefend()[targetTerritoryIndex];
+                    Orders* advance_order = new Advance(player, sourceTerritoryUnitMoveCount,
+                                                        source,
+                                                        target,
+                                                        gameEngine->getDeck(),
+                                                        true);
+                    player->getOrdersList()->addOrder(advance_order);
+                    cout << "Issuing Advance order to move player army from " << source->getTerritoryName() << " to "
+                         << target->getTerritoryName() << " for " << sourceTerritoryUnitMoveCount << " units." << endl;
+                    goto continueAdvMoveOrder;
+                }
             }
         } else {
-            cout << "This card doesn't exist, please try again." << endl;
-            goto pickNewCard;
+            cout << "Invalid option. Try again" << endl;
+            goto issueMoveOrder;
+        }
+    }
+    finishedMoveAdv:
+    if (!HumanPlayerStrategy::toAttack().empty()) {
+        continueAdvAttackOrder:
+        cout << "Would you like to issue Advance Attack orders?" << endl;
+        issueAttackOrder:
+        cout << "Enter 1 for yes and 0 for no." << endl;
+        int isIssuing;
+        cin >> isIssuing;
+        if (isIssuing == 0) {
+            cout << "Skipping issuing advance attack orders." << endl;
+            goto finishedAttackAdv;
+        } else if (isIssuing == 1) {
+            // Map holds attacker (attacker index, vector of territories it can be attacked by using their index)
+            std::map<int, std::vector<int>> territoriesToAttack;
+            //Fetch all territories the player can attack (they must be adj to the players' territory )
+
+            int targetArmyCountZero;
+            for (int i = 0; i < HumanPlayerStrategy::toAttack().size(); i++) {
+                auto targetTerritory = HumanPlayerStrategy::toAttack()[i];
+                for (int j = 0; j < HumanPlayerStrategy::toDefend().size(); j++) {
+                    auto sourceTerritory = HumanPlayerStrategy::toDefend()[j];
+                    if (targetTerritory->isAdjacent(sourceTerritory) &&
+                        sourceTerritory->getPlayerName() != targetTerritory->getPlayerName() &&
+                        sourceTerritory->getTerritoryName() != targetTerritory->getTerritoryName() &&
+                        sourceTerritory->getNumberOfArmies() > 0) {
+                        if (!std::count(territoriesToAttack[i].begin(), territoriesToAttack[i].end(),
+                                        j)) {
+                            // not found add it
+                            territoriesToAttack[i].push_back(j);
+                            targetArmyCountZero++;
+                        }
+                    }
+                }
+            }
+            if (targetArmyCountZero == 0) {
+                cout
+                        << "You are unable to attack any territory. You probably have no units on your territories to advance!"
+                        << endl;
+                goto finishedAttackAdv;
+            }
+            cout
+                    << "Here are the territories you can attack with your territories. Please enter the number shown to issue that order. Enter -1 to stop issuing advance attack orders."
+                    << endl;
+            auto it = territoriesToAttack.begin();
+            int whichToAttack = 0;
+            while (it != territoriesToAttack.end()) {
+                for (const auto& sourceIndex: it->second) {
+                    auto targetT = HumanPlayerStrategy::toAttack()[it->first];
+                    auto sourceT = HumanPlayerStrategy::toDefend()[sourceIndex];
+                    cout << "[" << whichToAttack << "] Enemy territory " << targetT->getTerritoryName()
+                         << " can be attacked by your territory " << sourceT->getTerritoryName() << "." << endl;
+                    whichToAttack++;
+                }
+                it++;
+            }
+            if (whichToAttack == 0) {
+                cout
+                        << "Skipping issuing advance attack orders. Your territories have no available units to attack with."
+                        << endl;
+                goto finishedAttackAdv;
+            }
+            wrongAttackIndex:
+            int attackIndex;
+            cin >> attackIndex;
+            if (attackIndex > 0 && attackIndex < whichToAttack) {
+                Territory* finalTargetTerritory;
+                Territory* finalSourceTerritory;
+                it = territoriesToAttack.begin();
+                whichToAttack = 0;
+                while (it != territoriesToAttack.end()) {
+                    for (const auto& sourceIndex: it->second) {
+                        if (whichToAttack == attackIndex) {
+                            finalTargetTerritory = HumanPlayerStrategy::toAttack()[it->first];
+                            finalSourceTerritory = HumanPlayerStrategy::toDefend()[sourceIndex];
+                            goto outOfHere;
+                        }
+                        whichToAttack++;
+                    }
+                    it++;
+                }
+                outOfHere:
+                if (finalTargetTerritory != nullptr && finalSourceTerritory != nullptr) {
+                    cout << "How many units would you like to attack with? Available: "
+                         << finalSourceTerritory->getNumberOfArmies() << "." << endl;
+                    wrongArmyCount:
+                    int unitsToAttackWith;
+                    cin >> unitsToAttackWith;
+                    if (unitsToAttackWith > 0 && unitsToAttackWith <= finalSourceTerritory->getNumberOfArmies()) {
+                        Orders* advance_order = new Advance(player, unitsToAttackWith, finalSourceTerritory,
+                                                            finalTargetTerritory,
+                                                            gameEngine->getDeck(),
+                                                            false);
+                        player->getOrdersList()->addOrder(advance_order);
+                        cout << "Issuing Advance order to attack enemy territory "
+                             << finalTargetTerritory->getTerritoryName() << " with your territory "
+                             << finalSourceTerritory->getTerritoryName() << " with " << unitsToAttackWith
+                             << " army units." << endl;
+                        goto continueAdvAttackOrder;
+                    } else {
+                        cout << " Invalid number of army units to attack with. Try again." << endl;
+                        goto wrongArmyCount;
+                    }
+                }
+            } else {
+                cout << "here" << endl;
+                cout << "Whoops, you wrote an invalid index. Try again." << endl;
+                goto wrongAttackIndex;
+            }
+        } else {
+            cout << "Invalid option. Try again" << endl;
+            goto issueAttackOrder;
+        }
+    }
+    finishedAttackAdv:
+
+    //Use one card every issue order phase if they have a card
+    startOfCards:
+    if (!player->getHandCards()->getCards().empty()) {
+        cout << "Would you like to use cards? Enter 1 for yes and 0 for no." << endl;
+        int cardUsage;
+        cin >> cardUsage;
+        if (cardUsage == 1) {
+            cout << "Available cards to play :" << endl;
+            for (int i = 0; i < player->getHandCards()->getCards().size(); i++) {
+                auto card = player->getHandCards()->getCards()[i];
+                if (card != nullptr) {
+                    cout << "[" << i << "] " << getNameByCardType(card->getType()) << endl;
+                }
+            }
+            pickNewCard:
+            int cardIndex;
+            cout << "Input which card by Index you'd like to play." << endl;
+            cin >> cardIndex;
+            if (cardIndex >= 0 && cardIndex <= player->getHandCards()->getCards().size()) {
+                Cards* cardsToPlays = player->getHandCards()->getCards().at(cardIndex);
+                cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
+                Orders* orderToMake = nullptr;
+                switch (cardsToPlays->getType()) { // ignore missing for now
+                    case BOMB:
+                        if (!HumanPlayerStrategy::toAttack().empty()) {
+                            int index = 0;
+                            cout << "Input which index of the territory you want to use this card on: " << endl;
+                            for (auto toAttackTer: HumanPlayerStrategy::toAttack()) {
+                                cout << "[" << index << "] Territory " << toAttackTer->getTerritoryName() << endl;
+                                index++;
+                            }
+                            wrongIndexBomb:
+                            int i;
+                            cin >> i;
+                            if (i > 0 && i < HumanPlayerStrategy::toAttack().size()) {
+                                Territory* target = toAttack()[i];
+                                orderToMake = new Bomb(player, target);
+                            } else {
+                                cout << "Invalid index. Try again." << endl;
+                                goto wrongIndexBomb;
+                            }
+                        }
+                        break;
+                    case BLOCKADE:
+                        if (!HumanPlayerStrategy::toDefend().empty()) {
+                            int index = 0;
+                            cout << "Input which index of the territory you want to use this card on: " << endl;
+                            for (auto toDef: HumanPlayerStrategy::toDefend()) {
+                                cout << "[" << index << "] Territory " << toDef->getTerritoryName() << endl;
+                                index++;
+                            }
+                            wrongIndexBlockade:
+                            int i;
+                            cin >> i;
+                            if (i > 0 && i < HumanPlayerStrategy::toDefend().size()) {
+                                Territory* target = HumanPlayerStrategy::toDefend()[i];
+                                orderToMake = new Blockade(player, gameEngine->getNeutralPlayer(), target);
+                            } else {
+                                cout << "Invalid index. Try again." << endl;
+                                goto wrongIndexBlockade;
+                            }
+                        }
+                        break;
+                    case AIRLIFT:
+                        if (!HumanPlayerStrategy::toDefend().empty()) {
+                            int index = 0;
+                            cout << "Input the index of the source territory: " << endl;
+                            for (auto toDef: HumanPlayerStrategy::toDefend()) {
+                                cout << "[" << index << "] Territory " << toDef->getTerritoryName() << endl;
+                                index++;
+                            }
+                            wrongIndexAirliftSource:
+                            int i;
+                            cin >> i;
+                            if (i > 0 && i < HumanPlayerStrategy::toDefend().size()) {
+                                Territory* source = HumanPlayerStrategy::toDefend()[i];
+                                index = 0;
+                                cout << "Input the index of the target territory: " << endl;
+                                for (auto toDef: HumanPlayerStrategy::toDefend()) {
+                                    if (toDef->getTerritoryName() != source->getTerritoryName()) {
+                                        cout << "[" << index << "] Territory " << toDef->getTerritoryName() << endl;
+                                        index++;
+                                    }
+                                }
+                                wrongIndexAirliftTarget:
+                                int j;
+                                cin >> j;
+                                if (i > 0 && i < HumanPlayerStrategy::toDefend().size()) {
+                                    Territory* target = HumanPlayerStrategy::toDefend()[j];
+                                    orderToMake = new Airlift(player, player->getReinforcementPool(), source, target);
+                                } else {
+                                    goto wrongIndexAirliftTarget;
+                                }
+                            } else {
+                                cout << "Invalid index. Try again." << endl;
+                                goto wrongIndexAirliftSource;
+                            }
+                        }
+                        break;
+                    case DIPLOMACY:
+                        if (!HumanPlayerStrategy::toAttack().empty()) {
+                            int index = 0;
+                            cout << "Input which index of the territory you want to use this card on: " << endl;
+                            for (auto toDef: HumanPlayerStrategy::toAttack()) {
+                                cout << "[" << index << "] Territory " << toDef->getTerritoryName() << endl;
+                                index++;
+                            }
+                            wrongIndexDiplomacy:
+                            int i;
+                            cin >> i;
+                            if (i > 0 && i < HumanPlayerStrategy::toAttack().size()) {
+                                Player* negotiatePlayer = HumanPlayerStrategy::toAttack()[i]->getTerritoryOwner();
+                                orderToMake = new Negotiate(player, negotiatePlayer);
+                            } else {
+                                cout << "Invalid index. Try again." << endl;
+                                goto wrongIndexDiplomacy;
+                            }
+                        }
+                        break;
+                }
+                if (orderToMake != nullptr) {
+                    //this handles creating the order and removing it from players hand + back to deck
+                    cardsToPlays->play(player, gameEngine->getDeck(), orderToMake);
+                    goto startOfCards;
+                }
+            } else {
+                cout << "This card doesn't exist, please try again." << endl;
+                goto pickNewCard;
+            }
         }
     }
     return true;
@@ -236,7 +510,8 @@ vector<Territory*> DefaultPlayerStrategy::toAttack() {
         for (Territory* adjacent: ter->getAdjacentTerritories()) {
             if (adjacent->getTerritoryOwner()->getPlayerName() != ter->getTerritoryOwner()->getPlayerName()) {
                 //if adjacent territory not already in list
-                if (!(find(attackTerritories.begin(), attackTerritories.end(), adjacent) != attackTerritories.end())) {
+                if (!(find(attackTerritories.begin(), attackTerritories.end(), adjacent) !=
+                      attackTerritories.end())) {
                     //add to the list of territories that can be attacked
                     attackTerritories.push_back(adjacent);
                 }
