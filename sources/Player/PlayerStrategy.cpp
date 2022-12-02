@@ -509,21 +509,12 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
                                         gameEngine->getDeck(), true);
     player->getOrdersList()->addOrder(advance_order);
 
-    if (player->getHandCards()->getCards().empty()) {
-        return false;
-    } else {
+    if (!player->getHandCards()->getCards().empty()) {
         if (player->getHandCards()->getCards().front() != nullptr) {
             cout << "Issuing Card " << getNameByCardType(player->getHandCards()->getCards().front()->getType()) << endl;
             Orders* order_to_be_made = nullptr;
 
             switch (player->getHandCards()->getCards().front()->getType()) {
-                case BOMB:
-                case REINFORCEMENT:
-                case BLOCKADE:
-                case AIRLIFT: {
-                    return false;
-                }
-
                 case DIPLOMACY: {
                     Player* negotiation_player = nullptr;
 
