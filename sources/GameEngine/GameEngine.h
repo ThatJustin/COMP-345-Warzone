@@ -62,9 +62,10 @@ private:
 
     Observer* observer;
 
+
 public:
     explicit GameEngine(LogObserver* obs);
-
+    void initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns);
     GameEngine(const GameEngine& gameEngine);
 
     ~GameEngine();
@@ -80,6 +81,11 @@ public:
     void detach(Observer* obs) override;
 
     GameState* getCurrentGameState();
+
+    bool isTournamentMode;
+
+    int tournamentNumberOfGames;
+
 
     //Keep track of the current param for loadmap/addplayer
     string commandParam;

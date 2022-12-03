@@ -2,6 +2,7 @@
 #include "../Map/Map.h"
 #include <iostream>
 #include <random>
+
 #include <algorithm>
 #include "math.h"
 #include "CommandProcessor.h"
@@ -9,10 +10,16 @@
 #include "sources/Player/Player.h"
 #include "sources/Cards/Cards.h"
 #include "sources/Orders/Orders.h"
+#include <sstream>
+#include <fstream>
+#include <filesystem>
+#include <vector>
+#include <string>
 
 /**
  * Constructor of GameEngine
  */
+
 GameEngine::GameEngine(LogObserver* obs) {
     attach(obs);
     //Keep track of the current game state
@@ -36,7 +43,8 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
-    this->turnNumber == 0;
+    this->isTournamentMode = false;
+    this->tournamentNumberOfGames = 0;
 }
 
 /**
@@ -101,6 +109,41 @@ GameEngine::~GameEngine() {
     }
 }
 
+void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns){
+    std::cout << "Starting tournament" << std::endl;
+    this->isTournamentMode = true;
+    this->tournamentNumberOfGames = NumberOfGames;
+    vector<string> MapFiles;
+    vector<string> PlayerStrategies;
+    string MapFile;
+    string PlayerStrategy;
+    std::stringstream MapFileStream(ListOfMapFiles);
+    std::stringstream PlayerStrategyStream(ListOfPlayerStrategies);
+
+    while (std::getline(MapFileStream, MapFile, ',')) {
+        MapFiles.push_back(MapFile);
+    }
+    while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
+        PlayerStrategies.push_back(PlayerStrategy);
+    }
+    int index = 0;
+    for (auto & iteratorMapFile : MapFiles) {
+        cout << "creating map files" <<endl;
+        ofstream File("Tournaments/map"+std::to_string(index)+".txt");
+        File << "loadmap " << iteratorMapFile << endl;
+        File << "validatemap" << endl;
+        for(auto & iteratorPlayerStrategy : PlayerStrategies){
+            File << "addplayer " << iteratorPlayerStrategy << endl;
+        }
+        File << "gamestart" << endl;
+        for(int i = 0; i < NumberOfGames; i++){
+            File << "replay" << endl;
+        }
+        File << "quit" << endl;
+        File.close();
+        index++;
+    }
+}
 /**
  * Changes the state of the game based on the transitionn given.hanging state for the game.
  * @param transition
@@ -394,7 +437,7 @@ void GameEngine::gameStart() {
         }
     }
     //Once mainGameLoop is called, the game will run by itself until it gets to the win state
-//    mainGameLoop();
+    mainGameLoop();
     //disable for A2 demo, we'll do it manually in test driver
 }
 
