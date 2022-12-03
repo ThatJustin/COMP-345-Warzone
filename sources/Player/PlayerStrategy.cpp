@@ -254,6 +254,8 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
 //Whenever someone can attack someone, check if the player being attacked has a NeutralPlayerStrategy and if they do,
 //change it to Aggressive Check all the orders that involve attacking someone
+//I believe that a player should be made aware that it is being attacked when an order results in some of thieir army units being destroyed,
+//i.e. during order execution. It could also be as an order is being issued.
 
 //NeutralPlayerStrategy
 NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {

@@ -123,7 +123,7 @@ void testPlayerStrategies(){
     cout<<endl;
 
     //for neutral player
-    //cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
+    //cout<<player2->getPlayerName() << " issue order is: " << player2 << endl;
     //cout<<endl;
 
     //for cheater player

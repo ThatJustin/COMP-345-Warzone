@@ -134,8 +134,6 @@ public:
 
     void toStreamInsertion(std::ostream& os) const override;
 
-    bool conquering;
-
 private:
     int m_numberOfArmyUnits;
     Territory* m_sourceTerritory;
