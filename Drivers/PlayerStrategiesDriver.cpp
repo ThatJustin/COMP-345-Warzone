@@ -41,8 +41,8 @@ void testPlayerStrategies(){
 
     Deck* deck = nullptr;
 
-    player1->setReinforcementPool(15);
-    player3->setReinforcementPool(15);
+    //player1->setReinforcementPool(15);
+    //player3->setReinforcementPool(15);
 
     //vector<Player*> players;
     vector<Continent*> continents;
@@ -74,7 +74,7 @@ void testPlayerStrategies(){
 
     continent1_t1->setNumberOfArmies(14);
     continent1_t2->setNumberOfArmies(15);
-    continent1_t3->setNumberOfArmies(4);
+    continent1_t3->setNumberOfArmies(24);
     continent1_t4->setNumberOfArmies(15);
     continent1_t5->setNumberOfArmies(15);
     continent1_t6->setNumberOfArmies(15);
@@ -119,21 +119,24 @@ void testPlayerStrategies(){
     cout<<player1->getPlayerName()<< " has "<< player1->getTerritories().size()<< " territory." <<endl;
     cout<<endl;
 
-    cout<<player1->getPlayerName() << " issue order is: " << player1->issueOrder(gameEngine) << endl;
+    cout<<player1->getPlayerName() << " issue order is working if the number is: " << player1->issueOrder(gameEngine) << endl;
     cout<<endl;
 
-    cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
-    cout<<endl;
+    //for neutral player
+    //cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
+    //cout<<endl;
 
-    cout<<player3->getPlayerName()<< " has "<< player3->getReinforcementPool() << " army." <<endl;
-    cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()<< " territory." <<endl;
-    cout<<endl;
+    //for cheater player
+    //cout<<player3->getPlayerName()<< " has "<< player3->getReinforcementPool() << " army." <<endl;
+    //cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()<< " territory." <<endl;
+    //cout<<endl;
 
-    cout<<player3->getPlayerName() << " issue order is: " << player3->issueOrder(gameEngine) << endl;
-    cout<<endl;
+    //cout<<player3->getPlayerName() << " issue order is: ";// << player3->toAttack() << endl;
+    //player3->toAttack();
+    //cout<<endl;
 
-    cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()+2<< " territory." <<endl;
-    cout<<endl;
+    //cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()+2<< " territory." <<endl;
+    //cout<<endl;
 
     //cout<<player4->getPlayerName() << " issue order is: " << player4->issueOrder(gameEngine) << endl;
     //cout<<endl;

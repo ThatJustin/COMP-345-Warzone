@@ -112,9 +112,14 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
     //deploys armies on its strongest country
     Orders* deployorders = new Deploy(player, player->getReinforcementPool(), defend);
-    deployorders->execute();
-    cout<< deployorders->orderResult<<endl;
-    delete deployorders;
+    player->getOrdersList()->addOrder(deployorders);
+    //push the order in the orderlist
+    ordersList.push_back(deployorders);
+
+    //test if the deploy to strongest territory is performed successfully
+    //deployorders->execute();
+    //cout<< "deployorders executed"<<endl;
+    //delete deployorders;
 
     //get the territory to attack
     vector<Territory*> attack = toAttack();
@@ -137,7 +142,7 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
                     player->getOrdersList()->addOrder(orders);
                     //push the order in the orderlist
                     ordersList.push_back(orders);
-                    //cout<< deployorders<<endl;
+                    //cout<< "Advanced"<<endl;
                     //add the current territory in the list of territory already visited
                     differentTerritory.push_back(source);
                 }
@@ -247,6 +252,9 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     return true;
 }
 
+//Whenever someone can attack someone, check if the player being attacked has a NeutralPlayerStrategy and if they do,
+//change it to Aggressive Check all the orders that involve attacking someone
+
 //NeutralPlayerStrategy
 NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
 
@@ -254,34 +262,15 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(p
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
 
-    vector<Territory*> defendPriority;
-
-    //return true if the neutral player is being attacked
-    isattacked = true;
-
-    return defendPriority; //{};
+    return {};
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
 
-    vector<Territory*> attackPriority;
-
-    return attackPriority; //{};
+    return {};
 }
 
 bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
-    cout<<gameEngine->getPlayer->getPlayerName()<<endl;
-
-    //PlayerStrategy* ps = new PlayerStrategy(this->player);
-    AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(gameEngine->getPlayer);
-
-    //check if it is attack
-    if(isattacked){
-        //if so turn into an aggressive player
-        player->setPlayerStrategy(aps);
-        cout<<gameEngine->getPlayer->getPlayerName()<< " is now an aggressive player."<< endl;
-    }
 
     return true;
 }
@@ -295,34 +284,18 @@ vector<Territory*> CheaterPlayerStrategy::toDefend() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
-    //return every adjacent territory that isnt ther's
-    return {};
-}
 
-bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
-    //loop toattack
-    //use advance order and add a parameter to check if its conquering(bool)
-    //Advance* advance = new Advance();
-    //advance->execute();
-
-    //if(advance->conquering){
-
-    //    toAttack();
-   // }
-
+    //return every adjacent territory that isn't there's
     //cheaterTerritory vector to return
     vector<Territory*> cheaterTerritory;
 
-    //something like this must be done so that it recognize that cheater territory get the territory originaly distributed
-    cheaterTerritory.push_back(player->getTerritories().at(0));
+    //something like this must be done so that it recognize that cheater territory get the territory originally distributed
+    for(Territory* terr:player->getTerritories()){
+        cheaterTerritory.push_back(terr);
+    }
 
     cout<<player->getPlayerName() << " has "<< cheaterTerritory.size() << " territory." <<endl;
-
-    //loop trough each territory owned by all the player
     for(Territory* territory: player->getTerritories()) {
-        //cout<<player->getPlayerName()<<endl;
-        //loop through each adjacent territory
         for (Territory* adjacent: territory->getAdjacentTerritories()) {
             cout<<territory->getAdjacentTerritories().size()<<endl;
             //check if the territory is not already owned by the cheater
@@ -332,21 +305,22 @@ bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
                 if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
                     cheaterTerritory.push_back(adjacent);
                     //need to add it so that it will return the amount you want to the driver
-                    //player->getTerritories().push_back(adjacent);
+                    player->getTerritories().push_back(adjacent);
                     //conquer player 2,4 territory
-                    cout<< "Amount of territory controlled: " <<cheaterTerritory.size()<<endl;
+                    cout<< "Amount of territory stolen: " <<cheaterTerritory.size()<<endl;
                 }
             }
         }
     }
 
-    //attack the lowest territory
     sort(toAttack().begin(), toAttack().end(),[](Territory* a, Territory* b) -> bool {
-             return a->getNumberOfArmies() < b->getNumberOfArmies();
+        return a->getNumberOfArmies() < b->getNumberOfArmies();
     });
 
-    //gameEngine->territories = cheaterTerritory;
-    //delete advance;
+    return cheaterTerritory;
+}
+
+bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
     return true;
 }

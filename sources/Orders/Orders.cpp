@@ -9,6 +9,7 @@
 #include "../Cards/Cards.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
+#include "../Player/PlayerStrategy.h"
 #include <random>
 
 using namespace std;
@@ -514,10 +515,22 @@ bool Advance::validate() {
             return false;
         }
     } else {
-        cout << "Advance order is to to attack." << endl;
+
+        cout << "Advance order is to attack." << endl;
         cout << "Source territory owner " << m_sourceTerritory->getPlayerName() << " player name "
              << player->getPlayerName() << endl;
         cout << "Target territory owner " << m_targetTerritory->getPlayerName() << "." << endl;
+
+        //turn neutral player into an aggressive player
+        AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(m_targetTerritory->getPlayer());
+        NeutralPlayerStrategy* nps;
+
+        //check if it is attacked and if it is a neutral player
+        if(m_targetTerritory->getPlayer()->getPlayerStrategy() == nps){
+            //if so turn into an aggressive player
+            m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
+            cout<<m_targetTerritory->getPlayerName()<<" is now an aggressive player."<< endl;
+        }
 
         if (m_sourceTerritory->getPlayerName() == m_targetTerritory->getPlayerName()) {
             cout << "Invalid advance order. Player cannot attack their own territory." << endl;
