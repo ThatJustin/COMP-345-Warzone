@@ -491,20 +491,26 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
         return false;
     }
     if (toDefend()[0] == nullptr) {
-        cout << player->getPlayerName() << " cannot deploy to this territory, which is their weakest one, with their entire/whole reinforcement pool since it does not exist." << endl;
+        cout << player->getPlayerName()
+             << " cannot deploy to this territory, which is their weakest one, with their entire/whole reinforcement pool since it does not exist."
+             << endl;
         return false;
     }
     if (toDefend()[1] == nullptr) {
-        cout << player->getPlayerName() << " cannot advance to this territory, which is their second weakest one, or use this territory to deploy army units to a weaker territory using an Airlift order since it does not exist." << endl;
+        cout << player->getPlayerName()
+             << " cannot advance to this territory, which is their second weakest one, or use this territory to deploy army units to a weaker territory using an Airlift order since it does not exist."
+             << endl;
         return false;
     }
     if (toDefend().back() == nullptr) {
-        cout << player->getPlayerName() << " cannot use this territory, which is their strongest one, to advance to another weaker territory since it does not exist." << endl;
+        cout << player->getPlayerName()
+             << " cannot use this territory, which is their strongest one, to advance to another weaker territory since it does not exist."
+             << endl;
         return false;
     }
 
-    int count_to_advance = floor(toDefend().back()->getNumberOfArmies()/2);
-    int count_to_airlift = floor(toDefend()[1]->getNumberOfArmies()/2);
+    int count_to_advance = floor(toDefend().back()->getNumberOfArmies() / 2);
+    int count_to_airlift = floor(toDefend()[1]->getNumberOfArmies() / 2);
 
     // here, I am getting the player's two territories with the lowest number of armies, i.e. the two weakest territories,
     // and deploying their entire/whole reinforcement pool to the first territory and advancing half of the number of armies
@@ -533,15 +539,16 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
             Orders* order_to_be_made = nullptr;
 
             switch (player->getHandCards()->getCards().front()->getType()) {
-                case BOMB: case BLOCKADE: case REINFORCEMENT:
+                case BOMB:
+                case BLOCKADE:
+                case REINFORCEMENT:
                     break;
                 case AIRLIFT:
-                    order_to_be_made = new Airlift(player, count_to_airlift, second_weakest_territory, weakest_territory);
-                    player->getOrdersList()->addOrder(order_to_be_made);
+                    order_to_be_made = new Airlift(player, count_to_airlift, second_weakest_territory,
+                                                   weakest_territory);
                     break;
                 case DIPLOMACY: {
                     Player* negotiation_player = nullptr;
-
                     for (Player* another_player: gameEngine->getGamePlayers()) {
                         if (another_player != player) {
                             if (negotiation_player == nullptr ||
@@ -550,13 +557,10 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
                             }
                         }
                     }
-
                     order_to_be_made = new Negotiate(player, negotiation_player);
-                    player->getOrdersList()->addOrder(order_to_be_made);
                 }
                     break;
             }
-
             if (order_to_be_made != nullptr) {
                 player->getHandCards()->getCards().front()->play(player, gameEngine->getDeck(), order_to_be_made);
                 return true;
