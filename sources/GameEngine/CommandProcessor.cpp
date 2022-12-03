@@ -201,6 +201,9 @@ std::ostream& operator<<(ostream& stream, const CommandProcessor& commandProcess
 bool CommandProcessor::validate(Command* pCommand, const std::string& currentState) {
     string com = pCommand->getTransitionName();
     bool success = false;
+    if(com == "tournament"){
+        success = true;
+    }
     // Check if the transition is valid from the current state
     if (com == "loadmap") {
         if (pCommand->getParam().empty()) {
