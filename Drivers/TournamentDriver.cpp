@@ -127,12 +127,14 @@ void testTournament(int argc, char** argv) {
 
             gameEngine->setCommandProcessor(commandProcessor);
             gameEngine->changeStateByTransition(GameEngine::StartGame);
+
         } else if (c->getTransitionName() == "quit") {
             index++;
             if(index != gameEngine->tournamentNumberOfGames-1){
                 cout << "playing Tournaments/map"+std::to_string(index) << endl;
                 commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index), logObserver);
                 gameEngine->setCommandProcessor(commandProcessor);
+                gameEngine->tournamentMapName = "map"+std::to_string(index);
             }else{
                 cout << "Thanks for playing!" << endl;
                 break;

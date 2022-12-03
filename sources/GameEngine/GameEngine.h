@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "sources/LogObserver/LoggingObserver.h"
+#include <map>
 
 using namespace std;
 
@@ -86,6 +87,9 @@ public:
 
     int tournamentNumberOfGames;
 
+    map<string,string> result;
+
+    string tournamentMapName;
 
     //Keep track of the current param for loadmap/addplayer
     string commandParam;

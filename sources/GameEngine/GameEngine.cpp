@@ -45,6 +45,8 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->neutral = new Player("Neutral");
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
+    this->result = map<string,string>();
+    this->tournamentMapName = "";
 }
 
 /**
@@ -1129,6 +1131,9 @@ void ExecuteOrders::enterState() {
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
         this->gameEngine->changeStateByTransition(GameEngine::Win);
+        if(gameEngine->isTournamentMode){
+            gameEngine->result.insert({gameEngine->tournamentMapName, gameEngine->getGamePlayers()[0]->getPlayerName()});
+        }
     }
     cout << endl;
 }
