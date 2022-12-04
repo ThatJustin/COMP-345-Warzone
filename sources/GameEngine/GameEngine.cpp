@@ -50,6 +50,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->result = map<string,string>();
     this->tournamentMapName = "";
     this->hasTournamentEnded = false;
+    this->tournamentMaxNumberOfTurns = 0;
 }
 
 /**
@@ -134,7 +135,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     int index = 0;
     for (auto & iteratorMapFile : MapFiles) {
         cout << "creating map files" <<endl;
-        ofstream File("Tournaments/map"+std::to_string(index)+".txt");
+        ofstream File("Games/Tournaments/map"+std::to_string(index)+".txt");
         File << "loadmap " << iteratorMapFile << endl;
         File << "validatemap" << endl;
         for(auto & iteratorPlayerStrategy : PlayerStrategies){
@@ -1154,9 +1155,15 @@ void ExecuteOrders::enterState() {
     //Check if there's a winner (1 player left)
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
-        this->gameEngine->changeStateByTransition(GameEngine::Win);
         if(gameEngine->isTournamentMode){
             gameEngine->result.insert({gameEngine->tournamentMapName, gameEngine->getGamePlayers()[0]->getPlayerName()});
+        }
+        this->gameEngine->changeStateByTransition(GameEngine::Win);
+    }else if(gameEngine->isTournamentMode){
+        if(gameEngine->turnNumber == gameEngine->tournamentMaxNumberOfTurns){
+            gameEngine->hasWinner = true;
+            gameEngine->result.insert({gameEngine->tournamentMapName, "Draw"});
+            gameEngine->changeStateByTransition(GameEngine::Win);
         }
     }
     cout << endl;

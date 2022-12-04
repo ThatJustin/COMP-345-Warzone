@@ -122,12 +122,11 @@ void testTournament(int argc, char** argv) {
                 MaxNumberOfTurns = stoi(In_Args[in_arg_index+1]);
             }
             cout << "initializing tournament" << endl;
-            cout << MaxNumberOfTurns << endl;
             gameEngine->initializeTournament(ListOfMapFiles, ListOfPlayerStrategies, NumberOfGames, MaxNumberOfTurns);
 
+            commandProcessor = new FileCommandProcessorAdapter("Tournaments/map0.txt", logObserver);
             gameEngine->setCommandProcessor(commandProcessor);
-            gameEngine->changeStateByTransition(GameEngine::StartGame);
-
+            gameEngine->tournamentMaxNumberOfTurns = MaxNumberOfTurns;
         } else if (c->getTransitionName() == "quit") {
             index++;
             if(index != gameEngine->tournamentNumberOfGames-1){
