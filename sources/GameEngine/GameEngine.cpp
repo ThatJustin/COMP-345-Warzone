@@ -2,7 +2,6 @@
 #include "../Map/Map.h"
 #include <iostream>
 #include <random>
-
 #include <algorithm>
 #include "math.h"
 #include "CommandProcessor.h"
@@ -15,6 +14,7 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include "sources/Player/PlayerStrategy.h"
 
 /**
  * Constructor of GameEngine
@@ -42,12 +42,13 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gameMap = nullptr;
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
-    this->neutral = new Player("Neutral");
+    this->neutral = new Player("NeutralPlayer");
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
-    this->result = map<string,string>();
+    this->result = map<string, string>();
     this->tournamentMapName = "";
     this->hasTournamentEnded = false;
+    this->turnNumber == 0;
 }
 
 /**
@@ -112,7 +113,8 @@ GameEngine::~GameEngine() {
     }
 }
 
-void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns){
+void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames,
+                                      int MaxNumberOfTurns) {
     std::cout << "Starting tournament" << std::endl;
     this->isTournamentMode = true;
     this->tournamentNumberOfGames = NumberOfGames;
@@ -130,16 +132,16 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
         PlayerStrategies.push_back(PlayerStrategy);
     }
     int index = 0;
-    for (auto & iteratorMapFile : MapFiles) {
-        cout << "creating map files" <<endl;
-        ofstream File("Tournaments/map"+std::to_string(index)+".txt");
+    for (auto& iteratorMapFile: MapFiles) {
+        cout << "creating map files" << endl;
+        ofstream File("Tournaments/map" + std::to_string(index) + ".txt");
         File << "loadmap " << iteratorMapFile << endl;
         File << "validatemap" << endl;
-        for(auto & iteratorPlayerStrategy : PlayerStrategies){
+        for (auto& iteratorPlayerStrategy: PlayerStrategies) {
             File << "addplayer " << iteratorPlayerStrategy << endl;
         }
         File << "gamestart" << endl;
-        for(int i = 0; i < NumberOfGames; i++){
+        for (int i = 0; i < NumberOfGames; i++) {
             File << "replay" << endl;
         }
         File << "quit" << endl;
@@ -147,6 +149,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
         index++;
     }
 }
+
 /**
  * Changes the state of the game based on the transitionn given.hanging state for the game.
  * @param transition
@@ -328,7 +331,8 @@ void GameEngine::prepareForReplay() {
     this->gameMap = nullptr;
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
-    this->neutral = new Player("Neutral");
+    this->neutral = new Player("NeutralPlayer");
+    this->getPlayer = new Player();
     this->turnNumber == 0;
 
     // If it's being read from a file
@@ -440,8 +444,9 @@ void GameEngine::gameStart() {
         }
     }
     //Once mainGameLoop is called, the game will run by itself until it gets to the win state
-    mainGameLoop();
-    //disable for A2 demo, we'll do it manually in test driver
+    if (!bIsDemo) {
+        mainGameLoop();
+    }
 }
 
 /**
@@ -474,7 +479,7 @@ string GameEngine::stringToLog() {
     string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
     if (isTournamentMode && hasTournamentEnded) {
         //loop in results map
-        for (auto &r: result) {
+        for (auto& r: result) {
             log += "Map: " + r.first;
             log += "Winner: " + r.second;
         }
@@ -831,6 +836,17 @@ void PlayersAdded::enterState() {
         cout << "There is already the maximum amount of players 6. Please go to the next state." << endl;
         return;
     }
+    if (player->getPlayerName() == "Human") {
+        player->setPlayerStrategy(new HumanPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Benevolent") {
+        player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Cheater") {
+        player->setPlayerStrategy(new CheaterPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Neutral") {
+        player->setPlayerStrategy(new NeutralPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Aggressive") {
+        player->setPlayerStrategy(new AggressivePlayerStrategy(player));
+    }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
         cout << "Player " << this->gameEngine->commandParam << " successfully added." << endl;
@@ -942,7 +958,7 @@ void AssignReinforcement::enterState() {
                 countToAdd = countToAdd + continent->getContinentControlBonusValue();
                 cout << "Player " << player->getPlayerName() << " owns all territories on continent "
                      << continent->getContinentName() << " bonus of " << continent->getContinentControlBonusValue()
-                     << " added.";
+                     << " added." << endl;
             }
         }
         //In any case, the minimal number of reinforcement army units per turn for any player is 3.
@@ -1140,8 +1156,9 @@ void ExecuteOrders::enterState() {
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
         this->gameEngine->changeStateByTransition(GameEngine::Win);
-        if(gameEngine->isTournamentMode){
-            gameEngine->result.insert({gameEngine->tournamentMapName, gameEngine->getGamePlayers()[0]->getPlayerName()});
+        if (gameEngine->isTournamentMode) {
+            gameEngine->result.insert(
+                    {gameEngine->tournamentMapName, gameEngine->getGamePlayers()[0]->getPlayerName()});
         }
     }
     cout << endl;

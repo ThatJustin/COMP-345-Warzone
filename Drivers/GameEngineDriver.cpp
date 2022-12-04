@@ -180,9 +180,9 @@ void testMainGameLoop() {
 // (5) a player that does not control any territory is removed from the game;
 // (6) the game ends when a single player controls all the territories.
     cout << "Testing people who lose all territories are removed from the game." << endl;
-    cout << "and that if one player owns all territories the game is over." << endl ;
+    cout << "and that if one player owns all territories the game is over." << endl;
     cout << "Emulating only one player with territories remaining." << endl << endl;
-    Player* neutral = new Player("Neutral");
+    Player* neutral = new Player("NeutralPlayer");
     for (int i = 1; i < gameEngine->getGamePlayers().size(); i++) {
         for (Territory* t: gameEngine->getGamePlayers().at(i)->getTerritories()) {
             cout << "Removing territory " << t->getTerritoryName() << " from player "

@@ -104,7 +104,9 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck, bool isMoveAdvance);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory,
+            Territory* targetTerritory,
+            Deck* deck, bool isMoveAdvance);
 
     ~Advance() override;
 

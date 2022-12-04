@@ -70,7 +70,7 @@ void testOrderExecution() {
     Player* p4 = new Player("Player4");
 
     //Mimicking Neutral PLayer from GameEngine
-    Player* neutral = new Player("Neutral");
+    Player* neutral = new Player("NeutralPlayer");
 
     Territory* t1 = new Territory(0, "t1", p1);
     Territory* t1_1 = new Territory(0, "t1", p1);
