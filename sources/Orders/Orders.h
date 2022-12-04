@@ -104,7 +104,9 @@ public:
 
     Advance(const Advance& advance);
 
-    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory, Deck* deck, bool isMoveAdvance);
+    Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory,
+            Territory* targetTerritory,
+            Deck* deck, bool isMoveAdvance);
 
     ~Advance() override;
 
@@ -133,6 +135,8 @@ public:
     Advance& operator=(const Advance& advance);
 
     void toStreamInsertion(std::ostream& os) const override;
+
+    bool conquering;
 
 private:
     int m_numberOfArmyUnits;

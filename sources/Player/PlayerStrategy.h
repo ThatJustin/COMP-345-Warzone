@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <ostream>
 
 using std::vector;
 
@@ -9,6 +10,10 @@ class Territory;
 class GameEngine;
 
 class Player;
+
+class Orders;
+
+class Deck;
 
 class PlayerStrategy {
 public:
@@ -19,7 +24,11 @@ public:
     virtual vector<Territory*> toAttack() = 0;
 
     virtual bool issueOrder(GameEngine* gameEngine) = 0;
+
     Player* player;
+
+    vector<Orders*> ordersList;
+
 private:
     Player* getPlayer() const;
 };
@@ -52,7 +61,7 @@ public:
     explicit BenevolentPlayerStrategy(Player* pPlayer);
 
     // Copy constructor
-    BenevolentPlayerStrategy(Player *pPlayer, const BenevolentPlayerStrategy& benevolent_player_strategy);
+    BenevolentPlayerStrategy(Player* pPlayer, const BenevolentPlayerStrategy& benevolent_player_strategy);
 
     // Assignment operator overload
     BenevolentPlayerStrategy& operator=(const BenevolentPlayerStrategy& benevolent_player_strategy);
@@ -79,6 +88,8 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
+
+    bool isattacked;
 };
 
 class CheaterPlayerStrategy : public PlayerStrategy {
@@ -90,6 +101,16 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
+
+    // Copy constructor
+    CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy);
+
+    // Assignment operator overload
+    CheaterPlayerStrategy& operator=(const CheaterPlayerStrategy& cheater_player_strategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const CheaterPlayerStrategy& cheater_player_strategy);
+
 };
 
 class DefaultPlayerStrategy : public PlayerStrategy {

@@ -1,4 +1,5 @@
 //
+//
 // Created by Alex De Luca on 2022-09-14.
 //
 #include "Orders.h"
@@ -455,15 +456,14 @@ Advance::Advance() {
  * @param targetTerritory
  */
 
-Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory,
-                 Deck* deck, bool isMoveAdvance)
-        : Orders(player) {
+Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory,
+                 Territory* targetTerritory,
+                 Deck* deck, bool isMoveAdvance) : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;
     this->m_deck = deck;
     this->bisMoveAdvance = isMoveAdvance;
-
 }
 
 /**
@@ -476,6 +476,7 @@ Advance::Advance(const Advance& advance) {
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
     this->player = advance.player;
     this->m_deck = advance.m_deck;
+    this->conquering = advance.conquering;
     this->bisMoveAdvance = advance.bisMoveAdvance;
 }
 
@@ -623,6 +624,7 @@ void Advance::execute() {
         }
         notify(this);
     }
+    conquering = true;
 }
 
 /**
@@ -723,6 +725,7 @@ Advance& Advance::operator=(const Advance& advance) {
     this->m_sourceTerritory = advance.m_sourceTerritory;
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
     this->player = advance.player;
+    this->conquering = advance.conquering;
     return *this;
 }
 

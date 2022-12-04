@@ -1,14 +1,11 @@
 #include <iostream>
 #include "Player.h"
 #include "../Map/Map.h"
-#include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
 #include "../GameEngine/GameEngine.h"
 #include <set>
 #include <algorithm>
 #include <vector>
-#include <time.h>
-#include <random>
 #include "PlayerStrategy.h"
 
 /**

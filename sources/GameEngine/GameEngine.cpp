@@ -37,6 +37,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
+    this->getPlayer = new Player();
     this->turnNumber == 0;
 }
 
@@ -284,6 +285,7 @@ void GameEngine::prepareForReplay() {
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
     this->neutral = new Player("Neutral");
+    this->getPlayer = new Player();
     this->turnNumber == 0;
 
     // If it's being read from a file
@@ -781,6 +783,12 @@ void PlayersAdded::enterState() {
         player->setPlayerStrategy(new HumanPlayerStrategy(player));
     } else if (player->getPlayerName() == "Benevolent") {
         player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Cheater") {
+        player->setPlayerStrategy(new CheaterPlayerStrategy(player));
+    } else if (player->getPlayerName() == "NeutralPS") {
+        player->setPlayerStrategy(new NeutralPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Aggressive") {
+        player->setPlayerStrategy(new AggressivePlayerStrategy(player));
     }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
