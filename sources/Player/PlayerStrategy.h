@@ -51,6 +51,15 @@ public:
     // Parameterized constructor taking a pointer to a player object as a parameter
     explicit BenevolentPlayerStrategy(Player* pPlayer);
 
+    // Copy constructor
+    BenevolentPlayerStrategy(Player *pPlayer, const BenevolentPlayerStrategy& benevolent_player_strategy);
+
+    // Assignment operator overload
+    BenevolentPlayerStrategy& operator=(const BenevolentPlayerStrategy& benevolent_player_strategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const BenevolentPlayerStrategy& benevolent_player_strategy);
+
     // Method to return a vector of territories that the player wants to defend
     vector<Territory*> toDefend() override;
 

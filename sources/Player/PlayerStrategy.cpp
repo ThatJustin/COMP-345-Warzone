@@ -452,6 +452,40 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
 
 /**
+ * Copy constructor for the BenevolentPlayerStrategy class
+ * @param pPlayer The player that the strategy is for
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to copy
+ */
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player *pPlayer, const BenevolentPlayerStrategy& benevolent_player_strategy) : PlayerStrategy(pPlayer) {
+    this->player = benevolent_player_strategy.player;
+}
+
+/**
+ * Assignment operator overload for the BenevolentPlayerStrategy class
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to assign
+ * @return A reference to the BenevolentPlayerStrategy object assigned
+ */
+BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPlayerStrategy& benevolent_player_strategy) {
+    if (this == &benevolent_player_strategy) {
+        return *this;
+    }
+    this->player = benevolent_player_strategy.player;
+    return *this;
+}
+
+/**
+ * Stream insertion operator overload for the BenevolentPlayerStrategy class
+ * @param outs The output stream
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to output
+ * @return A reference to the output stream which contains class information about the BenevolentPlayerStrategy object
+ */
+ostream& operator<<(ostream& outs, const BenevolentPlayerStrategy& benevolent_player_strategy) {
+    outs << "Name of the Player that uses the BenevolentPlayerStrategy: "
+         << benevolent_player_strategy.player->getPlayerName() << endl;
+    return outs;
+}
+
+/**
  * This method returns the territories that the player needs to defend, prioritizing the territories with the least number of armies, i.e. the weakest territories
  * @return A vector of territory pointers that point to territories the benevolent player wants to defend
  */
