@@ -456,9 +456,9 @@ Advance::Advance() {
  * @param targetTerritory
  */
 
-Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory, Territory* targetTerritory,
-                 Deck* deck, bool isMoveAdvance)
-        : Orders(player) {
+Advance::Advance(Player* player, int numberOfArmyUnits, Territory* sourceTerritory,
+                 Territory* targetTerritory,
+                 Deck* deck, bool isMoveAdvance) : Orders(player) {
     this->m_numberOfArmyUnits = numberOfArmyUnits;
     this->m_sourceTerritory = sourceTerritory;
     this->m_targetTerritory = targetTerritory;

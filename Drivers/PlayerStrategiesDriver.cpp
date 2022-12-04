@@ -53,6 +53,7 @@ void testPlayerStrategies(){
     Territory* continent1_t4 = new Territory(4, "continent1_t4", player2);
     Territory* continent1_t5 = new Territory(5, "continent1_t5", player3);
     Territory* continent1_t6 = new Territory(6, "continent1_t6", player4);
+    Territory* continent1_t7 = new Territory(7, "continent1_t7", player3);
 
     territories.push_back(continent1_t1);
     territories.push_back(continent1_t2);
@@ -60,6 +61,7 @@ void testPlayerStrategies(){
     territories.push_back(continent1_t4);
     territories.push_back(continent1_t5);
     territories.push_back(continent1_t6);
+    territories.push_back(continent1_t7);
 
     continent1_t1->addAdjacentTerritory(continent1_t2);
     continent1_t2->addAdjacentTerritory(continent1_t1);
@@ -71,6 +73,8 @@ void testPlayerStrategies(){
     continent1_t5->addAdjacentTerritory(continent1_t4);
     continent1_t5->addAdjacentTerritory(continent1_t6);
     continent1_t6->addAdjacentTerritory(continent1_t5);
+    continent1_t7->addAdjacentTerritory(continent1_t5);
+    continent1_t5->addAdjacentTerritory(continent1_t7);
 
     continent1_t1->setNumberOfArmies(14);
     continent1_t2->setNumberOfArmies(15);
@@ -78,6 +82,7 @@ void testPlayerStrategies(){
     continent1_t4->setNumberOfArmies(15);
     continent1_t5->setNumberOfArmies(15);
     continent1_t6->setNumberOfArmies(15);
+    continent1_t7->setNumberOfArmies(15);
 
     //continent1_t1->setTerritoryOwner(player1);
     //continent1_t2->setTerritoryOwner(player2);
@@ -92,6 +97,7 @@ void testPlayerStrategies(){
     player2->addTerritory(continent1_t4);
     player3->addTerritory(continent1_t5);
     player4->addTerritory(continent1_t6);
+    player3->addTerritory(continent1_t7);
 
     cout<<player1->getPlayerName()<< " turn to attack, he is an aggressive player."<< endl;
 
@@ -115,15 +121,15 @@ void testPlayerStrategies(){
 
     //(2) the strategy adopted by a player can be changed dynamically during play
     //return the owner and the amount of army per territory
-    cout<<player1->getPlayerName()<< " has "<< player1->getReinforcementPool() << " army." <<endl;
-    cout<<player1->getPlayerName()<< " has "<< player1->getTerritories().size()<< " territory." <<endl;
-    cout<<endl;
-
-    cout<<player1->getPlayerName() << " issue order is: " << player1->issueOrder(gameEngine) << endl;
-    cout<<endl;
-
-    cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
-    cout<<endl;
+//    cout<<player1->getPlayerName()<< " has "<< player1->getReinforcementPool() << " army." <<endl;
+//    cout<<player1->getPlayerName()<< " has "<< player1->getTerritories().size()<< " territory." <<endl;
+//    cout<<endl;
+//
+//    cout<<player1->getPlayerName() << " issue order is: " << player1->issueOrder(gameEngine) << endl;
+//    cout<<endl;
+//
+//    cout<<player2->getPlayerName() << " issue order is: " << player2->issueOrder(gameEngine) << endl;
+//    cout<<endl;
 
     cout<<player3->getPlayerName()<< " has "<< player3->getReinforcementPool() << " army." <<endl;
     cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()<< " territory." <<endl;
@@ -132,7 +138,7 @@ void testPlayerStrategies(){
     cout<<player3->getPlayerName() << " issue order is: " << player3->issueOrder(gameEngine) << endl;
     cout<<endl;
 
-    cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()+2<< " territory." <<endl;
+    // cout<<player3->getPlayerName()<< " has "<< player3->getTerritories().size()<< " territory." <<endl;
     cout<<endl;
 
     //cout<<player4->getPlayerName() << " issue order is: " << player4->issueOrder(gameEngine) << endl;

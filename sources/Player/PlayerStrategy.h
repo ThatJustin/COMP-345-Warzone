@@ -87,4 +87,16 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
+
+
+    // Copy constructor
+    CheaterPlayerStrategy(Player *pPlayer, const CheaterPlayerStrategy& cheater_player_strategy);
+
+    // Assignment operator overload
+    CheaterPlayerStrategy& operator=(const CheaterPlayerStrategy& cheater_player_strategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const CheaterPlayerStrategy& cheater_player_strategy);
+
+
 };

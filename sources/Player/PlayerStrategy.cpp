@@ -287,7 +287,10 @@ bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 }
 
 //CheaterPlayerStrategy
-CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy) : PlayerStrategy(pPlayer) {
+    this->player = cheater_player_strategy.player;
+}
 
 vector<Territory*> CheaterPlayerStrategy::toDefend() {
     //return the territory
@@ -295,58 +298,52 @@ vector<Territory*> CheaterPlayerStrategy::toDefend() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
-    //return every adjacent territory that isnt ther's
-    return {};
-}
-
-bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
-    //loop toattack
-    //use advance order and add a parameter to check if its conquering(bool)
-    //Advance* advance = new Advance();
-    //advance->execute();
-
-    //if(advance->conquering){
-
-    //    toAttack();
-   // }
-
     //cheaterTerritory vector to return
-    vector<Territory*> cheaterTerritory;
-
-    //something like this must be done so that it recognize that cheater territory get the territory originaly distributed
-    cheaterTerritory.push_back(player->getTerritories().at(0));
-
-    cout<<player->getPlayerName() << " has "<< cheaterTerritory.size() << " territory." <<endl;
-
+    vector<Territory*> territories_to_attack;
     //loop trough each territory owned by all the player
     for(Territory* territory: player->getTerritories()) {
-        //cout<<player->getPlayerName()<<endl;
         //loop through each adjacent territory
         for (Territory* adjacent: territory->getAdjacentTerritories()) {
-            cout<<territory->getAdjacentTerritories().size()<<endl;
             //check if the territory is not already owned by the cheater
             if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()){
                 cout<<"Stealing from: " <<adjacent->getTerritoryOwner()->getPlayerName()<<endl;
                 //if the adjacent territory isn't already in the list
-                if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
-                    cheaterTerritory.push_back(adjacent);
-                    //need to add it so that it will return the amount you want to the driver
-                    //player->getTerritories().push_back(adjacent);
-                    //conquer player 2,4 territory
-                    cout<< "Amount of territory controlled: " <<cheaterTerritory.size()<<endl;
+                if (!(find(territories_to_attack.begin(), territories_to_attack.end(), adjacent) != territories_to_attack.end())){
+                    territories_to_attack.push_back(adjacent);
                 }
             }
         }
     }
 
-    //attack the lowest territory
-    sort(toAttack().begin(), toAttack().end(),[](Territory* a, Territory* b) -> bool {
-             return a->getNumberOfArmies() < b->getNumberOfArmies();
-    });
+    cout<<player->getPlayerName()<<" has "<<territories_to_attack.size()<<" territories. "<<endl;
 
-    //gameEngine->territories = cheaterTerritory;
-    //delete advance;
+
+    return territories_to_attack;
+}
+
+bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    vector<Territory*> territoriesAdjToConquer = toAttack();
+
+    for (auto t : territoriesAdjToConquer ) {
+        t->getPlayer()->removeTerritory(t);
+        t->setTerritoryOwner(player);
+        player->addTerritory(t);
+    }
 
     return true;
 }
+
+CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& cheater_player_strategy) {
+    if (this == &cheater_player_strategy) {
+        return *this;
+    }
+    this->player = cheater_player_strategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const CheaterPlayerStrategy& cheater_player_strategy) {
+    outs << "Name of the Player that uses the CheaterPlayerStrategy: "
+         << cheater_player_strategy.player->getPlayerName() << endl;
+    return outs;
+}
+
