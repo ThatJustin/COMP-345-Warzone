@@ -5,19 +5,17 @@
 #include "sources/Cards/Cards.h"
 #include "../GameEngine/GameEngine.h"
 #include "sources/Cards/Cards.h"
-
-#include <cmath>
-using std::floor;
-
 #include <set>
-#include <Vector>
-#include <iostream>
-#include "algorithm"
-using namespace std;
-
+#include <vector>
 #include <time.h>
 #include <random>
 #include <bits/stdc++.h>
+#include <cmath>
+#include <set>
+#include <iostream>
+#include "algorithm"
+using namespace std;
+using std::floor;
 
 //PlayerStrategy
 PlayerStrategy::PlayerStrategy(Player* pPlayer) {
@@ -457,11 +455,11 @@ vector<Territory*> AggressivePlayerStrategy::toDefend() {
     Territory* strongestTerritory = player->getTerritories().at(0);
 
     //loop trough each territory owned by all the player
-    for(int i = 0; i < player->getTerritories().size(); i++){
+    for (int i = 0; i < player->getTerritories().size(); i++) {
         //if the strongest country own, defend it
-        if(strongestTerritory->getNumberOfArmies() <= player->getTerritories().at(i)->getNumberOfArmies()){
-             //add the strongest territory in the list
-             strongestTerritory = player->getTerritories().at(i);
+        if (strongestTerritory->getNumberOfArmies() <= player->getTerritories().at(i)->getNumberOfArmies()) {
+            //add the strongest territory in the list
+            strongestTerritory = player->getTerritories().at(i);
         }
     }
 
@@ -480,15 +478,15 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
     vector<Territory*> attackPriority;
 
     //loop trough each territory owned by all the player
-    for(Territory* territory: player->getTerritories()){
+    for (Territory* territory: player->getTerritories()) {
         //if the strongest country, own, if strongest enemy territory attack it
-        if(territory->getNumberOfArmies() > 0){
+        if (territory->getNumberOfArmies() > 0) {
             //verify if there is a territory adjacent to it
-            for(Territory* adjacent: territory->getAdjacentTerritories()){
+            for (Territory* adjacent: territory->getAdjacentTerritories()) {
                 //check if the adjacent territory is also not owned
-                if(adjacent->getTerritoryOwner() != player){
+                if (adjacent->getTerritoryOwner() != player) {
                     //check if territory not already in the list
-                    if(!(find(attackPriority.begin(), attackPriority.end(), adjacent) != attackPriority.end())){
+                    if (!(find(attackPriority.begin(), attackPriority.end(), adjacent) != attackPriority.end())) {
                         //add the adjacent territory in the list
                         attackPriority.push_back(adjacent);
                     }
@@ -510,14 +508,6 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
     //deploys armies on its strongest country
     Orders* deployorders = new Deploy(player, player->getReinforcementPool(), defend);
-    player->getOrdersList()->addOrder(deployorders);
-    //push the order in the orderlist
-    ordersList.push_back(deployorders);
-
-    //test if the deploy to strongest territory is performed successfully
-    //deployorders->execute();
-    //cout<< "deployorders executed"<<endl;
-    //delete deployorders;
 
     //get the territory to attack
     vector<Territory*> attack = toAttack();
@@ -526,16 +516,17 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
     vector<Territory*> differentTerritory;
 
     //loop through each territory in the attack list
-    for (Territory* territory: attack){
+    for (Territory* territory: attack) {
         //get all territory adjacent
-        for(Territory* source: territory->getAdjacentTerritories()){
+        for (Territory* source: territory->getAdjacentTerritories()) {
             //check if the territory is owned by the player
-            if(source->getTerritoryOwner() == player){
+            if (source->getTerritoryOwner() == player) {
                 //check if territory not already in the list
-                if(!(find(differentTerritory.begin(), differentTerritory.end(), source) != differentTerritory.end())){
+                if (!(find(differentTerritory.begin(), differentTerritory.end(), source) != differentTerritory.end())) {
 
                     //advance order now that all deploy are over
-                    Orders* orders = new Advance(player,source->getNumberOfArmies(), source, territory, gameEngine->deck, true);
+                    Orders* orders = new Advance(player, source->getNumberOfArmies(), source, territory,
+                                                 gameEngine->deck, true);
                     //add order in the list
                     player->getOrdersList()->addOrder(orders);
                     //push the order in the orderlist
@@ -549,12 +540,6 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
             gameEngine->territories.push_back(source);
         }
     }
-
-    //check if there are territory to defend
-    //if(defendPriority.size() == 0){
-    //    return false;
-    //}
-
     return true;
 }
 
@@ -564,6 +549,43 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
  * @param pPlayer the player that the strategy is for
  */
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+
+/**
+ * Copy constructor for the BenevolentPlayerStrategy class
+ * @param pPlayer The player that the strategy is for
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to copy
+ */
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer,
+                                                   const BenevolentPlayerStrategy& benevolent_player_strategy)
+        : PlayerStrategy(pPlayer) {
+    this->player = benevolent_player_strategy.player;
+}
+
+/**
+ * Assignment operator overload for the BenevolentPlayerStrategy class
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to assign
+ * @return A reference to the BenevolentPlayerStrategy object assigned
+ */
+BenevolentPlayerStrategy&
+BenevolentPlayerStrategy::operator=(const BenevolentPlayerStrategy& benevolent_player_strategy) {
+    if (this == &benevolent_player_strategy) {
+        return *this;
+    }
+    this->player = benevolent_player_strategy.player;
+    return *this;
+}
+
+/**
+ * Stream insertion operator overload for the BenevolentPlayerStrategy class
+ * @param outs The output stream
+ * @param benevolent_player_strategy The BenevolentPlayerStrategy object to output
+ * @return A reference to the output stream which contains class information about the BenevolentPlayerStrategy object
+ */
+ostream& operator<<(ostream& outs, const BenevolentPlayerStrategy& benevolent_player_strategy) {
+    outs << "Name of the Player that uses the BenevolentPlayerStrategy: "
+         << benevolent_player_strategy.player->getPlayerName() << endl;
+    return outs;
+}
 
 /**
  * This method returns the territories that the player needs to defend, prioritizing the territories with the least number of armies, i.e. the weakest territories
@@ -706,12 +728,28 @@ vector<Territory*> NeutralPlayerStrategy::toAttack() {
 }
 
 bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    cout << gameEngine->getPlayer->getPlayerName() << endl;
 
+    //PlayerStrategy* ps = new PlayerStrategy(this->player);
+    AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(gameEngine->getPlayer);
+
+    //check if it is attack
+//    if (isattacked) {
+//        //if so turn into an aggressive player
+//        player->setPlayerStrategy(aps);
+//        cout << gameEngine->getPlayer->getPlayerName() << " is now an aggressive player." << endl;
+//    }
     return true;
 }
 
 //CheaterPlayerStrategy
+
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy)
+        : PlayerStrategy(pPlayer) {
+    this->player = cheater_player_strategy.player;
+}
 
 vector<Territory*> CheaterPlayerStrategy::toDefend() {
     //return the territory
@@ -719,50 +757,57 @@ vector<Territory*> CheaterPlayerStrategy::toDefend() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
-
-    //return every adjacent territory that isn't there's
     //cheaterTerritory vector to return
-    vector<Territory*> cheaterTerritory;
-
-    //something like this must be done so that it recognize that cheater territory get the territory originally distributed
-    for(Territory* terr:player->getTerritories()){
-        cheaterTerritory.push_back(terr);
-    }
-
-    cout<<player->getPlayerName() << " has "<< cheaterTerritory.size() << " territory." <<endl;
-    for(Territory* territory: player->getTerritories()) {
+    vector<Territory*> territories_to_attack;
+    //loop trough each territory owned by all the player
+    for (Territory* territory: player->getTerritories()) {
+        //loop through each adjacent territory
         for (Territory* adjacent: territory->getAdjacentTerritories()) {
-            cout<<territory->getAdjacentTerritories().size()<<endl;
             //check if the territory is not already owned by the cheater
-            if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()){
-                cout<<"Stealing from: " <<adjacent->getTerritoryOwner()->getPlayerName()<<endl;
+            if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()) {
+//                cout << "Stealing from: " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
                 //if the adjacent territory isn't already in the list
-                if (!(find(cheaterTerritory.begin(), cheaterTerritory.end(), adjacent) != cheaterTerritory.end())){
-                    cheaterTerritory.push_back(adjacent);
-                    //need to add it so that it will return the amount you want to the driver
-                    player->getTerritories().push_back(adjacent);
-                    //conquer player 2,4 territory
-                    cout<< "Amount of territory stolen: " <<cheaterTerritory.size()<<endl;
+                if (!(find(territories_to_attack.begin(), territories_to_attack.end(), adjacent) !=
+                      territories_to_attack.end())) {
+                    territories_to_attack.push_back(adjacent);
                 }
             }
         }
     }
-
-    sort(toAttack().begin(), toAttack().end(),[](Territory* a, Territory* b) -> bool {
-        return a->getNumberOfArmies() < b->getNumberOfArmies();
-    });
-
-    return cheaterTerritory;
+//    cout<<player->getPlayerName()<<" has "<<territories_to_attack.size()<<" territories. "<<endl;
+    return territories_to_attack;
 }
 
 bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
+    vector<Territory*> territoriesAdjToConquer = toAttack();
+    if (!territoriesAdjToConquer.empty()) {
+        for (auto t: territoriesAdjToConquer) {
+            t->getPlayer()->removeTerritory(t);
+            t->setTerritoryOwner(player);
+            player->addTerritory(t);
+        }
+        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size() << " territorires." << endl;
+    }
     return true;
 }
 
-DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
 
+CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& cheater_player_strategy) {
+    if (this == &cheater_player_strategy) {
+        return *this;
+    }
+    this->player = cheater_player_strategy.player;
+    return *this;
 }
+
+ostream& operator<<(ostream& outs, const CheaterPlayerStrategy& cheater_player_strategy) {
+    outs << "Name of the Player that uses the CheaterPlayerStrategy: "
+         << cheater_player_strategy.player->getPlayerName() << endl;
+    return outs;
+}
+
+
+DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
 
 vector<Territory*> DefaultPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,

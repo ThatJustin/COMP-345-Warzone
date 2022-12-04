@@ -9,6 +9,7 @@
 #include "headers/LoggingObserverDriver.h"
 #include <time.h>
 #include <cmath>
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -19,10 +20,5 @@ int main(int argc, char** argv) {
 
 //    cout << "Testing TournamentDriver" << endl;
 //    testTournament(argc, argv);
-
-
-      //cout<<"Testing PlayerStrategiesDriver:\n"<<endl;
-      //testPlayerStrategies();
-
     return 0;
 }
