@@ -137,6 +137,7 @@ void testTournament(int argc, char** argv) {
                 gameEngine->tournamentMapName = "map"+std::to_string(index);
             }else{
                 cout << "Thanks for playing!" << endl;
+                gameEngine->hasTournamentEnded = true;
                 break;
             }
         }

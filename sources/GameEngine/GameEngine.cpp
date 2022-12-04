@@ -47,6 +47,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->tournamentNumberOfGames = 0;
     this->result = map<string,string>();
     this->tournamentMapName = "";
+    this->hasTournamentEnded = false;
 }
 
 /**
@@ -470,7 +471,15 @@ void GameEngine::detach(Observer* obs) {
 }
 
 string GameEngine::stringToLog() {
-    return "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
+    string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
+    if (isTournamentMode && hasTournamentEnded) {
+        //loop in results map
+        for (auto &r: result) {
+            log += "Map: " + r.first;
+            log += "Winner: " + r.second;
+        }
+    }
+    return log;
 }
 
 void GameEngine::setGameMap(Map* pMap) {

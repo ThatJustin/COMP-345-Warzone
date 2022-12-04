@@ -87,6 +87,8 @@ public:
 
     int tournamentNumberOfGames;
 
+    bool hasTournamentEnded;
+
     map<string,string> result;
 
     string tournamentMapName;
