@@ -775,7 +775,7 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
         for (Territory* adjacent: territory->getAdjacentTerritories()) {
             //check if the territory is not already owned by the cheater
             if (adjacent->getTerritoryOwner()->getPlayerName() != territory->getTerritoryOwner()->getPlayerName()) {
-                cout << "Stealing from: " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
+//                cout << "Stealing from: " << adjacent->getTerritoryOwner()->getPlayerName() << endl;
                 //if the adjacent territory isn't already in the list
                 if (!(find(territories_to_attack.begin(), territories_to_attack.end(), adjacent) !=
                       territories_to_attack.end())) {
@@ -790,13 +790,14 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
 
 bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     vector<Territory*> territoriesAdjToConquer = toAttack();
-
-    for (auto t: territoriesAdjToConquer) {
-        t->getPlayer()->removeTerritory(t);
-        t->setTerritoryOwner(player);
-        player->addTerritory(t);
+    if (!territoriesAdjToConquer.empty()) {
+        for (auto t: territoriesAdjToConquer) {
+            t->getPlayer()->removeTerritory(t);
+            t->setTerritoryOwner(player);
+            player->addTerritory(t);
+        }
+        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size() << " territorires." << endl;
     }
-
     return true;
 }
 

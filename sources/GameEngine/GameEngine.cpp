@@ -783,6 +783,12 @@ void PlayersAdded::enterState() {
         player->setPlayerStrategy(new HumanPlayerStrategy(player));
     } else if (player->getPlayerName() == "Benevolent") {
         player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Cheater") {
+        player->setPlayerStrategy(new CheaterPlayerStrategy(player));
+    } else if (player->getPlayerName() == "NeutralPS") {
+        player->setPlayerStrategy(new NeutralPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Aggressive") {
+        player->setPlayerStrategy(new AggressivePlayerStrategy(player));
     }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
