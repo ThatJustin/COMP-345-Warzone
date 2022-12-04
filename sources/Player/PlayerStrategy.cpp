@@ -288,6 +288,8 @@ bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
 //CheaterPlayerStrategy
 
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player *pPlayer) {}
+
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy) : PlayerStrategy(pPlayer) {
     this->player = cheater_player_strategy.player;
 }
