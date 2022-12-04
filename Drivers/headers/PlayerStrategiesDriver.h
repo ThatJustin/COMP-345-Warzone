@@ -1,3 +1,5 @@
 #pragma once
 
-void testPlayerStrategies();
+void testPlayerStrategies(int argc, char** argv);
+
+//void testPlayerStrategies();

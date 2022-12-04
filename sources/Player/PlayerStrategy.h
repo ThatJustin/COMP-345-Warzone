@@ -58,12 +58,16 @@ public:
 
 class BenevolentPlayerStrategy : public PlayerStrategy {
 public:
+    // Parameterized constructor taking a pointer to a player object as a parameter
     explicit BenevolentPlayerStrategy(Player* pPlayer);
 
+    // Method to return a vector of territories that the player wants to defend
     vector<Territory*> toDefend() override;
 
+    // Method to return a vector of territories that the player wants to attack
     vector<Territory*> toAttack() override;
 
+    // Method to issue an order
     bool issueOrder(GameEngine* gameEngine) override;
 };
 
@@ -81,6 +85,17 @@ public:
 class CheaterPlayerStrategy : public PlayerStrategy {
 public:
     explicit CheaterPlayerStrategy(Player* pPlayer);
+
+    vector<Territory*> toDefend() override;
+
+    vector<Territory*> toAttack() override;
+
+    bool issueOrder(GameEngine* gameEngine) override;
+};
+
+class DefaultPlayerStrategy : public PlayerStrategy {
+public:
+    explicit DefaultPlayerStrategy(Player* pPlayer);
 
     vector<Territory*> toDefend() override;
 
