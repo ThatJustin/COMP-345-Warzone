@@ -9,6 +9,7 @@
 #include "sources/Player/Player.h"
 #include "sources/Cards/Cards.h"
 #include "sources/Orders/Orders.h"
+#include "sources/Player/PlayerStrategy.h"
 
 /**
  * Constructor of GameEngine
@@ -396,8 +397,7 @@ void GameEngine::gameStart() {
         }
     }
     //Once mainGameLoop is called, the game will run by itself until it gets to the win state
-//    mainGameLoop();
-    //disable for A2 demo, we'll do it manually in test driver
+    mainGameLoop();
 }
 
 /**
@@ -779,6 +779,11 @@ void PlayersAdded::enterState() {
         cout << "There is already the maximum amount of players 6. Please go to the next state." << endl;
         return;
     }
+    if (player->getPlayerName() == "Human") {
+        player->setPlayerStrategy(new HumanPlayerStrategy(player));
+    } else if (player->getPlayerName() == "Benevolent") {
+        player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
+    }
     if (players.empty()) {
         this->gameEngine->addPlayer(player);
         cout << "Player " << this->gameEngine->commandParam << " successfully added." << endl;
@@ -890,7 +895,7 @@ void AssignReinforcement::enterState() {
                 countToAdd = countToAdd + continent->getContinentControlBonusValue();
                 cout << "Player " << player->getPlayerName() << " owns all territories on continent "
                      << continent->getContinentName() << " bonus of " << continent->getContinentControlBonusValue()
-                     << " added.";
+                     << " added." << endl;
             }
         }
         //In any case, the minimal number of reinforcement army units per turn for any player is 3.
