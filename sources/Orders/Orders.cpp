@@ -9,6 +9,7 @@
 #include "../Cards/Cards.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
+#include "../Player/PlayerStrategy.h"
 #include <random>
 
 using namespace std;
@@ -476,7 +477,6 @@ Advance::Advance(const Advance& advance) {
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
     this->player = advance.player;
     this->m_deck = advance.m_deck;
-    this->conquering = advance.conquering;
     this->bisMoveAdvance = advance.bisMoveAdvance;
 }
 
@@ -514,10 +514,22 @@ bool Advance::validate() {
             return false;
         }
     } else {
-        cout << "Advance order is to to attack." << endl;
+
+        cout << "Advance order is to attack." << endl;
         cout << "Source territory owner " << m_sourceTerritory->getPlayerName() << " player name "
              << player->getPlayerName() << endl;
         cout << "Target territory owner " << m_targetTerritory->getPlayerName() << "." << endl;
+
+        //turn neutral player into an aggressive player
+        AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(m_targetTerritory->getPlayer());
+        NeutralPlayerStrategy* nps;
+
+        //check if it is attacked and if it is a neutral player
+        if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
+            //if so turn into an aggressive player
+            m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
+            cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
+        }
 
         if (m_sourceTerritory->getPlayerName() == m_targetTerritory->getPlayerName()) {
             cout << "Invalid advance order. Player cannot attack their own territory." << endl;
@@ -573,6 +585,17 @@ void Advance::execute() {
             cout << "Attacking Army Count: " << source_army_count << endl;
             cout << "Defending Army Count: " << target_army_count << endl;
 
+            //turn neutral player into an aggressive player
+            AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(m_targetTerritory->getPlayer());
+            NeutralPlayerStrategy* nps;
+
+            //check if it is attacked and if it is a neutral player
+            if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
+                //if so turn into an aggressive player
+                m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
+                cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
+            }
+
             std::random_device rd1;
             std::mt19937 gen1(rd1());
             std::bernoulli_distribution killAttack(0.6);
@@ -600,6 +623,15 @@ void Advance::execute() {
                           to_string(source_army_count) + " armies left and " +
                           m_targetTerritory->getTerritoryName() + " has " + to_string(target_army_count) +
                           " armies left.";
+
+            // check if neutral and set them aggressive
+            if (m_targetTerritory->getTerritoryOwner()->getPlayerStrategy()->getType() == "Neutral") {
+                m_targetTerritory->getTerritoryOwner()->setPlayerStrategy(new AggressivePlayerStrategy(m_targetTerritory->getTerritoryOwner()));
+                cout << "After being neutral and getting attacked " << m_targetTerritory->getTerritoryOwner()->getPlayerName()
+                     << " is now an aggressive player." << endl;
+
+                cout << endl;
+            }
             if (target_army_count == 0) {
                 cout << "Successfully conquered the target." << endl;
                 Player* target_player = m_targetTerritory->getPlayer();
@@ -624,7 +656,6 @@ void Advance::execute() {
         }
         notify(this);
     }
-    conquering = true;
 }
 
 /**
@@ -725,7 +756,6 @@ Advance& Advance::operator=(const Advance& advance) {
     this->m_sourceTerritory = advance.m_sourceTerritory;
     this->m_numberOfArmyUnits = advance.m_numberOfArmyUnits;
     this->player = advance.player;
-    this->conquering = advance.conquering;
     return *this;
 }
 
@@ -795,6 +825,17 @@ bool Bomb::validate() {
             flag = true;
         }
     }
+    //turn neutral player into an aggressive player
+    AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(m_targetTerritory->getPlayer());
+    NeutralPlayerStrategy* nps;
+
+    //check if it is attacked and if it is a neutral player
+    if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
+        //if so turn into an aggressive player
+        m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
+        cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
+    }
+
     if (m_targetTerritory->getPlayerName() != player->getPlayerName() && flag &&
         !player->checkIsNegotiation(m_targetTerritory->getPlayer())) {
         cout << "Bomb Order is valid for " << player->getPlayerName() << " on " << m_targetTerritory->getTerritoryName()
@@ -816,6 +857,16 @@ void Bomb::execute() {
         orderResult = "Bomb Order successfully executed: Eliminating half of " + m_targetTerritory->getPlayerName() +
                       "'s army units on " +
                       m_targetTerritory->getTerritoryName() + " by " + player->getPlayerName() + ".";
+
+        //check if it is attacked and if it is a neutral player
+        if (m_targetTerritory->getPlayer()->getPlayerStrategy()->getType() == "Neutral") {
+            //if so turn into an aggressive player
+            m_targetTerritory->getPlayer()->setPlayerStrategy(
+                    new AggressivePlayerStrategy(m_targetTerritory->getPlayer()));
+            cout << "After being neutral and getting bombed " << m_targetTerritory->getPlayerName()
+                 << " is now an aggressive player." << endl;
+        }
+
         notify(this);
     }
 }

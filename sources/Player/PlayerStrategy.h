@@ -17,7 +17,7 @@ class Deck;
 
 class PlayerStrategy {
 public:
-    explicit PlayerStrategy(Player* pPlayer);
+    explicit PlayerStrategy(Player* pPlayer, std::string sType);
 
     virtual vector<Territory*> toDefend() = 0;
 
@@ -29,8 +29,11 @@ public:
 
     vector<Orders*> ordersList;
 
+    std::string getType();
+
 private:
     Player* getPlayer() const;
+    std::string type = "Default";
 };
 
 class HumanPlayerStrategy : public PlayerStrategy {
@@ -53,6 +56,8 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
+
+    bool isattacked;
 };
 
 class BenevolentPlayerStrategy : public PlayerStrategy {
@@ -88,8 +93,6 @@ public:
     vector<Territory*> toAttack() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
-
-    bool isattacked;
 };
 
 class CheaterPlayerStrategy : public PlayerStrategy {

@@ -1,30 +1,40 @@
 #include "PlayerStrategy.h"
-#include "sources/Player/Player.h"
-#include "sources/Map/Map.h"
+#include "Player.h"
+#include "../Orders/Orders.h"
+#include "../Map/Map.h"
 #include "sources/Cards/Cards.h"
-#include <algorithm>
-#include <cmath>
-#include "sources/GameEngine/GameEngine.h"
+#include "../GameEngine/GameEngine.h"
+#include "sources/Cards/Cards.h"
 #include <set>
+#include <utility>
 #include <vector>
 #include <time.h>
 #include <random>
 #include <bits/stdc++.h>
+#include <cmath>
+#include <set>
+#include <iostream>
+#include "algorithm"
 
 using namespace std;
 using std::floor;
 
 //PlayerStrategy
-PlayerStrategy::PlayerStrategy(Player* pPlayer) {
+PlayerStrategy::PlayerStrategy(Player* pPlayer, std::string sType) {
     this->player = pPlayer;
+    this->type = std::move(sType);
 }
 
 Player* PlayerStrategy::getPlayer() const {
     return player;
 }
 
+string PlayerStrategy::getType() {
+    return this->type;
+}
+
 // HumanPlayerStrategy
-HumanPlayerStrategy::HumanPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+HumanPlayerStrategy::HumanPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Human") {}
 
 vector<Territory*> HumanPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,
@@ -88,7 +98,7 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
         cin >> territoryIndex;
         auto territory = HumanPlayerStrategy::toDefend()[territoryIndex];
         cout << "Issuing Deploy Order for " << countToDeploy << " units to territory "
-             << territory->getTerritoryName() << ".";
+             << territory->getTerritoryName() << "." << endl;
         Orders* orders = new Deploy(player, countToDeploy, territory);
         player->getOrdersList()->addOrder(orders);
         reinforcementPoolCount -= countToDeploy;
@@ -436,7 +446,7 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
  * then always advances to enemy territories until it cannot do so anymore).
  * @param pPlayer
  */
-AggressivePlayerStrategy::AggressivePlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Aggressive") {
 
 }
 
@@ -492,60 +502,75 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
         }
     }
 
-    return attackPriority; //{attackOrder};
+    return attackPriority;
 }
 
 bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
+    cout << "Issuing order for AggressivePlayerStrategy " << endl;
     //list of territory todefend
     vector<Territory*> defendPriority = toDefend();
+    if (!defendPriority.empty() && player->getReinforcementPool() > 0) {
+        //get the strongest territory first
+        Territory* defend = defendPriority.at(0);
+        //deploys armies on its strongest country
+        Orders* deployOrders = new Deploy(player, player->getReinforcementPool(), defend);
+        player->getOrdersList()->addOrder(deployOrders);
+        cout << "Player has deployed all their reinforcement pool (" << player->getReinforcementPool()
+             << " army units) to their strongest territory " << defend->getTerritoryName() << "." << endl;
+    } else {
+        cout << "Unable to deploy units to the strongest territory. No units available!" << endl;
+    }
 
-    //get the strongest territory first
-    Territory* defend = defendPriority.at(0);
-
-    //deploys armies on its strongest country
-    Orders* deployorders = new Deploy(player, player->getReinforcementPool(), defend);
-    deployorders->execute();
-    cout << deployorders->orderResult << endl;
-    delete deployorders;
-
-    //get the territory to attack
-    vector<Territory*> attack = toAttack();
-
-    //make sure its always a different territory
-    vector<Territory*> differentTerritory;
-
-    //loop through each territory in the attack list
-    for (Territory* territory: attack) {
-        //get all territory adjacent
-        for (Territory* source: territory->getAdjacentTerritories()) {
-            //check if the territory is owned by the player
-            if (source->getTerritoryOwner() == player) {
-                //check if territory not already in the list
-                if (!(find(differentTerritory.begin(), differentTerritory.end(), source) != differentTerritory.end())) {
-
-                    //advance order now that all deploy are over
-                    Orders* orders = new Advance(player, source->getNumberOfArmies(), source, territory,
-                                                 gameEngine->deck, true);
-                    //add order in the list
-                    player->getOrdersList()->addOrder(orders);
-                    //push the order in the orderlist
-                    ordersList.push_back(orders);
-                    //cout<< deployorders<<endl;
-                    //add the current territory in the list of territory already visited
-                    differentTerritory.push_back(source);
-                }
+    // Advance Attack on anyone near my strongest territory.
+    if (!defendPriority.empty()) {
+        vector<Territory*> terrToAttack;
+        Territory* defend = defendPriority.at(0);
+        for (auto* t: defend->getAdjacentTerritories()) {
+            if (player->getPlayerName() != t->getTerritoryName()) {
+                terrToAttack.push_back(t);
             }
-            //push the territories in the gameengine as well
-            gameEngine->territories.push_back(source);
+        }
+        int armyCount = defend->getNumberOfArmies();
+        //divide the army and attack those around it
+        if (!terrToAttack.empty() && armyCount > 0) {
+            for (auto* t: terrToAttack) {
+                int armyUnits = armyCount / terrToAttack.size(); // divide equally
+                auto* advanceAttack = new Advance(player, armyUnits, defend, t, gameEngine->getDeck(), false);
+                player->getOrdersList()->addOrder(advanceAttack);
+                cout << "Player has issued an order to attack the the territory " << t->getTerritoryName()
+                     << " which is adj to their strongest territory using " << armyUnits
+                     << " army units." << endl;
+                armyCount -= armyUnits;
+            }
         }
     }
 
-    //check if there are territory to defend
-    //if(defendPriority.size() == 0){
-    //    return false;
-    //}
-
+    if (!player->getHandCards()->getCards().empty()) {
+        Cards* cardsToPlays = player->getHandCards()->getCards().front();
+        if (cardsToPlays != nullptr) {
+            cout << "Issuing Card " << getNameByCardType(cardsToPlays->getType()) << endl;
+            Orders* orderToMake = nullptr;
+            switch (cardsToPlays->getType()) {
+                case BOMB:
+                    if (!toAttack().empty()) {
+                        Territory* target = toAttack().front();
+                        orderToMake = new Bomb(player, target);
+                    }
+                    break;
+                case AIRLIFT:
+                    if (!toDefend().empty()) {
+                        Territory* target = toDefend().back(); // target is last to defend
+                        Territory* source = toDefend().front(); // source is first to defend
+                        orderToMake = new Airlift(player, player->getReinforcementPool(), source, target);
+                    }
+                    break;
+            }
+            if (orderToMake != nullptr) {
+                //this handles creating the order and removing it from players hand + back to deck
+                cardsToPlays->play(player, gameEngine->getDeck(), orderToMake);
+            }
+        }
+    }
     return true;
 }
 
@@ -554,7 +579,7 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
  * Parameterized constructor for the BenevolentPlayerStrategy class
  * @param pPlayer the player that the strategy is for
  */
-BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Benevolent") {}
 
 /**
  * Copy constructor for the BenevolentPlayerStrategy class
@@ -563,7 +588,7 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer) : PlayerStra
  */
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* pPlayer,
                                                    const BenevolentPlayerStrategy& benevolent_player_strategy)
-        : PlayerStrategy(pPlayer) {
+        : PlayerStrategy(pPlayer, "Benevolent") {
     this->player = benevolent_player_strategy.player;
 }
 
@@ -628,6 +653,7 @@ vector<Territory*> BenevolentPlayerStrategy::toAttack() {
  * @return true if the order was issued successfully if the player has any card to play in their hand, false otherwise
  */
 bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    cout << "Issuing order for BenevolentPlayerStrategy " << endl;
     if (toDefend().empty()) {
         cout << player->getPlayerName() << " has no territories to defend." << endl;
         return false;
@@ -662,19 +688,19 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     Territory* second_weakest_territory = toDefend()[1];
 
     cout << "Issuing Deploy Order for " << player->getReinforcementPool() << " units to territory "
-         << weakest_territory->getTerritoryName() << ".";
-
+         << weakest_territory->getTerritoryName() << "." << endl;
     Orders* deploy_order = new Deploy(player, player->getReinforcementPool(), weakest_territory);
     player->getOrdersList()->addOrder(deploy_order);
 
-    cout << "Issuing Advance Order for " << count_to_advance << " units from territory "
-         << toDefend().back()->getTerritoryName() << " to territory "
-         << second_weakest_territory->getTerritoryName() << ".";
+    if (player->getReinforcementPool() > 0) {
+        cout << "Issuing Advance Order for " << count_to_advance << " units from territory "
+             << toDefend().back()->getTerritoryName() << " to territory "
+             << second_weakest_territory->getTerritoryName() << "." << endl;
 
-    Orders* advance_order = new Advance(player, count_to_advance, toDefend().back(), second_weakest_territory,
-                                        gameEngine->getDeck(), true);
-    player->getOrdersList()->addOrder(advance_order);
-
+        Orders* advance_order = new Advance(player, count_to_advance, toDefend().back(), second_weakest_territory,
+                                            gameEngine->getDeck(), true);
+        player->getOrdersList()->addOrder(advance_order);
+    }
     if (!player->getHandCards()->getCards().empty()) {
         if (player->getHandCards()->getCards().front() != nullptr) {
             cout << "Issuing Card " << getNameByCardType(player->getHandCards()->getCards().front()->getType()) << endl;
@@ -713,51 +739,33 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     return true;
 }
 
-//NeutralPlayerStrategy
-NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {
+//Whenever someone can attack someone, check if the player being attacked has a NeutralPlayerStrategy and if they do,
+//change it to Aggressive Check all the orders that involve attacking someone
+//I believe that a player should be made aware that it is being attacked when an order results in some of thieir army units being destroyed,
+//i.e. during order execution. It could also be as an order is being issued.
 
-}
+//NeutralPlayerStrategy
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Neutral") {}
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
-
-    vector<Territory*> defendPriority;
-
-    //return true if the neutral player is being attacked
-    isattacked = true;
-
-    return defendPriority; //{};
+    return {};
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
-
-    vector<Territory*> attackPriority;
-
-    return attackPriority; //{};
+    return {};
 }
 
 bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
-
-    cout << gameEngine->getPlayer->getPlayerName() << endl;
-
-    //PlayerStrategy* ps = new PlayerStrategy(this->player);
-    AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(gameEngine->getPlayer);
-
-    //check if it is attack
-    if (isattacked) {
-        //if so turn into an aggressive player
-        player->setPlayerStrategy(aps);
-        cout << gameEngine->getPlayer->getPlayerName() << " is now an aggressive player." << endl;
-    }
-
+    cout << "Issuing order for NeutralPlayerStrategy. I'm neutral I don't attack." << endl;
     return true;
 }
 
 //CheaterPlayerStrategy
 
-CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Cheater") {}
 
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy)
-        : PlayerStrategy(pPlayer) {
+        : PlayerStrategy(pPlayer, "Cheater") {
     this->player = cheater_player_strategy.player;
 }
 
@@ -789,6 +797,8 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
 }
 
 bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    cout << "Issuing order for CheaterPlayerStrategy" << endl;
+
     vector<Territory*> territoriesAdjToConquer = toAttack();
     if (!territoriesAdjToConquer.empty()) {
         for (auto t: territoriesAdjToConquer) {
@@ -796,7 +806,7 @@ bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
             t->setTerritoryOwner(player);
             player->addTerritory(t);
         }
-        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size() << " territorires." << endl;
+        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size() << " territories as they are all adj to his own." << endl;
     }
     return true;
 }
@@ -817,7 +827,7 @@ ostream& operator<<(ostream& outs, const CheaterPlayerStrategy& cheater_player_s
 }
 
 
-DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer) {}
+DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Default") {}
 
 vector<Territory*> DefaultPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,
@@ -855,6 +865,8 @@ vector<Territory*> DefaultPlayerStrategy::toAttack() {
 }
 
 bool DefaultPlayerStrategy::issueOrder(GameEngine* gameEngine) {
+    cout << "Issuing order for DefaultPlayerStrategy" << endl;
+
     //Keep issuing deploy orders until no more units in reinforcement pool
 
     //We do not want to modify actual pool here, it's done during the deploy order execution
