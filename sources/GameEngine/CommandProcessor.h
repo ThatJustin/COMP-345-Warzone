@@ -67,6 +67,9 @@ private:
     bool validate(Command* pCommand, const std::string& currentState);
 
     Observer* observer;
+
+    static bool validateTournament(Command* pCommand, const std::string& ListOfMapFiles, const std::string& ListOfPlayerStrategies, int NumberOfGames,
+                            int MaxNumberOfTurns);
 };
 
 class FileLineReader {
