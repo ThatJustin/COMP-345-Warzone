@@ -4,7 +4,9 @@
 #include <fstream>
 #include "CommandProcessor.h"
 #include <algorithm>
-
+#include <sstream>
+#include <fstream>
+#include <filesystem>
 using namespace std;
 
 /**
@@ -192,6 +194,45 @@ std::ostream& operator<<(ostream& stream, const CommandProcessor& commandProcess
     return stream;
 }
 
+bool CommandProcessor::validateTournament(Command* pCommand, const string& ListOfMapFiles, const string& ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns){
+    vector<string> MapFiles;
+    vector<string> PlayerStrategies;
+    string MapFile;
+    string PlayerStrategy;
+    std::stringstream MapFileStream(ListOfMapFiles);
+    std::stringstream PlayerStrategyStream(ListOfPlayerStrategies);
+
+    while (std::getline(MapFileStream, MapFile, ',')) {
+        MapFiles.push_back(MapFile);
+    }
+    while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
+        PlayerStrategies.push_back(PlayerStrategy);
+    }
+
+
+    if(MapFiles.empty() || MapFiles.size() > 5){
+        pCommand->saveEffect("[INVALID COMMAND] Number of maps");
+        return false;
+    }
+
+    if(PlayerStrategies.size() < 2 || PlayerStrategies.size() > 4){
+        pCommand->saveEffect("[INVALID COMMAND] Number of players");
+        return false;
+    }
+
+    if(NumberOfGames < 1 || NumberOfGames > 5){
+        pCommand->saveEffect("[INVALID COMMAND] Number of Games");
+        return false;
+    }
+
+    if(MaxNumberOfTurns < 10 || MaxNumberOfTurns > 50){
+        pCommand->saveEffect("[INVALID COMMAND] Number of Turns");
+        return false;
+    }
+
+    return true;
+}
+
 /**
  * Validates if the command is valid in the current state.
  * @param pCommand command being used.
@@ -202,7 +243,51 @@ bool CommandProcessor::validate(Command* pCommand, const std::string& currentSta
     string com = pCommand->getTransitionName();
     bool success = false;
     if(com == "tournament"){
-        success = true;
+        string ListOfMapFiles;
+        string ListOfPlayerStrategies;
+        int NumberOfGames = 0;
+        int MaxNumberOfTurns = 0;
+        vector<string> Args;
+        vector<string> In_Args;
+        string arguments = pCommand->getParam();
+        string argument;
+        string In_argument;
+        std::stringstream ArgsStream(arguments);
+        while (std::getline(ArgsStream, argument, '-')) {
+            std::stringstream InArgsStream(argument);
+            while (std::getline(InArgsStream, In_argument, ' ')) {
+                In_Args.push_back(In_argument);
+            }
+        }
+        auto it_M = find(In_Args.begin(), In_Args.end(), "M");
+        if (it_M != In_Args.end()) {
+            int in_arg_index = -1;
+            in_arg_index = it_M - In_Args.begin();
+            ListOfMapFiles = In_Args[in_arg_index+1];
+        }
+
+
+        auto it_P = find(In_Args.begin(), In_Args.end(), "P");
+        if (it_P != In_Args.end()) {
+            int in_arg_index = -1;
+            in_arg_index = it_P - In_Args.begin();
+            ListOfPlayerStrategies = In_Args[in_arg_index+1];
+        }
+
+        auto it_G = find(In_Args.begin(), In_Args.end(), "G");
+        if (it_G != In_Args.end()) {
+            int in_arg_index = -1;
+            in_arg_index = it_G - In_Args.begin();
+            NumberOfGames = stoi(In_Args[in_arg_index+1]);
+        }
+
+        auto it_D = find(In_Args.begin(), In_Args.end(), "D");
+        if (it_D != In_Args.end()) {
+            int in_arg_index = -1;
+            in_arg_index = it_D - In_Args.begin();
+            MaxNumberOfTurns = stoi(In_Args[in_arg_index+1]);
+        }
+        success = validateTournament(pCommand, ListOfMapFiles, ListOfPlayerStrategies, NumberOfGames, MaxNumberOfTurns);
     }
     // Check if the transition is valid from the current state
     if (com == "loadmap") {
