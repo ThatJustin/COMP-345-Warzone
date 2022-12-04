@@ -51,6 +51,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->tournamentMapName = "";
     this->hasTournamentEnded = false;
     this->tournamentMaxNumberOfTurns = 0;
+    this->tournamentNumberOfMap = 0;
 }
 
 /**
@@ -119,6 +120,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     std::cout << "Starting tournament" << std::endl;
     this->isTournamentMode = true;
     this->tournamentNumberOfGames = NumberOfGames;
+
     vector<string> MapFiles;
     vector<string> PlayerStrategies;
     string MapFile;
@@ -132,6 +134,8 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
         PlayerStrategies.push_back(PlayerStrategy);
     }
+
+    this->tournamentNumberOfMap = MapFiles.size();
     int index = 0;
     for (auto & iteratorMapFile : MapFiles) {
         cout << "creating map files" <<endl;
@@ -142,7 +146,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
             File << "addplayer " << iteratorPlayerStrategy << endl;
         }
         File << "gamestart" << endl;
-        for(int i = 0; i < NumberOfGames; i++){
+        for(int i = 0; i < NumberOfGames-1; i++){
             File << "replay" << endl;
         }
         File << "quit" << endl;
@@ -477,7 +481,7 @@ void GameEngine::detach(Observer* obs) {
 
 string GameEngine::stringToLog() {
     string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
-    if (isTournamentMode && hasTournamentEnded) {
+    if (isTournamentMode) {
         //loop in results map
         for (auto &r: result) {
             log += "Map: " + r.first;

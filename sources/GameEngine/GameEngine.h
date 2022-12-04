@@ -95,6 +95,8 @@ public:
 
     string tournamentMapName;
 
+    int tournamentNumberOfMap;
+
     //Keep track of the current param for loadmap/addplayer
     string commandParam;
 

@@ -65,12 +65,6 @@ void testTournament(int argc, char** argv) {
             gameEngine->changeStateByTransition(GameEngine::AddPlayer);
         } else if (c->getTransitionName() == "gamestart") {
             gameEngine->gameStart();
-            cout << "Displaying the outcome of gameStart being called." << endl;
-            for (auto p: gameEngine->getGamePlayers()) {
-                cout << *p << endl;
-            }
-            cout << "Simulating a win transition for demo purpose." << endl;
-            gameEngine->changeStateByTransition(GameEngine::Win);
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
             gameEngine->changeStateByTransition(GameEngine::Play);
@@ -129,9 +123,11 @@ void testTournament(int argc, char** argv) {
             gameEngine->tournamentMaxNumberOfTurns = MaxNumberOfTurns;
         } else if (c->getTransitionName() == "quit") {
             index++;
-            if(index != gameEngine->tournamentNumberOfGames-1){
+            cout << index << endl;
+            cout << gameEngine->tournamentNumberOfMap << endl;
+            if(index != gameEngine->tournamentNumberOfMap){
                 cout << "playing Tournaments/map"+std::to_string(index) << endl;
-                commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index), logObserver);
+                commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index)+".txt", logObserver);
                 gameEngine->setCommandProcessor(commandProcessor);
                 gameEngine->tournamentMapName = "map"+std::to_string(index);
             }else{

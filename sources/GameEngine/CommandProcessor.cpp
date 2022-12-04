@@ -438,7 +438,6 @@ FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& fileCo
 string FileLineReader::readLineFromFile(const std::string& fileName) {
 
     std::string path = std::filesystem::current_path().string() + "/Games/" + fileName;
-    cout << path << endl;
     std::ifstream file(path);
     if (!file.is_open()) {
         cout << "Game with file name " << fileName << " doesn't exist." << endl;

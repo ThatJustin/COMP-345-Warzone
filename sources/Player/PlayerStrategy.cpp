@@ -10,7 +10,6 @@
 #include <vector>
 #include <time.h>
 #include <random>
-#include <bits/stdc++.h>
 #include <cmath>
 #include <set>
 #include <iostream>
