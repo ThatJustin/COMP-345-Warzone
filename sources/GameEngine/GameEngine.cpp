@@ -36,7 +36,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->gameMap = nullptr;
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
-    this->neutral = new Player("Neutral");
+    this->neutral = new Player("NeutralPlayer");
     this->getPlayer = new Player();
     this->turnNumber == 0;
 }
@@ -284,7 +284,7 @@ void GameEngine::prepareForReplay() {
     this->gameMap = nullptr;
     this->gamePlayers = std::vector<Player*>();
     this->deck = new Deck();
-    this->neutral = new Player("Neutral");
+    this->neutral = new Player("NeutralPlayer");
     this->getPlayer = new Player();
     this->turnNumber == 0;
 
@@ -397,7 +397,9 @@ void GameEngine::gameStart() {
         }
     }
     //Once mainGameLoop is called, the game will run by itself until it gets to the win state
-    mainGameLoop();
+    if (!bIsDemo) {
+        mainGameLoop();
+    }
 }
 
 /**
@@ -785,7 +787,7 @@ void PlayersAdded::enterState() {
         player->setPlayerStrategy(new BenevolentPlayerStrategy(player));
     } else if (player->getPlayerName() == "Cheater") {
         player->setPlayerStrategy(new CheaterPlayerStrategy(player));
-    } else if (player->getPlayerName() == "NeutralPS") {
+    } else if (player->getPlayerName() == "Neutral") {
         player->setPlayerStrategy(new NeutralPlayerStrategy(player));
     } else if (player->getPlayerName() == "Aggressive") {
         player->setPlayerStrategy(new AggressivePlayerStrategy(player));

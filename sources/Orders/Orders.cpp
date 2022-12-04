@@ -525,10 +525,10 @@ bool Advance::validate() {
         NeutralPlayerStrategy* nps;
 
         //check if it is attacked and if it is a neutral player
-        if(m_targetTerritory->getPlayer()->getPlayerStrategy() == nps){
+        if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
             //if so turn into an aggressive player
             m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
-            cout<<m_targetTerritory->getPlayerName()<<" is now an aggressive player."<< endl;
+            cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
         }
 
         if (m_sourceTerritory->getPlayerName() == m_targetTerritory->getPlayerName()) {
@@ -590,10 +590,10 @@ void Advance::execute() {
             NeutralPlayerStrategy* nps;
 
             //check if it is attacked and if it is a neutral player
-            if(m_targetTerritory->getPlayer()->getPlayerStrategy() == nps){
+            if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
                 //if so turn into an aggressive player
                 m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
-                cout<<m_targetTerritory->getPlayerName()<<" is now an aggressive player."<< endl;
+                cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
             }
 
             std::random_device rd1;
@@ -623,6 +623,15 @@ void Advance::execute() {
                           to_string(source_army_count) + " armies left and " +
                           m_targetTerritory->getTerritoryName() + " has " + to_string(target_army_count) +
                           " armies left.";
+
+            // check if neutral and set them aggressive
+            if (m_targetTerritory->getTerritoryOwner()->getPlayerStrategy()->getType() == "Neutral") {
+                m_targetTerritory->getTerritoryOwner()->setPlayerStrategy(new AggressivePlayerStrategy(m_targetTerritory->getTerritoryOwner()));
+                cout << "After being neutral and getting attacked " << m_targetTerritory->getTerritoryOwner()->getPlayerName()
+                     << " is now an aggressive player." << endl;
+
+                cout << endl;
+            }
             if (target_army_count == 0) {
                 cout << "Successfully conquered the target." << endl;
                 Player* target_player = m_targetTerritory->getPlayer();
@@ -821,10 +830,10 @@ bool Bomb::validate() {
     NeutralPlayerStrategy* nps;
 
     //check if it is attacked and if it is a neutral player
-    if(m_targetTerritory->getPlayer()->getPlayerStrategy() == nps){
+    if (m_targetTerritory->getPlayer()->getPlayerStrategy() == nps) {
         //if so turn into an aggressive player
         m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
-        cout<<m_targetTerritory->getPlayerName()<<" is now an aggressive player."<< endl;
+        cout << m_targetTerritory->getPlayerName() << " is now an aggressive player." << endl;
     }
 
     if (m_targetTerritory->getPlayerName() != player->getPlayerName() && flag &&
@@ -849,15 +858,13 @@ void Bomb::execute() {
                       "'s army units on " +
                       m_targetTerritory->getTerritoryName() + " by " + player->getPlayerName() + ".";
 
-        //turn neutral player into an aggressive player
-        AggressivePlayerStrategy* aps = new AggressivePlayerStrategy(m_targetTerritory->getPlayer());
-        NeutralPlayerStrategy* nps;
-
         //check if it is attacked and if it is a neutral player
-        if(m_targetTerritory->getPlayer()->getPlayerStrategy() == nps){
+        if (m_targetTerritory->getPlayer()->getPlayerStrategy()->getType() == "Neutral") {
             //if so turn into an aggressive player
-            m_targetTerritory->getPlayer()->setPlayerStrategy(aps);
-            cout<<m_targetTerritory->getPlayerName()<<" is now an aggressive player."<< endl;
+            m_targetTerritory->getPlayer()->setPlayerStrategy(
+                    new AggressivePlayerStrategy(m_targetTerritory->getPlayer()));
+            cout << "After being neutral and getting bombed " << m_targetTerritory->getPlayerName()
+                 << " is now an aggressive player." << endl;
         }
 
         notify(this);
