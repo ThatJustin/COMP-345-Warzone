@@ -753,7 +753,7 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
     int count_to_advance = floor(toDefend().back()->getNumberOfArmies() / 2);
     int count_to_airlift = 0;
-    if (toDefend()[1] == nullptr) {
+    if (toDefend()[1] != nullptr) {
         count_to_airlift = floor(toDefend()[1]->getNumberOfArmies() / 2);
     }
 
