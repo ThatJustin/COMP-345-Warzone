@@ -10,7 +10,6 @@
 #include <vector>
 #include <time.h>
 #include <random>
-#include <bits/stdc++.h>
 #include <cmath>
 #include <set>
 #include <iostream>
@@ -654,7 +653,7 @@ vector<Territory*> BenevolentPlayerStrategy::toAttack() {
  */
 bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     cout << "Issuing order for BenevolentPlayerStrategy " << endl;
-    if (toDefend().empty()) {
+    if (toDefend().empty() || toDefend().size() < 2) {
         cout << player->getPlayerName() << " has no territories to defend." << endl;
         return false;
     }
@@ -678,7 +677,10 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     }
 
     int count_to_advance = floor(toDefend().back()->getNumberOfArmies() / 2);
-    int count_to_airlift = floor(toDefend()[1]->getNumberOfArmies() / 2);
+    int count_to_airlift = 0;
+    if (toDefend()[1] == nullptr) {
+        count_to_airlift = floor(toDefend()[1]->getNumberOfArmies() / 2);
+    }
 
     // here, I am getting the player's two territories with the lowest number of armies, i.e. the two weakest territories,
     // and deploying their entire/whole reinforcement pool to the first territory and advancing half of the number of armies

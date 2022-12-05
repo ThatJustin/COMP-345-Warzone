@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "sources/LogObserver/LoggingObserver.h"
+#include <map>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ class Player;
 
 //for part 3
 class Map;
+
 class OrdersList;
 
 class GameState;
@@ -62,8 +64,12 @@ private:
 
     Observer* observer;
 
+
 public:
     explicit GameEngine(LogObserver* obs);
+
+    void
+    initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns);
 
     GameEngine(const GameEngine& gameEngine);
 
@@ -80,6 +86,25 @@ public:
     void detach(Observer* obs) override;
 
     GameState* getCurrentGameState();
+
+    bool isTournamentMode;
+
+    int tournamentNumberOfGames;
+
+    bool hasTournamentEnded;
+
+    int tournamentMaxNumberOfTurns;
+
+    map<string, vector<string>> result;
+
+    int tournamentMapIndex;
+
+    int tournamentNumberOfMap;
+
+    string tournamentListOfMap;
+    string tournamentListOfPlayers;
+
+    vector<string> tournamentListOfMapVector;
 
     //Keep track of the current param for loadmap/addplayer
     string commandParam;
@@ -156,6 +181,13 @@ public:
     bool bIsDemo = false;
 
     Player* getPlayer;
+    bool isDrawGame = false;
+
+    void reinforcementPhase();
+
+    void issueOrdersPhase();
+
+    void executeOrdersPhase();
 };
 
 class GameState {
