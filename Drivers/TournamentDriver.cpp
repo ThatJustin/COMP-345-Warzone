@@ -135,6 +135,7 @@ void testTournament(int argc, char** argv) {
             }else{
                 cout << "Thanks for playing!" << endl;
                 gameEngine->hasTournamentEnded = true;
+                gameEngine->notify(gameEngine);
                 break;
             }
         }

@@ -500,7 +500,7 @@ void GameEngine::detach(Observer* obs) {
 
 string GameEngine::stringToLog() {
     string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
-    if (isTournamentMode && this->currentGameState->name == "win") {
+    if (isTournamentMode && hasTournamentEnded) {
         //loop in results map
         log += "\n Tournament mode: \n"
                "M: " + this->tournamentListOfMap + "\n"
@@ -1197,9 +1197,9 @@ void ExecuteOrders::enterState() {
         this->gameEngine->changeStateByTransition(GameEngine::Win);
     } else if (gameEngine->turnNumber >= gameEngine->tournamentMaxNumberOfTurns && gameEngine->isTournamentMode) {
         gameEngine->hasWinner = true;
+        gameEngine->isDrawGame = true;
         gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back("Draw");
         gameEngine->changeStateByTransition(GameEngine::Win);
-        gameEngine->isDrawGame = true;
     }
 
 
