@@ -91,7 +91,7 @@ public:
 
     int tournamentMaxNumberOfTurns;
 
-    map<string,string> result;
+    map<string,vector<string>> result;
 
     string tournamentMapName;
 

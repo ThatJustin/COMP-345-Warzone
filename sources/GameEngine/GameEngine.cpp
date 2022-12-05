@@ -47,7 +47,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->turnNumber == 0;
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
-    this->result = map<string,string>();
+    this->result = map<string,vector<string>>();
     this->tournamentMapName = "";
     this->hasTournamentEnded = false;
     this->tournamentMaxNumberOfTurns = 0;
@@ -130,6 +130,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
 
     while (std::getline(MapFileStream, MapFile, ',')) {
         MapFiles.push_back(MapFile);
+
     }
     while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
         PlayerStrategies.push_back(PlayerStrategy);
@@ -337,7 +338,7 @@ void GameEngine::prepareForReplay() {
     this->deck = new Deck();
     this->neutral = new Player("NeutralPlayer");
     this->getPlayer = new Player();
-    this->turnNumber == 0;
+    this->turnNumber = 0;
 
     // If it's being read from a file
     if (!this->isUsingConsole()) {
@@ -481,11 +482,13 @@ void GameEngine::detach(Observer* obs) {
 
 string GameEngine::stringToLog() {
     string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
-    if (isTournamentMode) {
+    if (isTournamentMode && this->currentGameState->name == "win") {
         //loop in results map
         for (auto &r: result) {
             log += "Map: " + r.first;
-            log += "Winner: " + r.second;
+            for (auto &p: r.second) {
+                log += "Winner: " + p;
+            }
         }
     }
     return log;
@@ -1157,19 +1160,24 @@ void ExecuteOrders::enterState() {
     playersToRemove.clear();
     cout << endl;
     //Check if there's a winner (1 player left)
+
+
+
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
         if(gameEngine->isTournamentMode){
-            gameEngine->result.insert({gameEngine->tournamentMapName, gameEngine->getGamePlayers()[0]->getPlayerName()});
+            gameEngine->result[gameEngine->tournamentMapName].push_back(gameEngine->getGamePlayers()[0]->getPlayerName());
         }
         this->gameEngine->changeStateByTransition(GameEngine::Win);
-    }else if(gameEngine->isTournamentMode){
-        if(gameEngine->turnNumber == gameEngine->tournamentMaxNumberOfTurns){
-            gameEngine->hasWinner = true;
-            gameEngine->result.insert({gameEngine->tournamentMapName, "Draw"});
-            gameEngine->changeStateByTransition(GameEngine::Win);
-        }
     }
+
+    if(gameEngine->turnNumber == gameEngine->tournamentMaxNumberOfTurns && gameEngine->isTournamentMode){
+        gameEngine->hasWinner = true;
+        gameEngine->result[gameEngine->tournamentMapName].push_back("draw");
+        gameEngine->changeStateByTransition(GameEngine::Win);
+    }
+
+
     cout << endl;
 }
 
