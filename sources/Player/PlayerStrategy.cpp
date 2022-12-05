@@ -32,8 +32,53 @@ string PlayerStrategy::getType() {
     return this->type;
 }
 
+PlayerStrategy::~PlayerStrategy() {}
+
+PlayerStrategy::PlayerStrategy(Player* pPlayer,
+                               const PlayerStrategy& humanPlayerStrategy) {
+    this->type = humanPlayerStrategy.type;
+    this->player = humanPlayerStrategy.player;
+}
+
+PlayerStrategy&
+PlayerStrategy::operator=(const PlayerStrategy& playerStrategy) {
+    if (this == &playerStrategy) {
+        return *this;
+    }
+    this->player = playerStrategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const PlayerStrategy& playerStrategy) {
+    outs << "Name of the Player that uses the PlayerStrategy: "
+         << playerStrategy.player->getPlayerName() << endl;
+    return outs;
+}
+
 // HumanPlayerStrategy
 HumanPlayerStrategy::HumanPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Human") {}
+
+HumanPlayerStrategy::HumanPlayerStrategy(Player* pPlayer,
+                                         const HumanPlayerStrategy& humanPlayerStrategy)
+        : PlayerStrategy(pPlayer, "Human") {
+    this->player = humanPlayerStrategy.player;
+}
+
+
+HumanPlayerStrategy&
+HumanPlayerStrategy::operator=(const HumanPlayerStrategy& humanPlayerStrategy) {
+    if (this == &humanPlayerStrategy) {
+        return *this;
+    }
+    this->player = humanPlayerStrategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const HumanPlayerStrategy& humanPlayerStrategy) {
+    outs << "Name of the Player that uses the AggressivePlayerStrategy: "
+         << humanPlayerStrategy.player->getPlayerName() << endl;
+    return outs;
+}
 
 vector<Territory*> HumanPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,
@@ -439,6 +484,10 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     return true;
 }
 
+HumanPlayerStrategy::~HumanPlayerStrategy() {
+
+}
+
 //AggressivePlayerStrategy
 /**
  * computer player that focuses on attack (deploys or advances armies on its strongest country,
@@ -447,6 +496,28 @@ bool HumanPlayerStrategy::issueOrder(GameEngine* gameEngine) {
  */
 AggressivePlayerStrategy::AggressivePlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Aggressive") {
 
+}
+
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* pPlayer,
+                                                   const AggressivePlayerStrategy& aggressivePlayerStrategy)
+        : PlayerStrategy(pPlayer, "Aggressive") {
+    this->player = aggressivePlayerStrategy.player;
+}
+
+
+AggressivePlayerStrategy&
+AggressivePlayerStrategy::operator=(const AggressivePlayerStrategy& aggressivePlayerStrategy) {
+    if (this == &aggressivePlayerStrategy) {
+        return *this;
+    }
+    this->player = aggressivePlayerStrategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const AggressivePlayerStrategy& aggressivePlayerStrategy) {
+    outs << "Name of the Player that uses the AggressivePlayerStrategy: "
+         << aggressivePlayerStrategy.player->getPlayerName() << endl;
+    return outs;
 }
 
 /*
@@ -571,6 +642,10 @@ bool AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine) {
         }
     }
     return true;
+}
+
+AggressivePlayerStrategy::~AggressivePlayerStrategy() {
+
 }
 
 //BenevolentPlayerStrategy
@@ -741,6 +816,10 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
     return true;
 }
 
+BenevolentPlayerStrategy::~BenevolentPlayerStrategy() {
+
+}
+
 //Whenever someone can attack someone, check if the player being attacked has a NeutralPlayerStrategy and if they do,
 //change it to Aggressive Check all the orders that involve attacking someone
 //I believe that a player should be made aware that it is being attacked when an order results in some of thieir army units being destroyed,
@@ -748,6 +827,29 @@ bool BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
 //NeutralPlayerStrategy
 NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Neutral") {}
+
+
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* pPlayer,
+                                             const NeutralPlayerStrategy& neutralPlayerStrategy)
+        : PlayerStrategy(pPlayer, "Neutral") {
+    this->player = neutralPlayerStrategy.player;
+}
+
+
+NeutralPlayerStrategy&
+NeutralPlayerStrategy::operator=(const NeutralPlayerStrategy& neutralPlayerStrategy) {
+    if (this == &neutralPlayerStrategy) {
+        return *this;
+    }
+    this->player = neutralPlayerStrategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const NeutralPlayerStrategy& neutralPlayerStrategy) {
+    outs << "Name of the Player that uses the NeutralPlayerStrategy: "
+         << neutralPlayerStrategy.player->getPlayerName() << endl;
+    return outs;
+}
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
     return {};
@@ -766,9 +868,24 @@ bool NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine) {
 
 CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Cheater") {}
 
-CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheater_player_strategy)
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* pPlayer, const CheaterPlayerStrategy& cheaterPlayerStrategy)
         : PlayerStrategy(pPlayer, "Cheater") {
-    this->player = cheater_player_strategy.player;
+    this->player = cheaterPlayerStrategy.player;
+}
+
+CheaterPlayerStrategy&
+CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& cheaterPlayerStrategy) {
+    if (this == &cheaterPlayerStrategy) {
+        return *this;
+    }
+    this->player = cheaterPlayerStrategy.player;
+    return *this;
+}
+
+ostream& operator<<(ostream& outs, const CheaterPlayerStrategy& cheaterPlayerStrategy) {
+    outs << "Name of the Player that uses the CheaterPlayerStrategy: "
+         << cheaterPlayerStrategy.player->getPlayerName() << endl;
+    return outs;
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend() {
@@ -808,28 +925,38 @@ bool CheaterPlayerStrategy::issueOrder(GameEngine* gameEngine) {
             t->setTerritoryOwner(player);
             player->addTerritory(t);
         }
-        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size() << " territories as they are all adj to his own." << endl;
+        cout << "Cheater Player has taken over " << territoriesAdjToConquer.size()
+             << " territories as they are all adj to his own." << endl;
     }
     return true;
 }
 
+CheaterPlayerStrategy::~CheaterPlayerStrategy() {
 
-CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& cheater_player_strategy) {
-    if (this == &cheater_player_strategy) {
+}
+
+DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Default") {}
+
+DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer,
+                                             const DefaultPlayerStrategy& defaultPlayerStrategy)
+        : PlayerStrategy(pPlayer, "Default") {
+    this->player = defaultPlayerStrategy.player;
+}
+
+DefaultPlayerStrategy&
+DefaultPlayerStrategy::operator=(const DefaultPlayerStrategy& defaultPlayerStrategy) {
+    if (this == &defaultPlayerStrategy) {
         return *this;
     }
-    this->player = cheater_player_strategy.player;
+    this->player = defaultPlayerStrategy.player;
     return *this;
 }
 
-ostream& operator<<(ostream& outs, const CheaterPlayerStrategy& cheater_player_strategy) {
-    outs << "Name of the Player that uses the CheaterPlayerStrategy: "
-         << cheater_player_strategy.player->getPlayerName() << endl;
+ostream& operator<<(ostream& outs, const DefaultPlayerStrategy& defaultPlayerStrategy) {
+    outs << "Name of the Player that uses the DefaultPlayerStrategy: "
+         << defaultPlayerStrategy.player->getPlayerName() << endl;
     return outs;
 }
-
-
-DefaultPlayerStrategy::DefaultPlayerStrategy(Player* pPlayer) : PlayerStrategy(pPlayer, "Default") {}
 
 vector<Territory*> DefaultPlayerStrategy::toDefend() {
     // Try sorting them based on army count, return territories with the most units,
@@ -1009,4 +1136,8 @@ bool DefaultPlayerStrategy::issueOrder(GameEngine* gameEngine) {
         }
     }
     return true;
+}
+
+DefaultPlayerStrategy::~DefaultPlayerStrategy() {
+
 }

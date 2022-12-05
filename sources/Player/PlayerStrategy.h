@@ -25,14 +25,26 @@ public:
 
     virtual bool issueOrder(GameEngine* gameEngine) = 0;
 
+    virtual ~PlayerStrategy();
+
     Player* player;
 
     vector<Orders*> ordersList;
 
     std::string getType();
 
+    // Copy constructor
+    PlayerStrategy(Player* pPlayer, const PlayerStrategy& playerStrategy);
+
+    // Assignment operator overload
+    PlayerStrategy& operator=(const PlayerStrategy& playerStrategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const PlayerStrategy& playerStrategy);
+
 private:
     Player* getPlayer() const;
+
     std::string type = "Default";
 };
 
@@ -44,7 +56,18 @@ public:
 
     vector<Territory*> toAttack() override;
 
+    ~HumanPlayerStrategy() override;
+
     bool issueOrder(GameEngine* gameEngine) override;
+
+    // Copy constructor
+    HumanPlayerStrategy(Player* pPlayer, const HumanPlayerStrategy& humanPlayerStrategy);
+
+    // Assignment operator overload
+    HumanPlayerStrategy& operator=(const HumanPlayerStrategy& humanPlayerStrategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const HumanPlayerStrategy& humanPlayerStrategy);
 };
 
 class AggressivePlayerStrategy : public PlayerStrategy {
@@ -55,9 +78,18 @@ public:
 
     vector<Territory*> toAttack() override;
 
+    ~AggressivePlayerStrategy() override;
+
     bool issueOrder(GameEngine* gameEngine) override;
 
-    bool isattacked;
+    // Copy constructor
+    AggressivePlayerStrategy(Player* pPlayer, const AggressivePlayerStrategy& aggressivePlayerStrategy);
+
+    // Assignment operator overload
+    AggressivePlayerStrategy& operator=(const AggressivePlayerStrategy& aggressivePlayerStrategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const AggressivePlayerStrategy& aggressivePlayerStrategy);
 };
 
 class BenevolentPlayerStrategy : public PlayerStrategy {
@@ -67,6 +99,8 @@ public:
 
     // Copy constructor
     BenevolentPlayerStrategy(Player* pPlayer, const BenevolentPlayerStrategy& benevolent_player_strategy);
+
+    ~BenevolentPlayerStrategy() override;
 
     // Assignment operator overload
     BenevolentPlayerStrategy& operator=(const BenevolentPlayerStrategy& benevolent_player_strategy);
@@ -92,7 +126,18 @@ public:
 
     vector<Territory*> toAttack() override;
 
+    ~NeutralPlayerStrategy() override;
+
     bool issueOrder(GameEngine* gameEngine) override;
+
+    // Copy constructor
+    NeutralPlayerStrategy(Player* pPlayer, const NeutralPlayerStrategy& neutralPlayerStrategy);
+
+    // Assignment operator overload
+    NeutralPlayerStrategy& operator=(const NeutralPlayerStrategy& neutralPlayerStrategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const NeutralPlayerStrategy& neutralPlayerStrategy);
 };
 
 class CheaterPlayerStrategy : public PlayerStrategy {
@@ -102,6 +147,8 @@ public:
     vector<Territory*> toDefend() override;
 
     vector<Territory*> toAttack() override;
+
+    ~CheaterPlayerStrategy() override;
 
     bool issueOrder(GameEngine* gameEngine) override;
 
@@ -124,5 +171,16 @@ public:
 
     vector<Territory*> toAttack() override;
 
+    ~DefaultPlayerStrategy() override;
+
     bool issueOrder(GameEngine* gameEngine) override;
+
+    // Copy constructor
+    DefaultPlayerStrategy(Player* pPlayer, const DefaultPlayerStrategy& defaultPlayerStrategy);
+
+    // Assignment operator overload
+    DefaultPlayerStrategy& operator=(const DefaultPlayerStrategy& defaultPlayerStrategy);
+
+    // Stream insertion operator overload
+    friend std::ostream& operator<<(std::ostream& outs, const DefaultPlayerStrategy& defaultPlayerStrategy);
 };
