@@ -13,14 +13,17 @@
 #include "Drivers/headers/CommandProcessingDriver.h"
 #include "sources/GameEngine/CommandProcessor.h"
 #include "sources/GameEngine/GameEngine.h"
+
 using namespace std::literals;
 using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+
 #include <algorithm>
+
 void testTournament(int argc, char** argv) {
-    if (argc < 2 || (argv[1] != "-console"sv && argv[1] != "-file"sv )) {
+    if (argc < 2 || (argv[1] != "-console"sv && argv[1] != "-file"sv)) {
         cout << "Please run the program using either -console or -file filename arguments." << endl;
         exit(0);
     }
@@ -45,7 +48,7 @@ void testTournament(int argc, char** argv) {
     GameEngine* gameEngine = new GameEngine(logObserver);
     gameEngine->setCommandProcessor(commandProcessor);
     gameEngine->changeStateByTransition(GameEngine::StartGame);
-    int index= 0;
+    int index = 0;
     while (true) {
         string curStateName = gameEngine->getCurrentGameState()->name;
         Command* c = commandProcessor->getCommand(curStateName);
@@ -68,7 +71,7 @@ void testTournament(int argc, char** argv) {
         } else if (c->getTransitionName() == "replay") {
             gameEngine->prepareForReplay();
             gameEngine->changeStateByTransition(GameEngine::Play);
-        }else if(c->getTransitionName() == "tournament"){
+        } else if (c->getTransitionName() == "tournament") {
             string ListOfMapFiles;
             string ListOfPlayerStrategies;
             int NumberOfGames = 0;
@@ -90,7 +93,7 @@ void testTournament(int argc, char** argv) {
             if (it_M != In_Args.end()) {
                 int in_arg_index = -1;
                 in_arg_index = it_M - In_Args.begin();
-                ListOfMapFiles = In_Args[in_arg_index+1];
+                ListOfMapFiles = In_Args[in_arg_index + 1];
             }
 
 
@@ -98,21 +101,21 @@ void testTournament(int argc, char** argv) {
             if (it_P != In_Args.end()) {
                 int in_arg_index = -1;
                 in_arg_index = it_P - In_Args.begin();
-                ListOfPlayerStrategies = In_Args[in_arg_index+1];
+                ListOfPlayerStrategies = In_Args[in_arg_index + 1];
             }
 
             auto it_G = find(In_Args.begin(), In_Args.end(), "G");
             if (it_G != In_Args.end()) {
                 int in_arg_index = -1;
                 in_arg_index = it_G - In_Args.begin();
-                NumberOfGames = stoi(In_Args[in_arg_index+1]);
+                NumberOfGames = stoi(In_Args[in_arg_index + 1]);
             }
 
             auto it_D = find(In_Args.begin(), In_Args.end(), "D");
             if (it_D != In_Args.end()) {
                 int in_arg_index = -1;
                 in_arg_index = it_D - In_Args.begin();
-                MaxNumberOfTurns = stoi(In_Args[in_arg_index+1]);
+                MaxNumberOfTurns = stoi(In_Args[in_arg_index + 1]);
             }
             gameEngine->initializeTournament(ListOfMapFiles, ListOfPlayerStrategies, NumberOfGames, MaxNumberOfTurns);
 
@@ -120,19 +123,21 @@ void testTournament(int argc, char** argv) {
             gameEngine->setCommandProcessor(commandProcessor);
             gameEngine->tournamentMaxNumberOfTurns = MaxNumberOfTurns;
             gameEngine->tournamentMapIndex = 0;
-            gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
+            gameEngine->result.insert(
+                    {gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex], vector<string>()});
         } else if (c->getTransitionName() == "quit") {
             index++;
-            cout << gameEngine->tournamentNumberOfMap << endl;
-            if(index != gameEngine->tournamentNumberOfMap){
-                cout << "playing Tournaments/map"+std::to_string(index) << endl;
-                commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index)+".txt", logObserver);
+            if (index != gameEngine->tournamentNumberOfMap) {
+                cout << "playing Tournaments/map" + std::to_string(index) << endl;
+                commandProcessor = new FileCommandProcessorAdapter("Tournaments/map" + std::to_string(index) + ".txt",
+                                                                   logObserver);
                 gameEngine->setCommandProcessor(commandProcessor);
                 gameEngine->tournamentMapIndex = index;
                 gameEngine->prepareForReplay();
                 gameEngine->changeStateByTransition(GameEngine::Play);
-                gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
-            }else{
+                gameEngine->result.insert(
+                        {gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex], vector<string>()});
+            } else {
                 cout << "Thanks for playing!" << endl;
                 gameEngine->hasTournamentEnded = true;
                 gameEngine->notify(gameEngine);
