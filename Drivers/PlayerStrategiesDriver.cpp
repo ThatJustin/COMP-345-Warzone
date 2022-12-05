@@ -22,7 +22,7 @@ void testPlayerStrategies(int argc, char** argv) {
     gameEngine->changeStateByTransition(GameEngine::StartGame);
     auto* mapLoader = new MapLoader();
     auto* map = mapLoader->loadMap("./Map Files/Aden.map");
-    Player* human = new Player("Benevolent");
+    Player* human = new Player("Human");
     human->setPlayerStrategy(new HumanPlayerStrategy(human));
     gameEngine->addPlayer(human);
     gameEngine->addPlayer(new Player("Johnny"));
@@ -32,7 +32,7 @@ void testPlayerStrategies(int argc, char** argv) {
 
     human->issueOrder(gameEngine);
     human->useOrders();
-    gameEngine->changeStateByTransition(GameEngine::GameStart); // assign reinforcement
+    gameEngine->reinforcementPhase();
 
     human->issueOrder(gameEngine);
     human->useOrders();
@@ -58,7 +58,7 @@ void testPlayerStrategies(int argc, char** argv) {
 //
 //    agg->issueOrder(gameEngine);
 //    agg->useOrders();
-//    gameEngine->changeStateByTransition(GameEngine::GameStart); // assign reinforcement
+//    gameEngine->reinforcementPhase();
 //
 //    agg->issueOrder(gameEngine);
 //    agg->useOrders();
@@ -86,7 +86,7 @@ void testPlayerStrategies(int argc, char** argv) {
 //
 //    ben->issueOrder(gameEngine);
 //    ben->useOrders();
-//    gameEngine->changeStateByTransition(GameEngine::GameStart); // assign reinforcement
+//    gameEngine->reinforcementPhase();
 //
 //    ben->issueOrder(gameEngine);
 //    ben->useOrders();
@@ -117,7 +117,7 @@ void testPlayerStrategies(int argc, char** argv) {
 //    neutral->issueOrder(gameEngine);
 //    neutral->useOrders();
 //    johnny->useOrders();
-//    gameEngine->changeStateByTransition(GameEngine::GameStart); // assign reinforcement
+//    gameEngine->reinforcementPhase();
 //
 //    neutral->issueOrder(gameEngine);
 //    johnny->issueOrder(gameEngine);
@@ -144,7 +144,7 @@ void testPlayerStrategies(int argc, char** argv) {
 //
 //    cheat->issueOrder(gameEngine);
 //    cheat->useOrders();
-//    gameEngine->changeStateByTransition(GameEngine::GameStart); // assign reinforcement
+//    gameEngine->reinforcementPhase();
 //
 //    cheat->issueOrder(gameEngine);
 //    cheat->useOrders();

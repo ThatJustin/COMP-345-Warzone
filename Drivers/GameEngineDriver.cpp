@@ -168,14 +168,13 @@ void testMainGameLoop() {
     gameEngine->gameStart();
 //(1) a player receives the correct number of army units in the reinforcement phase (showing different cases);
     cout << "Testing that a player receives the correct number of army units in the reinforcement phase" << endl;
-    gameEngine->changeStateByTransition(GameEngine::GameStart);
+    gameEngine->reinforcementPhase();
 
     // (2) a player will only issue deploy orders and no other kind of orders if they still have army units in their reinforcement pool;
 // (3) a player can issue advance orders to either defend or attack, based on the toAttack() and toDefend() lists;
 // (4) a player can play cards to issue orders;
     cout << "Testing issuing deploy, advance and card orders." << endl;
-
-    gameEngine->changeStateByTransition(GameEngine::IssueOrder);
+    gameEngine->issueOrdersPhase();
 
 // (5) a player that does not control any territory is removed from the game;
 // (6) the game ends when a single player controls all the territories.
@@ -193,7 +192,7 @@ void testMainGameLoop() {
         }
     }
 
-    gameEngine->changeStateByTransition(GameEngine::IssueOrdersEnd);
+    gameEngine->executeOrdersPhase();
     cout << "End of demo for maingameloop functionality." << endl;
     delete gameEngine;
 }

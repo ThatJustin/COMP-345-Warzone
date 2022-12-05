@@ -14,6 +14,7 @@ class Player;
 
 //for part 3
 class Map;
+
 class OrdersList;
 
 class GameState;
@@ -66,7 +67,10 @@ private:
 
 public:
     explicit GameEngine(LogObserver* obs);
-    void initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns);
+
+    void
+    initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns);
+
     GameEngine(const GameEngine& gameEngine);
 
     ~GameEngine();
@@ -91,7 +95,7 @@ public:
 
     int tournamentMaxNumberOfTurns;
 
-    map<string,vector<string>> result;
+    map<string, vector<string>> result;
 
     int tournamentMapIndex;
 
@@ -177,6 +181,13 @@ public:
     bool bIsDemo = false;
 
     Player* getPlayer;
+    bool isDrawGame = false;
+
+    void reinforcementPhase();
+
+    void issueOrdersPhase();
+
+    void executeOrdersPhase();
 };
 
 class GameState {

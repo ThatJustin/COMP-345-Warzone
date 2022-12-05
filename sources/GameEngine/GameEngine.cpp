@@ -47,7 +47,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->turnNumber = 0;
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
-    this->result = map<string,vector<string>>();
+    this->result = map<string, vector<string>>();
     this->tournamentMapIndex = 0;
     this->hasTournamentEnded = false;
     this->tournamentMaxNumberOfTurns = 0;
@@ -121,7 +121,8 @@ GameEngine::~GameEngine() {
     }
 }
 
-void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames, int MaxNumberOfTurns){
+void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayerStrategies, int NumberOfGames,
+                                      int MaxNumberOfTurns) {
     std::cout << "Starting tournament" << std::endl;
     this->isTournamentMode = true;
     this->tournamentNumberOfGames = NumberOfGames;
@@ -143,16 +144,16 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     this->tournamentListOfMapVector = MapFiles;
     this->tournamentNumberOfMap = MapFiles.size();
     int index = 0;
-    for (auto & iteratorMapFile : MapFiles) {
-        cout << "Creating Tournament Map Files" <<endl;
-        ofstream File("Games/Tournaments/map"+std::to_string(index)+".txt");
+    for (auto& iteratorMapFile: MapFiles) {
+        cout << "Creating Tournament Map Files" << endl;
+        ofstream File("Games/Tournaments/map" + std::to_string(index) + ".txt");
         File << "loadmap " << iteratorMapFile << endl;
         File << "validatemap" << endl;
-        for(auto & iteratorPlayerStrategy : PlayerStrategies){
+        for (auto& iteratorPlayerStrategy: PlayerStrategies) {
             File << "addplayer " << iteratorPlayerStrategy << endl;
         }
         File << "gamestart" << endl;
-        for(int i = 0; i < NumberOfGames - 1; i++){
+        for (int i = 0; i < NumberOfGames - 1; i++) {
             File << "replay" << endl;
         }
         File << "quit" << endl;
@@ -160,6 +161,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
         index++;
     }
 }
+
 /**
  * Changes the state of the game based on the transitionn given.hanging state for the game.
  * @param transition
@@ -315,12 +317,23 @@ void GameEngine::startupPhase() {
 void GameEngine::mainGameLoop() {
     //When this function is called, you are already in the AssignReinforcement state
     while (!hasWinner) {
-        changeStateByTransition(GameEngine::GameStart); // goes to assign reinforcement state
-
-        changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
+        reinforcementPhase();
+        issueOrdersPhase();
         cout << endl;
-        changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
+        executeOrdersPhase();
     }
+}
+
+void GameEngine::reinforcementPhase() {
+    changeStateByTransition(GameEngine::GameStart); // goes to assign reinforcement state
+}
+
+void GameEngine::issueOrdersPhase() {
+    changeStateByTransition(GameEngine::IssueOrder); // goes to issue order state
+}
+
+void GameEngine::executeOrdersPhase() {
+    changeStateByTransition(GameEngine::IssueOrdersEnd); // goes to execute orders state
 }
 
 /**
@@ -344,7 +357,7 @@ void GameEngine::prepareForReplay() {
     this->neutral = new Player("NeutralPlayer");
     this->getPlayer = new Player();
     this->turnNumber = 0;
-
+    this->isDrawGame = false;
     // If it's being read from a file
     if (!this->isUsingConsole()) {
         FileCommandProcessorAdapter* processorAdapter = dynamic_cast<FileCommandProcessorAdapter*>(this->commandProcessor);
@@ -491,12 +504,14 @@ string GameEngine::stringToLog() {
         //loop in results map
         log += "\n Tournament mode: \n"
                "M: " + this->tournamentListOfMap + "\n"
-               "P: " + this->tournamentListOfPlayers + "\n"
-               "G: " + std::to_string(this->tournamentNumberOfGames) + "\n"
-               "D: " + std::to_string(this->tournamentMaxNumberOfTurns) + "\n";
-        for (auto &r: result) {
+                                                   "P: " + this->tournamentListOfPlayers + "\n"
+                                                                                           "G: " +
+               std::to_string(this->tournamentNumberOfGames) + "\n"
+                                                               "D: " +
+               std::to_string(this->tournamentMaxNumberOfTurns) + "\n";
+        for (auto& r: result) {
             log += "\n Map: " + r.first;
-            for (auto &p: r.second) {
+            for (auto& p: r.second) {
                 log += "\n Winner: " + p;
             }
         }
@@ -1175,16 +1190,16 @@ void ExecuteOrders::enterState() {
 
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
-        if(gameEngine->isTournamentMode){
-            gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back(gameEngine->getGamePlayers()[0]->getPlayerName());
+        if (gameEngine->isTournamentMode) {
+            gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back(
+                    gameEngine->getGamePlayers()[0]->getPlayerName());
         }
         this->gameEngine->changeStateByTransition(GameEngine::Win);
-    }
-
-    if(gameEngine->turnNumber == gameEngine->tournamentMaxNumberOfTurns && gameEngine->isTournamentMode){
+    } else if (gameEngine->turnNumber >= gameEngine->tournamentMaxNumberOfTurns && gameEngine->isTournamentMode) {
         gameEngine->hasWinner = true;
-        gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back("draw");
+        gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back("Draw");
         gameEngine->changeStateByTransition(GameEngine::Win);
+        gameEngine->isDrawGame = true;
     }
 
 
@@ -1259,10 +1274,13 @@ Win::~Win() {
  */
 void Win::enterState() {
     cout << "Entering " << *this << endl;
-
-    cout << "Player " << gameEngine->getGamePlayers().at(0)->getPlayerName() << " has won the game!" << endl;
-
+    if (gameEngine->isDrawGame) {
+        cout << "Game ended in a draw!" << endl;
+    } else {
+        cout << "Player " << gameEngine->getGamePlayers().at(0)->getPlayerName() << " has won the game!" << endl;
+    }
 }
+
 
 /**
  * Returns true if the state is allowed to make this transition.
