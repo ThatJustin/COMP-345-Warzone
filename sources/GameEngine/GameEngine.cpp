@@ -48,10 +48,15 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
     this->result = map<string,vector<string>>();
-    this->tournamentMapName = "";
+    this->tournamentMapIndex = 0;
     this->hasTournamentEnded = false;
     this->tournamentMaxNumberOfTurns = 0;
     this->tournamentNumberOfMap = 0;
+
+    this->tournamentListOfMap = "";
+    this->tournamentListOfPlayers = "";
+
+    this->tournamentListOfMapVector = vector<string>();
 }
 
 /**
@@ -120,7 +125,8 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     std::cout << "Starting tournament" << std::endl;
     this->isTournamentMode = true;
     this->tournamentNumberOfGames = NumberOfGames;
-
+    this->tournamentListOfMap = ListOfMapFiles;
+    this->tournamentListOfPlayers = ListOfPlayerStrategies;
     vector<string> MapFiles;
     vector<string> PlayerStrategies;
     string MapFile;
@@ -130,12 +136,11 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
 
     while (std::getline(MapFileStream, MapFile, ',')) {
         MapFiles.push_back(MapFile);
-
     }
     while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
         PlayerStrategies.push_back(PlayerStrategy);
     }
-
+    this->tournamentListOfMapVector = MapFiles;
     this->tournamentNumberOfMap = MapFiles.size();
     int index = 0;
     for (auto & iteratorMapFile : MapFiles) {
@@ -484,10 +489,15 @@ string GameEngine::stringToLog() {
     string log = "[State Change] Game has changed to state [" + this->currentGameState->name + "].";
     if (isTournamentMode && this->currentGameState->name == "win") {
         //loop in results map
+        log += "\n Tournament mode: \n"
+               "M: " + this->tournamentListOfMap + "\n"
+               "P: " + this->tournamentListOfPlayers + "\n"
+               "G: " + std::to_string(this->tournamentNumberOfGames) + "\n"
+               "D: " + std::to_string(this->tournamentMaxNumberOfTurns) + "\n";
         for (auto &r: result) {
-            log += "Map: " + r.first;
+            log += "\n Map: " + r.first;
             for (auto &p: r.second) {
-                log += "Winner: " + p;
+                log += "\n Winner: " + p;
             }
         }
     }
@@ -1166,14 +1176,14 @@ void ExecuteOrders::enterState() {
     if (gameEngine->getGamePlayers().size() == 1) {
         gameEngine->hasWinner = true;
         if(gameEngine->isTournamentMode){
-            gameEngine->result[gameEngine->tournamentMapName].push_back(gameEngine->getGamePlayers()[0]->getPlayerName());
+            gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back(gameEngine->getGamePlayers()[0]->getPlayerName());
         }
         this->gameEngine->changeStateByTransition(GameEngine::Win);
     }
 
     if(gameEngine->turnNumber == gameEngine->tournamentMaxNumberOfTurns && gameEngine->isTournamentMode){
         gameEngine->hasWinner = true;
-        gameEngine->result[gameEngine->tournamentMapName].push_back("draw");
+        gameEngine->result[gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex]].push_back("draw");
         gameEngine->changeStateByTransition(GameEngine::Win);
     }
 

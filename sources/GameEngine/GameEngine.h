@@ -93,9 +93,14 @@ public:
 
     map<string,vector<string>> result;
 
-    string tournamentMapName;
+    int tournamentMapIndex;
 
     int tournamentNumberOfMap;
+
+    string tournamentListOfMap;
+    string tournamentListOfPlayers;
+
+    vector<string> tournamentListOfMapVector;
 
     //Keep track of the current param for loadmap/addplayer
     string commandParam;

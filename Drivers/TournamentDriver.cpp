@@ -121,8 +121,8 @@ void testTournament(int argc, char** argv) {
             commandProcessor = new FileCommandProcessorAdapter("Tournaments/map0.txt", logObserver);
             gameEngine->setCommandProcessor(commandProcessor);
             gameEngine->tournamentMaxNumberOfTurns = MaxNumberOfTurns;
-            gameEngine->tournamentMapName = "map0";
-            gameEngine->result.insert({"map0",vector<string>()});
+            gameEngine->tournamentMapIndex = 0;
+            gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
         } else if (c->getTransitionName() == "quit") {
             index++;
             cout << index << endl;
@@ -131,8 +131,8 @@ void testTournament(int argc, char** argv) {
                 cout << "playing Tournaments/map"+std::to_string(index) << endl;
                 commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index)+".txt", logObserver);
                 gameEngine->setCommandProcessor(commandProcessor);
-                gameEngine->result.insert({"map"+std::to_string(index),vector<string>()});
-                gameEngine->tournamentMapName = "map"+std::to_string(index);
+                gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
+                gameEngine->tournamentMapIndex = index;
             }else{
                 cout << "Thanks for playing!" << endl;
                 gameEngine->hasTournamentEnded = true;
