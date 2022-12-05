@@ -69,7 +69,6 @@ void testTournament(int argc, char** argv) {
             gameEngine->prepareForReplay();
             gameEngine->changeStateByTransition(GameEngine::Play);
         }else if(c->getTransitionName() == "tournament"){
-            cout << "tournament command received" << endl;
             string ListOfMapFiles;
             string ListOfPlayerStrategies;
             int NumberOfGames = 0;
@@ -115,7 +114,6 @@ void testTournament(int argc, char** argv) {
                 in_arg_index = it_D - In_Args.begin();
                 MaxNumberOfTurns = stoi(In_Args[in_arg_index+1]);
             }
-            cout << "initializing tournament" << endl;
             gameEngine->initializeTournament(ListOfMapFiles, ListOfPlayerStrategies, NumberOfGames, MaxNumberOfTurns);
 
             commandProcessor = new FileCommandProcessorAdapter("Tournaments/map0.txt", logObserver);
@@ -125,7 +123,6 @@ void testTournament(int argc, char** argv) {
             gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
         } else if (c->getTransitionName() == "quit") {
             index++;
-            cout << index << endl;
             cout << gameEngine->tournamentNumberOfMap << endl;
             if(index != gameEngine->tournamentNumberOfMap){
                 cout << "playing Tournaments/map"+std::to_string(index) << endl;

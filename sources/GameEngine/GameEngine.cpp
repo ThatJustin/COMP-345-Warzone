@@ -136,7 +136,6 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
 
     while (std::getline(MapFileStream, MapFile, ',')) {
         MapFiles.push_back(MapFile);
-        cout << MapFile << endl;
     }
     while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
         PlayerStrategies.push_back(PlayerStrategy);
@@ -145,7 +144,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
     this->tournamentNumberOfMap = MapFiles.size();
     int index = 0;
     for (auto & iteratorMapFile : MapFiles) {
-        cout << "creating map files" <<endl;
+        cout << "Creating Tournament Map Files" <<endl;
         ofstream File("Games/Tournaments/map"+std::to_string(index)+".txt");
         File << "loadmap " << iteratorMapFile << endl;
         File << "validatemap" << endl;
@@ -153,7 +152,6 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
             File << "addplayer " << iteratorPlayerStrategy << endl;
         }
         File << "gamestart" << endl;
-        cout << "here 156" + std::to_string(NumberOfGames) << endl;
         for(int i = 0; i < NumberOfGames - 1; i++){
             File << "replay" << endl;
         }
