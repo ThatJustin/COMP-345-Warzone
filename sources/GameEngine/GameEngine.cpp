@@ -44,7 +44,7 @@ GameEngine::GameEngine(LogObserver* obs) {
     this->deck = new Deck();
     this->neutral = new Player("NeutralPlayer");
     this->getPlayer = new Player();
-    this->turnNumber == 0;
+    this->turnNumber = 0;
     this->isTournamentMode = false;
     this->tournamentNumberOfGames = 0;
     this->result = map<string,vector<string>>();
@@ -136,6 +136,7 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
 
     while (std::getline(MapFileStream, MapFile, ',')) {
         MapFiles.push_back(MapFile);
+        cout << MapFile << endl;
     }
     while (std::getline(PlayerStrategyStream, PlayerStrategy, ',')) {
         PlayerStrategies.push_back(PlayerStrategy);
@@ -152,7 +153,8 @@ void GameEngine::initializeTournament(string ListOfMapFiles, string ListOfPlayer
             File << "addplayer " << iteratorPlayerStrategy << endl;
         }
         File << "gamestart" << endl;
-        for(int i = 0; i < NumberOfGames-1; i++){
+        cout << "here 156" + std::to_string(NumberOfGames) << endl;
+        for(int i = 0; i < NumberOfGames - 1; i++){
             File << "replay" << endl;
         }
         File << "quit" << endl;

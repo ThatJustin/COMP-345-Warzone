@@ -131,8 +131,10 @@ void testTournament(int argc, char** argv) {
                 cout << "playing Tournaments/map"+std::to_string(index) << endl;
                 commandProcessor = new FileCommandProcessorAdapter("Tournaments/map"+std::to_string(index)+".txt", logObserver);
                 gameEngine->setCommandProcessor(commandProcessor);
-                gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
                 gameEngine->tournamentMapIndex = index;
+                gameEngine->prepareForReplay();
+                gameEngine->changeStateByTransition(GameEngine::Play);
+                gameEngine->result.insert({gameEngine->tournamentListOfMapVector[gameEngine->tournamentMapIndex],vector<string>()});
             }else{
                 cout << "Thanks for playing!" << endl;
                 gameEngine->hasTournamentEnded = true;
